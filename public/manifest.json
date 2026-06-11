@@ -1,0 +1,25 @@
+{
+  "name": "GreenStep India",
+  "short_name": "GreenStep",
+  "description": "India-first carbon footprint tracker for Haridwar, Uttarakhand and beyond.",
+  "theme_color": "#1D9E75",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "orientation": "portrait",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

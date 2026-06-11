@@ -1,0 +1,100 @@
+{
+  "transport": {
+    "petrol_car": 0.18,
+    "diesel_car": 0.163,
+    "two_wheeler_petrol": 0.075,
+    "two_wheeler_ev": 0.02,
+    "bus_diesel": 0.089,
+    "metro_rail": 0.031,
+    "auto_cng": 0.09,
+    "train_ir": 0.012,
+    "flight_domestic": 0.255,
+    "flight_intl": 0.195,
+    "walk_cycle": 0,
+    "electric_car": 0.065
+  },
+  "energy": {
+    "grid_electricity_kwh": 0.82,
+    "lpg_cylinder_14kg": 29.5,
+    "kerosene_litre": 2.54,
+    "natural_gas_scm": 2.034,
+    "ac_hour": 0.984
+  },
+  "diet_daily": {
+    "vegan": 1.5,
+    "vegetarian": 2.5,
+    "non_veg_chicken": 3.9,
+    "non_veg_mixed": 5.2,
+    "non_veg_beef": 7.2,
+    "dairy_litre": 3.2,
+    "local_produce": -0.3,
+    "restaurant_multiplier": 1.3,
+    "food_waste_multiplier": 0.01
+  },
+  "food_delivery": {
+    "delivery_km": 0.09,
+    "packaging_per_order": 0.12
+  },
+  "shopping": {
+    "smartphone": 70,
+    "phone": 70,
+    "laptop": 350,
+    "clothing_item": 10,
+    "clothing_fast_fashion": 10,
+    "clothing_sustainable": 5,
+    "appliance_large": 200,
+    "appliance": 200,
+    "furniture": 120,
+    "jewellery": 80,
+    "refurbished_multiplier": 0.3
+  },
+  "waste_per_kg": {
+    "landfill_waste": 0.58,
+    "recycled_waste": 0.02,
+    "composted_waste": 0.01,
+    "e_waste_kg": 2.1
+  },
+  "digital_per_hour": {
+    "video_streaming_hd": 0.036,
+    "video_call": 0.008,
+    "email_with_attachment": 0.0001,
+    "cloud_storage_gb": 0.002,
+    "crypto_tx": 0.0005,
+    "ai_prompt_query": 0.001
+  },
+  "water": {
+    "tap_water_litre": 0.00034,
+    "borewell_litre": 0.00055,
+    "tanker_water_litre": 0.0015,
+    "rainwater_litre": 0.00008,
+    "hot_water_litre_boiler": 0.018,
+    "hot_water_litre_solar": 0.004
+  },
+  "pet_yearly": {
+    "dog_large": 164,
+    "dog_medium": 120,
+    "dog_small": 80,
+    "cat": 72,
+    "bird": 4,
+    "fish": 6
+  },
+  "events": {
+    "veg_catering_per_attendee": 1.5,
+    "non_veg_catering_per_attendee": 3,
+    "generator_hour": 2.5,
+    "fireworks_event": 25,
+    "zero_waste_multiplier": 0.75
+  },
+  "india_daily_avg_kg": 5.67,
+  "india_annual_avg_kg": 2070,
+  "india_annual_target_kg": 1500,
+  "india_paris_target_kg_day": 4.11,
+  "world_avg_daily_kg": 11.5,
+  "sources": [
+    "CEA 2024",
+    "IPCC AR6",
+    "MoPNG",
+    "GHG Protocol India",
+    "ScienceDirect pet study 2022"
+  ]
+}
