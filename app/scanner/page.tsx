@@ -1,244 +1,693 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { callClaude } from "@/lib/anthropicClient";
-import { Search, Scan, Plus } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { MotionPage } from "@/components/motion-page";
+import { Button } from "@/components/ui/button";
+import { showSettingsToast } from "@/components/settings/SettingsToast";
+import { cn, formatKg } from "@/lib/utils";
+import { Search, Leaf, Recycle } from "lucide-react";
 
-const SYSTEM_PROMPT = `You are a product carbon footprint analyst. When given a product name or description, respond ONLY with valid JSON (no markdown, no explanation outside JSON):
-
-{
-  "product": "<product name>",
-  "footprint_kg": <number: total lifecycle CO2e in kg>,
-  "rating": "<A+ | A | B | C | D | F>",
-  "rating_label": "<e.g. Very Low | Low | Moderate | High | Very High | Extreme>",
-  "breakdown": {
-    "production": <number: kg CO2e>,
-    "transport": <number: kg CO2e>,
-    "use_phase": <number: kg CO2e>,
-    "disposal": <number: kg CO2e>
-  },
-  "comparison": "<one sentence comparing to a familiar reference>",
-  "greener_alternative": "<name of a lower-carbon alternative product>",
-  "alternative_footprint_kg": <number>,
-  "tip": "<one actionable sentence>"
-}
-
-Use IPCC AR6 lifecycle emission data. For unknown products, make a well-reasoned estimate and still return valid JSON.`;
-
-interface ScanResult {
+/* ─── Types ─── */
+interface ProductResult {
   product: string;
+  brand?: string;
+  category?: string;
+  image?: string;
   footprint_kg: number;
   rating: string;
   rating_label: string;
+  sustainability_score?: number;
   breakdown: {
     production: number;
     transport: number;
     use_phase: number;
     disposal: number;
   };
+  packaging?: {
+    type: string;
+    recyclable: boolean;
+    biodegradable: boolean;
+  };
   comparison: string;
   greener_alternative: string;
   alternative_footprint_kg: number;
   tip: string;
+  eco_facts?: string[];
 }
 
-const EXAMPLES = ["iPhone 15", "Beef burger", "Cotton T-shirt", "Plastic water bottle", "Oat milk 1L"];
+interface ScanHistoryItem {
+  query: string;
+  type: "name" | "barcode" | "qr";
+  product: string;
+  footprint_kg: number;
+  rating: string;
+  timestamp: number;
+}
 
+/* ─── Tabs ─── */
+const SCAN_TABS = [
+  { id: "search", label: "Product Search", emoji: "🔍", desc: "Search by name" },
+  { id: "barcode", label: "Barcode / Code", emoji: "📊", desc: "Enter barcode" },
+  { id: "camera", label: "Camera Scan", emoji: "📷", desc: "Scan with camera" },
+] as const;
+
+type TabId = (typeof SCAN_TABS)[number]["id"];
+
+/* ─── Quick search suggestions ─── */
+const QUICK_SEARCHES = [
+  { name: "iPhone 15", emoji: "📱" },
+  { name: "Cotton T-Shirt", emoji: "👕" },
+  { name: "Plastic Water Bottle", emoji: "🧴" },
+  { name: "Oat Milk", emoji: "🥛" },
+  { name: "LED Bulb", emoji: "💡" },
+  { name: "Rice", emoji: "🍚" },
+  { name: "Beef Burger", emoji: "🍔" },
+  { name: "Laptop", emoji: "💻" },
+];
+
+/* ─── Example barcodes ─── */
+const EXAMPLE_BARCODES = [
+  { code: "8901030899999", label: "Amul Butter" },
+  { code: "8901725133541", label: "Parle-G Biscuits" },
+  { code: "8901063070226", label: "Tata Tea Gold" },
+  { code: "5000159484695", label: "Cadbury Dairy Milk" },
+];
+
+/* ─── Rating colors ─── */
+function getRatingStyle(rating: string) {
+  switch (rating) {
+    case "A+": return { bg: "bg-emerald-500", text: "text-white", ring: "ring-emerald-300" };
+    case "A": return { bg: "bg-green-500", text: "text-white", ring: "ring-green-300" };
+    case "B": return { bg: "bg-yellow-500", text: "text-white", ring: "ring-yellow-300" };
+    case "C": return { bg: "bg-orange-500", text: "text-white", ring: "ring-orange-300" };
+    case "D": return { bg: "bg-red-500", text: "text-white", ring: "ring-red-300" };
+    case "F": return { bg: "bg-rose-700", text: "text-white", ring: "ring-rose-400" };
+    default: return { bg: "bg-gray-400", text: "text-white", ring: "ring-gray-300" };
+  }
+}
+
+function getSustainabilityColor(score: number) {
+  if (score >= 80) return "from-emerald-400 to-emerald-600";
+  if (score >= 60) return "from-green-400 to-green-600";
+  if (score >= 40) return "from-yellow-400 to-orange-500";
+  if (score >= 20) return "from-orange-400 to-red-500";
+  return "from-red-500 to-rose-700";
+}
+
+/* ─── Main page ─── */
 export default function ScannerPage() {
+  const [activeTab, setActiveTab] = useState<TabId>("search");
   const [query, setQuery] = useState("");
+  const [barcodeInput, setBarcodeInput] = useState("");
   const [isScanning, setIsScanning] = useState(false);
-  const [result, setResult] = useState<ScanResult | null>(null);
-  const [recentScans, setRecentScans] = useState<string[]>(EXAMPLES);
+  const [result, setResult] = useState<ProductResult | null>(null);
+  const [source, setSource] = useState("");
   const [error, setError] = useState("");
+  const [history, setHistory] = useState<ScanHistoryItem[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [cameraActive, setCameraActive] = useState(false);
+  const [cameraError, setCameraError] = useState("");
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
+  // Load history
   useEffect(() => {
-    const stored = localStorage.getItem("recent_scans");
-    if (stored) {
-      try {
-        setRecentScans(JSON.parse(stored));
-      } catch {}
-    }
+    try {
+      const stored = localStorage.getItem("scanner_history");
+      if (stored) setHistory(JSON.parse(stored));
+    } catch {}
   }, []);
 
-  const handleScan = async (searchQuery: string) => {
+  const saveToHistory = useCallback((item: ScanHistoryItem) => {
+    setHistory((prev) => {
+      const updated = [item, ...prev.filter((h) => h.query !== item.query)].slice(0, 20);
+      localStorage.setItem("scanner_history", JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
+  const clearHistory = () => {
+    setHistory([]);
+    localStorage.removeItem("scanner_history");
+    showSettingsToast("History cleared");
+  };
+
+  /* ─── Scan / Search ─── */
+  const handleScan = async (searchQuery: string, type: "name" | "barcode" | "qr" = "name") => {
     const q = searchQuery.trim();
     if (!q) return;
-    
+
     setIsScanning(true);
     setResult(null);
     setError("");
 
     try {
-      const responseText = await callClaude(SYSTEM_PROMPT, q);
-      let parsed: ScanResult;
-      try {
-        // Strip out any potential markdown backticks just in case
-        const cleanJson = responseText.replace(/^[`\s]*json|[`\s]*$/gi, '').trim();
-        parsed = JSON.parse(cleanJson);
-      } catch (e) {
-        throw new Error("Could not parse footprint data.");
+      const response = await fetch("/api/scanner", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: q, type }),
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        setError(data.error);
+        return;
       }
-      
-      setResult(parsed);
-      
-      setRecentScans((prev) => {
-        const newScans = [q, ...prev.filter((s) => s.toLowerCase() !== q.toLowerCase())].slice(0, 5);
-        localStorage.setItem("recent_scans", JSON.stringify(newScans));
-        return newScans;
+
+      setResult(data.data);
+      setSource(data.source);
+
+      saveToHistory({
+        query: q,
+        type,
+        product: data.data.product,
+        footprint_kg: data.data.footprint_kg,
+        rating: data.data.rating,
+        timestamp: Date.now(),
       });
     } catch (err) {
       console.error(err);
-      setError("Failed to analyze product. Please try again.");
+      setError("Failed to analyze product. Please check your connection and try again.");
     } finally {
       setIsScanning(false);
     }
   };
 
-  const getRatingColor = (rating: string) => {
-    switch (rating) {
-      case "A+": return "text-emerald-500 bg-emerald-500/10";
-      case "A": return "text-green-500 bg-green-500/10";
-      case "B": return "text-yellow-500 bg-yellow-500/10";
-      case "C": return "text-orange-500 bg-orange-500/10";
-      case "D": return "text-red-500 bg-red-500/10";
-      case "F": return "text-rose-700 bg-rose-700/10";
-      default: return "text-gray-500 bg-gray-500/10";
+  /* ─── Camera ─── */
+  const startCamera = async () => {
+    setCameraError("");
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
+      });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+      }
+      setCameraActive(true);
+    } catch (err) {
+      setCameraError("Camera access denied. Please allow camera permissions in your browser settings.");
+      setCameraActive(false);
     }
   };
 
-  const addToFootprint = () => {
-    if (!result) return;
-    const current = parseInt(localStorage.getItem("user_footprint") || "1900", 10);
-    localStorage.setItem("user_footprint", (current + result.footprint_kg).toString());
-    alert(`Added ${result.footprint_kg} kg CO2e to your footprint!`);
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+    }
+    setCameraActive(false);
   };
 
+  useEffect(() => {
+    return () => { stopCamera(); };
+  }, []);
+
+  useEffect(() => {
+    if (activeTab !== "camera") stopCamera();
+  }, [activeTab]);
+
+  /* ─── Add to footprint ─── */
+  const addToFootprint = () => {
+    if (!result) return;
+    try {
+      const response = fetch("/api/entries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: "shopping",
+          input: { items: { [result.category?.toLowerCase() === "electronics" ? "smartphone" : "clothing_item"]: 1 } },
+          notes: `Scanner: ${result.product} (${result.footprint_kg} kg CO₂e)`,
+        }),
+      });
+      showSettingsToast(`Added ${result.product} (${result.footprint_kg} kg CO₂e) to your log! 🌿`);
+    } catch {
+      showSettingsToast("Failed to add entry", "error");
+    }
+  };
+
+  const totalBreakdown = result ? result.breakdown.production + result.breakdown.transport + result.breakdown.use_phase + result.breakdown.disposal : 0;
+
   return (
-    <div className="min-h-[calc(100vh-4rem)] p-4 md:p-8 bg-[#F8FAF5] dark:bg-[#0B1815] text-[#1B4332] dark:text-[#F8FAF5]">
-      <div className="max-w-2xl mx-auto space-y-8">
-        
-        {/* Search Bar */}
-        <div className="space-y-4">
-          <h1 className="text-2xl font-bold text-[#2D6A4F] dark:text-[#52B788]">Scanner</h1>
-          <div className="relative flex items-center gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={20} />
+    <MotionPage>
+      <section className="space-y-5 pb-8">
+        {/* ─── Header ─── */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1B4332] via-[#2D6A4F] to-[#40916C] p-6 text-white shadow-xl">
+          <div className="absolute top-0 right-0 h-32 w-32 rounded-full bg-white/5 -translate-y-8 translate-x-8" />
+          <div className="absolute bottom-0 left-0 h-24 w-24 rounded-full bg-white/5 translate-y-8 -translate-x-8" />
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-bold backdrop-blur-sm">
+            🔍 Product Scanner
+          </div>
+          <h1 className="mt-3 font-heading text-2xl font-extrabold leading-tight sm:text-3xl">
+            Scan & Discover Impact
+          </h1>
+          <p className="mt-1 text-sm text-white/70">
+            Search products, scan barcodes, or use your camera to discover their carbon footprint.
+          </p>
+        </div>
+
+        {/* ─── Tab bar ─── */}
+        <div className="flex gap-2 overflow-x-auto hide-scrollbar">
+          {SCAN_TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => { setActiveTab(tab.id); setResult(null); setError(""); }}
+              className={cn(
+                "inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border-2 px-4 text-sm font-bold transition-all",
+                activeTab === tab.id
+                  ? "border-[#2D6A4F] bg-[#2D6A4F] text-white shadow-md"
+                  : "border-[#E5E7EB] dark:border-white/10 bg-white dark:bg-white/[0.03] text-ink/70 dark:text-white/70 hover:border-[#52B788]/40"
+              )}
+            >
+              <span>{tab.emoji}</span>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* ─── SEARCH TAB ─── */}
+        {activeTab === "search" && (
+          <div className="space-y-4">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6B7C6E]" size={20} />
               <input
+                ref={inputRef}
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleScan(query)}
-                placeholder="Scan a product — type any product name"
-                className="w-full rounded-2xl border-2 border-[#52B788]/30 bg-white dark:bg-[#1A2F2A] py-4 pl-12 pr-4 text-lg focus:border-[#2D6A4F] focus:outline-none"
+                placeholder="Search any product — iPhone, T-shirt, Rice, LED bulb..."
+                className="w-full min-h-14 rounded-2xl border-2 border-[#D1FAE5]/80 dark:border-white/10 bg-white dark:bg-white/[0.03] pl-12 pr-4 text-sm font-semibold focus:border-[#2D6A4F] focus:outline-none transition"
               />
             </div>
-            <button
-              title="Coming soon: barcode scan"
-              className="flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-[#52B788]/30 bg-white dark:bg-[#1A2F2A] text-[#2D6A4F] hover:bg-[#F8FAF5] transition"
-            >
-              <Scan size={24} />
-            </button>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <span className="text-sm text-neutral-500 py-1">Recent:</span>
-            {recentScans.map((scan) => (
-              <button
-                key={scan}
-                onClick={() => { setQuery(scan); handleScan(scan); }}
-                className="rounded-full bg-[#52B788]/10 px-3 py-1 text-sm font-medium hover:bg-[#52B788]/20 transition"
-              >
-                {scan}
-              </button>
-            ))}
-          </div>
-        </div>
 
+            <div className="flex flex-wrap gap-2">
+              <span className="text-xs font-bold text-[#6B7C6E] dark:text-white/40 py-1.5">Try:</span>
+              {QUICK_SEARCHES.map((item) => (
+                <button
+                  key={item.name}
+                  onClick={() => { setQuery(item.name); handleScan(item.name); }}
+                  disabled={isScanning}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[#D1FAE5] dark:border-white/10 bg-white dark:bg-white/[0.03] px-3 py-1.5 text-xs font-semibold hover:border-[#52B788] hover:bg-[#F0FDF4] dark:hover:bg-[#2D6A4F]/15 transition disabled:opacity-40"
+                >
+                  <span>{item.emoji}</span>
+                  {item.name}
+                </button>
+              ))}
+            </div>
+
+            <Button
+              onClick={() => handleScan(query)}
+              disabled={!query.trim() || isScanning}
+              className="w-full rounded-2xl bg-[#2D6A4F] py-3.5 text-sm font-bold text-white shadow-lg hover:bg-[#1B4332] disabled:opacity-40"
+            >
+              {isScanning ? (
+                <><span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" /> Analyzing...</>
+              ) : (
+                <>🔍 Analyze Product</>
+              )}
+            </Button>
+          </div>
+        )}
+
+        {/* ─── BARCODE TAB ─── */}
+        {activeTab === "barcode" && (
+          <div className="space-y-4">
+            <div className="rounded-2xl border-2 border-[#D1FAE5]/80 dark:border-white/10 bg-white dark:bg-white/[0.03] p-5">
+              <label className="block text-sm font-bold text-[#6B7C6E] dark:text-white/50 mb-2">
+                📊 Enter Barcode / Product Code
+              </label>
+              <input
+                type="text"
+                value={barcodeInput}
+                onChange={(e) => setBarcodeInput(e.target.value.replace(/[^a-zA-Z0-9-]/g, ""))}
+                onKeyDown={(e) => e.key === "Enter" && handleScan(barcodeInput, "barcode")}
+                placeholder="e.g. 8901030899999 or SKU-12345"
+                className="w-full min-h-14 rounded-xl border-2 border-[#E5E7EB] dark:border-white/10 bg-[#F8FAF5] dark:bg-white/[0.02] px-4 text-lg font-mono font-bold tracking-wider focus:border-[#2D6A4F] focus:outline-none transition"
+                maxLength={20}
+              />
+              <p className="mt-2 text-xs text-[#6B7C6E] dark:text-white/40">
+                Supports: EAN-13, EAN-8, UPC-A, GTIN, SKU codes
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <span className="text-xs font-bold text-[#6B7C6E] dark:text-white/40 py-1.5">Try:</span>
+              {EXAMPLE_BARCODES.map((item) => (
+                <button
+                  key={item.code}
+                  onClick={() => { setBarcodeInput(item.code); handleScan(item.code, "barcode"); }}
+                  disabled={isScanning}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[#D1FAE5] dark:border-white/10 bg-white dark:bg-white/[0.03] px-3 py-1.5 text-xs font-semibold hover:border-[#52B788] transition disabled:opacity-40"
+                >
+                  📊 {item.label}
+                </button>
+              ))}
+            </div>
+
+            <Button
+              onClick={() => handleScan(barcodeInput, "barcode")}
+              disabled={!barcodeInput.trim() || isScanning}
+              className="w-full rounded-2xl bg-[#2D6A4F] py-3.5 text-sm font-bold text-white shadow-lg hover:bg-[#1B4332] disabled:opacity-40"
+            >
+              {isScanning ? (
+                <><span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" /> Looking up...</>
+              ) : (
+                <>📊 Look Up Barcode</>
+              )}
+            </Button>
+          </div>
+        )}
+
+        {/* ─── CAMERA TAB ─── */}
+        {activeTab === "camera" && (
+          <div className="space-y-4">
+            <div className="relative overflow-hidden rounded-2xl border-2 border-[#D1FAE5]/80 dark:border-white/10 bg-black aspect-video">
+              {cameraActive ? (
+                <>
+                  <video ref={videoRef} className="h-full w-full object-cover" playsInline muted />
+                  {/* Scanner overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="h-48 w-48 rounded-2xl border-4 border-[#52B788]/60">
+                      <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-[#52B788] rounded-tl-lg" />
+                      <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-[#52B788] rounded-tr-lg" />
+                      <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-[#52B788] rounded-bl-lg" />
+                      <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-[#52B788] rounded-br-lg" />
+                    </div>
+                    {/* Scanning line animation */}
+                    <div className="absolute h-0.5 w-44 bg-gradient-to-r from-transparent via-[#52B788] to-transparent animate-pulse" />
+                  </div>
+                  <div className="absolute bottom-3 inset-x-0 text-center">
+                    <p className="text-xs text-white/70 bg-black/50 rounded-full px-3 py-1 inline-block backdrop-blur-sm">
+                      Point camera at barcode or QR code
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-white/60 p-8">
+                  <span className="text-4xl mb-3">📷</span>
+                  <p className="text-sm font-semibold text-center">Camera preview will appear here</p>
+                  <p className="text-xs mt-1 text-center text-white/40">Click "Start Camera" to begin scanning</p>
+                </div>
+              )}
+            </div>
+
+            {cameraError && (
+              <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/30 p-3">
+                <p className="text-xs font-medium text-red-600 dark:text-red-400">{cameraError}</p>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                onClick={cameraActive ? stopCamera : startCamera}
+                className={cn(
+                  "rounded-2xl py-3.5 text-sm font-bold shadow-lg",
+                  cameraActive
+                    ? "bg-red-500 text-white hover:bg-red-600"
+                    : "bg-[#2D6A4F] text-white hover:bg-[#1B4332]"
+                )}
+              >
+                {cameraActive ? "⏹ Stop Camera" : "📷 Start Camera"}
+              </Button>
+              <Button
+                onClick={() => {
+                  const code = prompt("Enter the barcode/QR code value you scanned:");
+                  if (code) handleScan(code.trim(), "barcode");
+                }}
+                className="rounded-2xl bg-white dark:bg-white/[0.05] border-2 border-[#D1FAE5] dark:border-white/10 py-3.5 text-sm font-bold text-[#2D6A4F] dark:text-[#52B788] hover:bg-[#F0FDF4]"
+              >
+                ⌨️ Type Code
+              </Button>
+            </div>
+
+            <div className="rounded-2xl border border-amber-200 dark:border-amber-900/30 bg-amber-50 dark:bg-amber-900/10 p-3">
+              <p className="text-xs font-medium text-amber-700 dark:text-amber-400">
+                💡 <strong>Tip:</strong> For best results, hold the camera steady 15-20cm from the barcode. Use the "Barcode / Code" tab to manually enter codes for faster lookup.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* ─── Loading state ─── */}
         {isScanning && (
           <div className="flex flex-col items-center justify-center py-12 space-y-4">
-            <div className="relative flex h-16 w-16 items-center justify-center">
-              <div className="absolute inset-0 rounded-full border-4 border-[#52B788]/20"></div>
-              <div className="absolute inset-0 rounded-full border-4 border-[#2D6A4F] border-t-transparent animate-spin"></div>
-              <Search className="text-[#2D6A4F] animate-pulse" />
+            <div className="relative flex h-20 w-20 items-center justify-center">
+              <div className="absolute inset-0 rounded-full border-4 border-[#D1FAE5] dark:border-[#2D6A4F]/40" />
+              <div className="absolute inset-0 rounded-full border-4 border-[#2D6A4F] border-t-transparent animate-spin" />
+              <span className="text-2xl">🔍</span>
             </div>
-            <p className="text-sm font-medium animate-pulse text-[#2D6A4F]">Analyzing lifecycle emissions...</p>
+            <p className="text-sm font-bold text-[#2D6A4F] dark:text-[#52B788] animate-pulse">
+              Analyzing lifecycle emissions...
+            </p>
+            <p className="text-xs text-[#6B7C6E] dark:text-white/40">
+              Checking databases & calculating carbon footprint
+            </p>
           </div>
         )}
 
-        {error && (
-          <div className="rounded-xl bg-red-50 dark:bg-red-900/20 p-4 text-red-600 dark:text-red-400 text-center">
-            {error}
-            <button onClick={() => handleScan(query)} className="ml-4 underline font-bold">Retry</button>
+        {/* ─── Error state ─── */}
+        {error && !isScanning && (
+          <div className="rounded-2xl border-2 border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10 p-5 text-center space-y-3">
+            <span className="text-3xl">😔</span>
+            <p className="text-sm font-bold text-red-600 dark:text-red-400">{error}</p>
+            <div className="flex gap-2 justify-center">
+              <button
+                onClick={() => handleScan(activeTab === "barcode" ? barcodeInput : query, activeTab === "barcode" ? "barcode" : "name")}
+                className="rounded-full bg-red-100 dark:bg-red-900/20 px-4 py-2 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-200 transition"
+              >
+                🔄 Retry
+              </button>
+              <button
+                onClick={() => { setError(""); setActiveTab("search"); }}
+                className="rounded-full bg-[#D1FAE5] dark:bg-[#2D6A4F]/30 px-4 py-2 text-xs font-bold text-[#2D6A4F] dark:text-[#52B788] hover:bg-[#B7E4C7] transition"
+              >
+                🔍 Try different search
+              </button>
+            </div>
           </div>
         )}
 
-        {result && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 space-y-6">
-            <div className="rounded-3xl bg-white dark:bg-[#1A2F2A] p-6 shadow-sm border border-[#52B788]/20">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold capitalize">{result.product}</h2>
-                  <p className="text-3xl font-black text-[#2D6A4F] dark:text-[#52B788] mt-2">
-                    {result.footprint_kg} <span className="text-lg font-medium">kg CO2e</span>
+        {/* ─── RESULT ─── */}
+        {result && !isScanning && (
+          <div className="space-y-4 animate-[fadeIn_0.4s_ease]">
+            {/* Source badge */}
+            <div className="flex items-center justify-between">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#D1FAE5] dark:bg-[#2D6A4F]/30 px-3 py-1 text-[10px] font-bold uppercase text-[#2D6A4F] dark:text-[#52B788]">
+                {source === "local_db" ? "📚 Local Database" : source === "openfoodfacts+ai" ? "🌍 OpenFoodFacts + AI" : source === "openfoodfacts" ? "🌍 OpenFoodFacts" : "🤖 AI Analysis"}
+              </span>
+              <button
+                onClick={() => { setResult(null); setError(""); }}
+                className="text-xs font-bold text-[#6B7C6E] hover:text-[#2D6A4F] transition"
+              >
+                ✕ Clear
+              </button>
+            </div>
+
+            {/* Main product card */}
+            <div className="rounded-3xl border-2 border-[#D1FAE5]/80 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] p-6 shadow-sm">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  {result.brand && result.brand !== "Generic" && (
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/40 mb-1">{result.brand}</p>
+                  )}
+                  <h2 className="text-xl font-extrabold capitalize truncate">{result.product}</h2>
+                  {result.category && (
+                    <span className="inline-block mt-1 rounded-full bg-[#F0FDF4] dark:bg-[#2D6A4F]/15 px-2.5 py-0.5 text-[10px] font-bold text-[#2D6A4F] dark:text-[#52B788]">
+                      {result.category}
+                    </span>
+                  )}
+                  <p className="mt-3 font-heading text-3xl font-extrabold text-[#1B4332] dark:text-white tabular-nums">
+                    {result.footprint_kg} <span className="text-base font-bold text-[#6B7C6E]">kg CO₂e</span>
                   </p>
                 </div>
-                <div className={`flex flex-col items-center justify-center rounded-2xl h-20 w-20 ${getRatingColor(result.rating)}`}>
-                  <span className="text-3xl font-black">{result.rating}</span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider">{result.rating_label}</span>
+
+                {/* Rating badge */}
+                <div className={cn(
+                  "flex flex-col items-center justify-center rounded-2xl h-20 w-20 shrink-0 shadow-lg ring-4",
+                  getRatingStyle(result.rating).bg,
+                  getRatingStyle(result.rating).text,
+                  getRatingStyle(result.rating).ring
+                )}>
+                  <span className="text-2xl font-black">{result.rating}</span>
+                  <span className="text-[9px] font-bold uppercase tracking-wider">{result.rating_label}</span>
                 </div>
               </div>
 
-              <p className="mt-4 text-sm font-medium bg-[#F8FAF5] dark:bg-black/20 p-3 rounded-xl border border-[#52B788]/10">
-                💡 {result.comparison}
-              </p>
+              {/* Sustainability score bar */}
+              {result.sustainability_score != null && result.sustainability_score > 0 && (
+                <div className="mt-4">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-xs font-bold text-[#6B7C6E] dark:text-white/50">Sustainability Score</span>
+                    <span className="text-sm font-extrabold text-[#1B4332] dark:text-white">{result.sustainability_score}/100</span>
+                  </div>
+                  <div className="h-2.5 w-full rounded-full bg-gray-100 dark:bg-white/10 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full bg-gradient-to-r ${getSustainabilityColor(result.sustainability_score)} transition-all duration-700`}
+                      style={{ width: `${result.sustainability_score}%` }}
+                    />
+                  </div>
+                </div>
+              )}
 
-              {/* Breakdown Chart Placeholder (CSS based) */}
-              <div className="mt-8">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-500 mb-4">Lifecycle Breakdown</h3>
-                <div className="flex h-4 w-full overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
-                  <div style={{ width: `${(result.breakdown.production / result.footprint_kg) * 100}%` }} className="bg-[#2D6A4F]" title="Production"></div>
-                  <div style={{ width: `${(result.breakdown.transport / result.footprint_kg) * 100}%` }} className="bg-[#52B788]" title="Transport"></div>
-                  <div style={{ width: `${(result.breakdown.use_phase / result.footprint_kg) * 100}%` }} className="bg-[#74C69D]" title="Use Phase"></div>
-                  <div style={{ width: `${(result.breakdown.disposal / result.footprint_kg) * 100}%` }} className="bg-[#B7E4C7]" title="Disposal"></div>
-                </div>
-                <div className="mt-3 flex flex-wrap gap-4 text-xs font-medium">
-                  <div className="flex items-center gap-1"><span className="h-3 w-3 rounded-full bg-[#2D6A4F]"></span> Production</div>
-                  <div className="flex items-center gap-1"><span className="h-3 w-3 rounded-full bg-[#52B788]"></span> Transport</div>
-                  <div className="flex items-center gap-1"><span className="h-3 w-3 rounded-full bg-[#74C69D]"></span> Use Phase</div>
-                  <div className="flex items-center gap-1"><span className="h-3 w-3 rounded-full bg-[#B7E4C7]"></span> Disposal</div>
-                </div>
+              {/* Comparison */}
+              <div className="mt-4 rounded-xl bg-[#F0FDF4] dark:bg-[#2D6A4F]/15 border border-[#D1FAE5]/60 dark:border-[#2D6A4F]/40 p-3">
+                <p className="text-sm text-[#2D6A4F] dark:text-[#B7E4C7]">💡 {result.comparison}</p>
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="rounded-2xl bg-[#F8FAF5] dark:bg-[#1A2F2A] p-5 border border-[#52B788]/30 flex flex-col justify-between">
-                <div>
-                  <h3 className="text-sm font-bold text-[#2D6A4F] dark:text-[#52B788] mb-1">Greener Alternative</h3>
-                  <p className="font-semibold">{result.greener_alternative}</p>
-                  <p className="text-sm mt-1">{result.alternative_footprint_kg} kg CO2e</p>
+            {/* Lifecycle breakdown */}
+            {totalBreakdown > 0 && (
+              <div className="rounded-2xl border-2 border-[#D1FAE5]/80 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] p-5">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/40 mb-3">Lifecycle Breakdown</h3>
+                <div className="flex h-3 w-full overflow-hidden rounded-full">
+                  <div style={{ width: `${(result.breakdown.production / totalBreakdown) * 100}%` }} className="bg-[#1B4332]" title="Production" />
+                  <div style={{ width: `${(result.breakdown.transport / totalBreakdown) * 100}%` }} className="bg-[#2D6A4F]" title="Transport" />
+                  <div style={{ width: `${(result.breakdown.use_phase / totalBreakdown) * 100}%` }} className="bg-[#52B788]" title="Use Phase" />
+                  <div style={{ width: `${(result.breakdown.disposal / totalBreakdown) * 100}%` }} className="bg-[#B7E4C7]" title="Disposal" />
                 </div>
-                <div className="mt-4 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                  ↓ Saves {(result.footprint_kg - result.alternative_footprint_kg).toFixed(1)} kg CO2e
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  {[
+                    { label: "Production", value: result.breakdown.production, color: "bg-[#1B4332]" },
+                    { label: "Transport", value: result.breakdown.transport, color: "bg-[#2D6A4F]" },
+                    { label: "Use Phase", value: result.breakdown.use_phase, color: "bg-[#52B788]" },
+                    { label: "Disposal", value: result.breakdown.disposal, color: "bg-[#B7E4C7]" },
+                  ].map((item) => (
+                    <div key={item.label} className="flex items-center gap-2 text-xs">
+                      <span className={`h-2.5 w-2.5 rounded-full ${item.color}`} />
+                      <span className="text-[#6B7C6E] dark:text-white/50">{item.label}</span>
+                      <span className="ml-auto font-bold tabular-nums">{item.value} kg</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-              
-              <div className="rounded-2xl bg-white dark:bg-[#1A2F2A] p-5 shadow-sm border border-[#52B788]/20 flex flex-col justify-between">
-                <div>
-                  <h3 className="text-sm font-bold text-[#2D6A4F] dark:text-[#52B788] mb-1">Actionable Tip</h3>
-                  <p className="text-sm leading-relaxed">{result.tip}</p>
+            )}
+
+            {/* Packaging info */}
+            {result.packaging && (
+              <div className="rounded-2xl border-2 border-[#D1FAE5]/80 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] p-5">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/40 mb-3">📦 Packaging</h3>
+                <div className="flex flex-wrap gap-2">
+                  <span className="rounded-full bg-[#F0FDF4] dark:bg-[#2D6A4F]/15 px-3 py-1.5 text-xs font-bold text-[#2D6A4F] dark:text-[#52B788]">
+                    {result.packaging.type}
+                  </span>
+                  <span className={`rounded-full px-3 py-1.5 text-xs font-bold ${result.packaging.recyclable ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400" : "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400"}`}>
+                    {result.packaging.recyclable ? "♻️ Recyclable" : "❌ Not Recyclable"}
+                  </span>
+                  <span className={`rounded-full px-3 py-1.5 text-xs font-bold ${result.packaging.biodegradable ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400" : "bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400"}`}>
+                    {result.packaging.biodegradable ? "🌱 Biodegradable" : "⚠️ Non-Biodegradable"}
+                  </span>
                 </div>
-                <button
-                  onClick={addToFootprint}
-                  className="mt-4 w-full flex items-center justify-center gap-2 rounded-xl bg-[#2D6A4F] py-2.5 text-sm font-bold text-white hover:bg-[#1B4332] transition"
-                >
-                  <Plus size={16} />
-                  Add to my footprint
-                </button>
               </div>
+            )}
+
+            {/* Greener alternative + tip */}
+            <div className="grid md:grid-cols-2 gap-3">
+              <div className="rounded-2xl border-2 border-emerald-200 dark:border-emerald-900/30 bg-emerald-50 dark:bg-emerald-900/10 p-5">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-2">🌿 Greener Alternative</h3>
+                <p className="font-bold text-[#1B4332] dark:text-white">{result.greener_alternative}</p>
+                <p className="text-sm mt-1 text-[#6B7C6E] dark:text-white/60">{result.alternative_footprint_kg} kg CO₂e</p>
+                {result.footprint_kg > result.alternative_footprint_kg && (
+                  <p className="mt-2 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                    ↓ Saves {(result.footprint_kg - result.alternative_footprint_kg).toFixed(1)} kg CO₂e
+                  </p>
+                )}
+              </div>
+
+              <div className="rounded-2xl border-2 border-[#D1FAE5]/80 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] p-5">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/40 mb-2">💡 Eco Tip</h3>
+                <p className="text-sm leading-relaxed text-[#1B4332] dark:text-white/80">{result.tip}</p>
+              </div>
+            </div>
+
+            {/* Eco facts */}
+            {result.eco_facts && result.eco_facts.length > 0 && (
+              <div className="rounded-2xl border-2 border-[#D1FAE5]/80 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] p-5">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/40 mb-3">📖 Did You Know?</h3>
+                <div className="space-y-2">
+                  {result.eco_facts.map((fact, i) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#2D6A4F]/10 text-[10px] font-bold text-[#2D6A4F] dark:text-[#52B788]">{i + 1}</span>
+                      <p className="text-sm text-[#6B7C6E] dark:text-white/60">{fact}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Action buttons */}
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                onClick={addToFootprint}
+                className="rounded-2xl bg-[#2D6A4F] py-3.5 text-sm font-bold text-white shadow-lg hover:bg-[#1B4332]"
+              >
+                ➕ Add to Carbon Log
+              </Button>
+              <Button
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({ title: `${result.product} Carbon Footprint`, text: `${result.product}: ${result.footprint_kg} kg CO₂e (Rating: ${result.rating})` });
+                  } else {
+                    navigator.clipboard.writeText(`${result.product}: ${result.footprint_kg} kg CO₂e (Rating: ${result.rating})`);
+                    showSettingsToast("Copied to clipboard! 📋");
+                  }
+                }}
+                className="rounded-2xl bg-white dark:bg-white/[0.05] border-2 border-[#D1FAE5] dark:border-white/10 py-3.5 text-sm font-bold text-[#2D6A4F] dark:text-[#52B788] hover:bg-[#F0FDF4]"
+              >
+                📤 Share Result
+              </Button>
             </div>
           </div>
         )}
 
-      </div>
-    </div>
+        {/* ─── SCAN HISTORY ─── */}
+        {history.length > 0 && !isScanning && !result && (
+          <div className="rounded-2xl border-2 border-[#D1FAE5]/80 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] p-5">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/40">📋 Scan History</h3>
+              <button onClick={clearHistory} className="text-[10px] font-bold text-red-400 hover:text-red-600 transition">
+                Clear all
+              </button>
+            </div>
+            <div className="space-y-2">
+              {history.slice(0, 8).map((item, i) => (
+                <button
+                  key={`${item.query}-${i}`}
+                  onClick={() => {
+                    if (item.type === "barcode") {
+                      setBarcodeInput(item.query);
+                      setActiveTab("barcode");
+                    } else {
+                      setQuery(item.query);
+                      setActiveTab("search");
+                    }
+                    handleScan(item.query, item.type);
+                  }}
+                  className="flex w-full items-center gap-3 rounded-xl border border-[#D1FAE5]/60 dark:border-white/[0.06] bg-[#F8FAF5] dark:bg-white/[0.02] p-3 text-left hover:bg-[#F0FDF4] dark:hover:bg-[#2D6A4F]/10 transition"
+                >
+                  <span className="text-base">{item.type === "barcode" ? "📊" : "🔍"}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold truncate">{item.product}</p>
+                    <p className="text-[10px] text-[#6B7C6E] dark:text-white/40">
+                      {item.footprint_kg} kg CO₂e • {new Date(item.timestamp).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className={cn(
+                    "flex h-8 w-8 items-center justify-center rounded-lg text-xs font-black",
+                    getRatingStyle(item.rating).bg,
+                    getRatingStyle(item.rating).text
+                  )}>
+                    {item.rating}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
+    </MotionPage>
   );
 }

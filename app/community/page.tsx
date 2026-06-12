@@ -202,7 +202,7 @@ export default function CommunityPage() {
                 Both accounts get 50 eco-coins after their first entry.
               </CardDescription>
             </CardHeader>
-            <div className="rounded-card border border-line bg-mist p-3 text-sm font-bold text-ink/70 dark:border-white/10 dark:bg-white/5 dark:text-white/70">
+            <div className="rounded-card border border-line bg-mist p-3 text-sm font-bold text-ink/70 break-all dark:border-white/10 dark:bg-white/5 dark:text-white/70">
               {referralLink}
             </div>
             <Button className="mt-3 w-full" onClick={copyReferral} type="button" variant="secondary">

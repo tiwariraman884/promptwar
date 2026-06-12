@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useSettings } from "@/lib/settings-context";
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -88,6 +89,8 @@ export default function DashboardPage() {
   const [data, setData] = useState<DashboardData>(demoDashboard);
   const [loading, setLoading] = useState(true);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const { profile } = useSettings();
+  const displayName = profile.name?.split(" ")[0] || data.profile.display_name;
   const [greeting, setGreeting] = useState("Welcome");
 
   useEffect(() => {
@@ -128,14 +131,14 @@ export default function DashboardPage() {
               <Badge className="bg-white/15 text-white" tone="dark">
                 {data.profile.city}, {data.profile.state}
               </Badge>
-              <h1 className="mt-4 font-heading text-2xl font-extrabold leading-tight sm:text-3xl">
-                {greeting}, {data.profile.display_name} — Your CO2 today:{" "}
-                {data.todayKg.toFixed(1)} kg
+              <h1 className="mt-4 font-heading text-xl font-extrabold leading-tight sm:text-2xl md:text-3xl">
+                {greeting}, <span className="bg-gradient-to-r from-[#B7E4C7] to-white bg-clip-text text-transparent">{displayName}</span> — Your CO2 today:{" "}
+                <span className="tabular-nums">{data.todayKg.toFixed(1)}</span> kg
               </h1>
             </div>
             <Link
               href="/calculator"
-              className="inline-flex items-center gap-2.5 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur-sm transition-all duration-200 hover:bg-white hover:text-[#1B4332] hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
+              className="inline-flex items-center gap-2.5 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold text-white backdrop-blur-sm transition-all duration-200 hover:bg-white hover:text-[#1B4332] hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 sm:px-5 sm:py-2.5 sm:text-sm"
             >
               <Calculator aria-hidden size={16} />
               <span className="h-4 w-px bg-current opacity-25" />

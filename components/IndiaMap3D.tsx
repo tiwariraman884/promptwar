@@ -216,7 +216,7 @@ export default function IndiaMapOfficial({ selectedCity, step, diet, vehicle, go
   const pulseOpacity2 = 0.08 + Math.sin(time * 2.5) * 0.04;
 
   return (
-    <div className="relative flex min-h-[380px] flex-col overflow-hidden rounded-card bg-[#0d1f1a]">
+    <div className="relative flex min-h-[280px] flex-col overflow-hidden rounded-card bg-[#0d1f1a] sm:min-h-[380px]">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-3 pb-1 z-20 relative">
         <div>

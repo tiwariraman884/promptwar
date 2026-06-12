@@ -14,3 +14,5 @@ pnpm-debug.log*
 *.log
 next-dev-*.log
 next-start.*.log
+scratch.json
+typecheck_out*.txt

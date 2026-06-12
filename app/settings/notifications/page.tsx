@@ -1,248 +1,210 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { IconArrowLeft, IconLock } from "@/components/icons/EcoIcons";
+import { useSettings } from "@/lib/settings-context";
+import { SettingsCard } from "@/components/settings/SettingsCard";
+import { SettingsToggle } from "@/components/settings/SettingsToggle";
+import { showSettingsToast } from "@/components/settings/SettingsToast";
+import { IconArrowLeft } from "@/components/icons/EcoIcons";
 
-const NOTIFICATION_GROUPS = [
+type NotifKey = keyof ReturnType<typeof useSettings>["notifications"];
+
+interface ToggleRow {
+  key: NotifKey;
+  label: string;
+  locked?: boolean;
+}
+
+const GROUPS: { title: string; description: string; emoji: string; items: ToggleRow[] }[] = [
   {
-    group: "Weekly Reports",
-    description: "Your carbon footprint summary every Sunday",
-    settings: [
-      { id: "weekly_report_email", label: "Email digest", defaultValue: true },
-      { id: "weekly_report_push", label: "Push notification", defaultValue: false },
+    title: "Account Notifications",
+    description: "Security and account-related alerts",
+    emoji: "🔐",
+    items: [
+      { key: "loginAlerts", label: "Login alerts" },
+      { key: "securityAlerts", label: "Security alerts", locked: true },
+      { key: "passwordChanges", label: "Password changes" },
+      { key: "accountUpdates", label: "Account updates" },
     ],
   },
   {
-    group: "AI Coach",
-    description: "Tips and reminders from your EcoCoach",
-    settings: [
-      { id: "coach_tips", label: "Daily eco tips", defaultValue: true },
-      { id: "coach_milestone", label: "Milestone alerts", defaultValue: true },
-      { id: "coach_nudge", label: "Inactivity nudges", defaultValue: false },
+    title: "Eco Platform",
+    description: "Carbon tracking and sustainability updates",
+    emoji: "🌿",
+    items: [
+      { key: "dailyCarbonReminders", label: "Daily carbon reminders" },
+      { key: "weeklyReports", label: "Weekly sustainability reports" },
+      { key: "streakReminders", label: "Streak reminders" },
+      { key: "challengeUpdates", label: "Challenge updates" },
+      { key: "badgeUnlocks", label: "Badge unlock alerts" },
+      { key: "ecoCoinRewards", label: "Eco coin rewards" },
     ],
   },
   {
-    group: "Group & Challenges",
-    description: "Updates from your groups and active challenges",
-    settings: [
-      { id: "group_activity", label: "Group member activity", defaultValue: true },
-      { id: "challenge_progress", label: "Challenge progress reminders", defaultValue: true },
-      { id: "leaderboard_change", label: "Leaderboard changes", defaultValue: false },
+    title: "Email Notifications",
+    description: "Email digests and newsletters",
+    emoji: "📧",
+    items: [
+      { key: "productUpdates", label: "Product updates" },
+      { key: "newsletter", label: "Newsletter" },
+      { key: "sustainabilityTips", label: "Sustainability tips" },
+      { key: "monthlySummaries", label: "Monthly summaries" },
     ],
   },
   {
-    group: "Offsets & Store",
-    description: "Order updates and new project launches",
-    settings: [
-      { id: "offset_confirmation", label: "Offset certificate issued", defaultValue: true },
-      { id: "new_project", label: "New offset projects available", defaultValue: false },
-      { id: "store_offers", label: "Eco store offers", defaultValue: false },
-    ],
-  },
-  {
-    group: "Platform",
-    description: "Important account and security alerts",
-    settings: [
-      { id: "security_alerts", label: "Security alerts", defaultValue: true, locked: true },
-      { id: "product_updates", label: "Product updates & changelog", defaultValue: true },
-      { id: "research_surveys", label: "Research surveys (help us improve)", defaultValue: false },
+    title: "Push Notifications",
+    description: "Real-time browser and mobile alerts",
+    emoji: "🔔",
+    items: [
+      { key: "browserNotifications", label: "Browser notifications" },
+      { key: "mobileNotifications", label: "Mobile notifications" },
+      { key: "instantAlerts", label: "Instant alerts" },
     ],
   },
 ];
 
-type Prefs = Record<string, boolean>;
-
-function Toggle({
-  id,
-  checked,
-  onChange,
-  disabled,
-}: {
-  id: string;
-  checked: boolean;
-  onChange: (val: boolean) => void;
-  disabled?: boolean;
-}) {
-  return (
-    <button
-      id={id}
-      role="switch"
-      aria-checked={checked}
-      disabled={disabled}
-      onClick={() => !disabled && onChange(!checked)}
-      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#52B788] focus:ring-offset-2 ${
-        checked ? "bg-[#2D6A4F]" : "bg-gray-200 dark:bg-white/20"
-      } ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
-    >
-      <span
-        className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform ${
-          checked ? "translate-x-6" : "translate-x-1"
-        }`}
-      />
-    </button>
-  );
-}
-
-function Toast({ message }: { message: string }) {
-  if (!message) return null;
-  return (
-    <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 rounded-full bg-[#2D6A4F] px-6 py-3 text-sm font-bold text-white shadow-lg">
-      {message}
-    </div>
-  );
-}
-
 export default function NotificationSettingsPage() {
-  const [paused, setPaused] = useState(false);
-  const [prefs, setPrefs] = useState<Prefs>(() => {
-    const defaults: Prefs = {};
-    NOTIFICATION_GROUPS.forEach((g) =>
-      g.settings.forEach((s) => (defaults[s.id] = s.defaultValue))
-    );
-    return defaults;
-  });
-  const [quietFrom, setQuietFrom] = useState("22:00");
-  const [quietTo, setQuietTo] = useState("07:00");
-  const [noWeekends, setNoWeekends] = useState(false);
-  const [toast, setToast] = useState("");
+  const { notifications, updateNotifications } = useSettings();
 
-  useEffect(() => {
-    const stored = localStorage.getItem("eco_notifications");
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (parsed.prefs) setPrefs(parsed.prefs);
-        if (typeof parsed.paused === "boolean") setPaused(parsed.paused);
-        if (parsed.quietFrom) setQuietFrom(parsed.quietFrom);
-        if (parsed.quietTo) setQuietTo(parsed.quietTo);
-        if (typeof parsed.noWeekends === "boolean") setNoWeekends(parsed.noWeekends);
-      } catch {
-        // ignore
-      }
-    }
-  }, []);
-
-  function handleToggle(id: string, val: boolean) {
-    setPrefs((p) => ({ ...p, [id]: val }));
+  function handleToggle(key: NotifKey, val: boolean) {
+    updateNotifications({ [key]: val });
+    showSettingsToast(val ? "Enabled" : "Disabled", "info");
   }
 
-  function handleSave() {
-    const data = { prefs, paused, quietFrom, quietTo, noWeekends };
-    localStorage.setItem("eco_notifications", JSON.stringify(data));
-    setToast("Notification preferences saved!");
-    setTimeout(() => setToast(""), 3000);
+  async function handleBrowserPermission() {
+    if (!("Notification" in window)) {
+      showSettingsToast("Browser notifications not supported", "error");
+      return;
+    }
+    const permission = await Notification.requestPermission();
+    if (permission === "granted") {
+      updateNotifications({ browserNotifications: true });
+      showSettingsToast("Browser notifications enabled");
+    } else {
+      showSettingsToast("Permission denied", "error");
+    }
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAF5] dark:bg-[#0B1815] text-[#1B4332] dark:text-white">
-      <Toast message={toast} />
-
-      <div className="mx-auto max-w-2xl px-4 py-8">
-        <Link
-          href="/profile"
-          className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-[#2D6A4F] dark:text-[#52B788] hover:underline"
-        >
-          <IconArrowLeft size={16} /> Back
+    <div className="min-h-screen bg-[#F8FAF5] dark:bg-[#0B1815] text-[#1B4332] dark:text-white pb-28 md:pb-8">
+      <div className="mx-auto max-w-2xl px-4 py-8 space-y-6">
+        <Link href="/settings" className="inline-flex items-center gap-2 text-sm font-medium text-[#2D6A4F] dark:text-[#52B788] hover:underline">
+          <IconArrowLeft size={16} /> Settings
         </Link>
 
-        <h1 className="text-2xl font-bold mb-1">Notifications</h1>
-        <p className="text-sm text-[#6B7C6E] dark:text-white/60 mb-6">
-          Control which alerts and updates you receive from GreenStep.
-        </p>
-
-        {/* Master pause toggle */}
-        <div className="mb-6 flex items-center justify-between rounded-2xl border border-[#D1FAE5] dark:border-white/10 bg-white dark:bg-[#111C18] px-4 py-4">
-          <div>
-            <p className="font-bold">Pause all notifications</p>
-            <p className="text-xs text-[#6B7C6E] dark:text-white/60 mt-0.5">Temporarily silence everything</p>
-          </div>
-          <Toggle id="master-pause" checked={paused} onChange={setPaused} />
+        <div>
+          <h1 className="text-2xl font-bold">Notifications</h1>
+          <p className="mt-1 text-sm text-[#6B7C6E] dark:text-white/50">
+            Control which alerts and updates you receive.
+          </p>
         </div>
 
-        {/* Notification groups */}
-        <div className="space-y-4 mb-8">
-          {NOTIFICATION_GROUPS.map((group) => (
-            <div
-              key={group.group}
-              className={`rounded-2xl border bg-white dark:bg-[#111C18] overflow-hidden transition ${
-                paused ? "opacity-50 pointer-events-none" : "border-[#D1FAE5] dark:border-white/10"
-              }`}
-            >
-              <div className="px-4 pt-4 pb-2">
-                <p className="font-bold text-[#1B4332] dark:text-white">{group.group}</p>
-                <p className="text-xs text-[#6B7C6E] dark:text-white/60">{group.description}</p>
-              </div>
-              <div className="divide-y divide-[#D1FAE5]/60 dark:divide-white/5">
-                {group.settings.map((setting) => {
-                  const locked = "locked" in setting && setting.locked;
-                  return (
-                    <div key={setting.id} className="flex items-center justify-between px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <label htmlFor={setting.id} className="text-sm font-medium cursor-pointer">
-                          {setting.label}
-                        </label>
-                        {locked && (
-                          <span title="Required for account security">
-                            <IconLock size={13} className="text-[#6B7C6E] dark:text-white/40" />
-                          </span>
-                        )}
-                      </div>
-                      <Toggle
-                        id={setting.id}
-                        checked={prefs[setting.id] ?? setting.defaultValue}
-                        onChange={(val) => handleToggle(setting.id, val)}
-                        disabled={!!locked}
-                      />
-                    </div>
-                  );
-                })}
+        {/* Master pause */}
+        <SettingsCard>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-bold">⏸️ Pause all notifications</p>
+              <p className="text-xs text-[#6B7C6E] dark:text-white/50 mt-0.5">Temporarily silence everything</p>
+            </div>
+            <SettingsToggle
+              checked={notifications.paused}
+              onChange={(val) => {
+                updateNotifications({ paused: val });
+                showSettingsToast(val ? "All notifications paused" : "Notifications resumed");
+              }}
+            />
+          </div>
+        </SettingsCard>
+
+        {/* Groups */}
+        {GROUPS.map((group) => (
+          <SettingsCard
+            key={group.title}
+            title={`${group.emoji} ${group.title}`}
+            description={group.description}
+          >
+            <div className={`space-y-0 -mx-5 -mb-5 ${notifications.paused ? "opacity-40 pointer-events-none" : ""}`}>
+              {group.items.map((item, idx) => (
+                <div
+                  key={item.key}
+                  className={`flex items-center justify-between px-5 py-3.5 ${
+                    idx !== 0 ? "border-t border-[#D1FAE5]/60 dark:border-white/5" : ""
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium cursor-pointer">{item.label}</label>
+                    {item.locked && (
+                      <span className="text-[10px] font-bold text-[#6B7C6E] dark:text-white/40 bg-gray-100 dark:bg-white/10 px-1.5 py-0.5 rounded-full">Required</span>
+                    )}
+                  </div>
+                  <SettingsToggle
+                    checked={notifications[item.key] as boolean}
+                    onChange={(val) => handleToggle(item.key, val)}
+                    disabled={item.locked}
+                  />
+                </div>
+              ))}
+
+              {/* Browser notification permission button */}
+              {group.title === "Push Notifications" && (
+                <div className="px-5 pb-4 pt-2 border-t border-[#D1FAE5]/60 dark:border-white/5">
+                  <button
+                    onClick={handleBrowserPermission}
+                    className="w-full rounded-xl border border-[#52B788]/30 py-2.5 text-sm font-medium text-[#2D6A4F] dark:text-[#52B788] hover:bg-[#F0FDF4] dark:hover:bg-white/5 transition"
+                  >
+                    🔔 Request Browser Permission
+                  </button>
+                </div>
+              )}
+            </div>
+          </SettingsCard>
+        ))}
+
+        {/* Schedule */}
+        <SettingsCard title="⏰ Notification Schedule" description="Set quiet hours and weekend preferences">
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm font-semibold mb-3">Quiet Hours</p>
+              <div className="flex items-center gap-3">
+                <div className="flex-1">
+                  <label className="text-xs text-[#6B7C6E] mb-1 block">From</label>
+                  <input
+                    type="time"
+                    value={notifications.quietFrom}
+                    onChange={(e) => updateNotifications({ quietFrom: e.target.value })}
+                    className="w-full rounded-xl border border-[#52B788]/30 bg-[#F8FAF5] dark:bg-[#1A2F2A] px-3 py-2 text-sm focus:border-[#2D6A4F] focus:outline-none"
+                  />
+                </div>
+                <span className="text-[#6B7C6E] mt-5">to</span>
+                <div className="flex-1">
+                  <label className="text-xs text-[#6B7C6E] mb-1 block">To</label>
+                  <input
+                    type="time"
+                    value={notifications.quietTo}
+                    onChange={(e) => updateNotifications({ quietTo: e.target.value })}
+                    className="w-full rounded-xl border border-[#52B788]/30 bg-[#F8FAF5] dark:bg-[#1A2F2A] px-3 py-2 text-sm focus:border-[#2D6A4F] focus:outline-none"
+                  />
+                </div>
               </div>
             </div>
-          ))}
-        </div>
 
-        {/* Quiet hours */}
-        <h2 className="text-lg font-bold mb-3">Notification Schedule</h2>
-        <div className="rounded-2xl border border-[#D1FAE5] dark:border-white/10 bg-white dark:bg-[#111C18] divide-y divide-[#D1FAE5]/60 dark:divide-white/5 overflow-hidden mb-6">
-          <div className="px-4 py-4">
-            <p className="text-sm font-semibold mb-3">Quiet hours</p>
-            <div className="flex items-center gap-3">
-              <div className="flex-1">
-                <label className="text-xs text-[#6B7C6E] mb-1 block">From</label>
-                <input
-                  type="time"
-                  value={quietFrom}
-                  onChange={(e) => setQuietFrom(e.target.value)}
-                  className="w-full rounded-xl border border-[#52B788]/30 bg-[#F8FAF5] dark:bg-[#1A2F2A] px-3 py-2 text-sm focus:border-[#2D6A4F] focus:outline-none"
-                />
-              </div>
-              <span className="text-[#6B7C6E] mt-5">to</span>
-              <div className="flex-1">
-                <label className="text-xs text-[#6B7C6E] mb-1 block">To</label>
-                <input
-                  type="time"
-                  value={quietTo}
-                  onChange={(e) => setQuietTo(e.target.value)}
-                  className="w-full rounded-xl border border-[#52B788]/30 bg-[#F8FAF5] dark:bg-[#1A2F2A] px-3 py-2 text-sm focus:border-[#2D6A4F] focus:outline-none"
-                />
-              </div>
+            <div className="flex items-center justify-between pt-2 border-t border-[#D1FAE5]/60 dark:border-white/5">
+              <label className="text-sm font-medium cursor-pointer">Don&apos;t notify on weekends</label>
+              <SettingsToggle
+                checked={notifications.noWeekends}
+                onChange={(val) => updateNotifications({ noWeekends: val })}
+              />
             </div>
           </div>
-          <div className="flex items-center justify-between px-4 py-4">
-            <label htmlFor="no-weekends" className="text-sm font-medium cursor-pointer">
-              Don&apos;t notify on weekends
-            </label>
-            <Toggle id="no-weekends" checked={noWeekends} onChange={setNoWeekends} />
-          </div>
-        </div>
+        </SettingsCard>
 
-        <button
-          onClick={handleSave}
-          className="w-full rounded-xl bg-[#2D6A4F] py-3.5 text-sm font-bold text-white hover:bg-[#1B4332] transition"
+        {/* Link to notification center */}
+        <Link
+          href="/notifications"
+          className="flex items-center justify-center gap-2 w-full rounded-xl border border-[#52B788]/30 py-3 text-sm font-bold text-[#2D6A4F] dark:text-[#52B788] hover:bg-[#F0FDF4] dark:hover:bg-white/5 transition"
         >
-          Save Preferences
-        </button>
+          📬 View Notification History
+        </Link>
       </div>
     </div>
   );

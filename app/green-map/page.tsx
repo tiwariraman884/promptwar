@@ -181,7 +181,7 @@ export default function GreenMapPage() {
   }, [useMyLocation, userLocation, requestLocation]);
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-[#F8FAF5] dark:bg-[#0B1815] text-[#1B4332] dark:text-[#F8FAF5] flex flex-col md:flex-row">
+    <div className="min-h-[calc(100vh-4rem)] bg-[#F8FAF5] dark:bg-[#0B1815] text-[#1B4332] dark:text-[#F8FAF5] flex flex-col md:flex-row pb-20 md:pb-0">
       
       {/* Toast Notification */}
       {toastMessage && (
