@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Logo from "@/components/Logo";
 import { useSettings } from "@/lib/settings-context";
+import { useT } from "@/lib/i18n-context";
 import {
   IconDashboard,
   IconCalculator,
@@ -38,19 +39,19 @@ function getInitials(name: string) {
 }
 
 /* ─── All nav items (used by desktop sidebar) ─── */
-const navItems: Array<{ href: string; label: string; icon: NavIcon }> = [
-  { href: "/dashboard",  label: "Dashboard",  icon: (p) => <IconDashboard  {...p} /> },
-  { href: "/calculator", label: "Calculator", icon: (p) => <IconCalculator {...p} /> },
-  { href: "/ai-coach",   label: "AI Coach",   icon: (p) => <IconAiCoach   {...p} /> },
-  { href: "/scanner",    label: "Scanner",    icon: (p) => <IconScanner    {...p} /> },
-  { href: "/tips",       label: "Tips",       icon: (p) => <IconTips       {...p} /> },
-  { href: "/green-map",  label: "Green Map",  icon: (p) => <IconGreenMap   {...p} /> },
-  { href: "/community",  label: "Community",  icon: (p) => <IconCommunity  {...p} /> },
-  { href: "/eco-store",  label: "Eco Store",  icon: (p) => <IconEcoStore   {...p} /> },
-  { href: "/offsets",    label: "Offsets",    icon: (p) => <IconOffsets    {...p} /> },
-  { href: "/groups",     label: "Groups",     icon: (p) => <IconGroups     {...p} /> },
-  { href: "/report",     label: "Reports",    icon: (p) => <IconReport     {...p} /> },
-  { href: "/profile",    label: "Profile",    icon: (p) => <IconProfile    {...p} /> },
+const navItems: Array<{ href: string; label: string; tKey: string; icon: NavIcon }> = [
+  { href: "/dashboard",  label: "Dashboard",  tKey: "nav.dashboard",  icon: (p) => <IconDashboard  {...p} /> },
+  { href: "/calculator", label: "Calculator", tKey: "nav.calculator", icon: (p) => <IconCalculator {...p} /> },
+  { href: "/ai-coach",   label: "AI Coach",   tKey: "nav.aiCoach",   icon: (p) => <IconAiCoach   {...p} /> },
+  { href: "/scanner",    label: "Scanner",    tKey: "nav.scanner",   icon: (p) => <IconScanner    {...p} /> },
+  { href: "/tips",       label: "Tips",       tKey: "nav.tips",      icon: (p) => <IconTips       {...p} /> },
+  { href: "/green-map",  label: "Green Map",  tKey: "nav.greenMap",  icon: (p) => <IconGreenMap   {...p} /> },
+  { href: "/community",  label: "Community",  tKey: "nav.community", icon: (p) => <IconCommunity  {...p} /> },
+  { href: "/eco-store",  label: "Eco Store",  tKey: "nav.ecoStore",  icon: (p) => <IconEcoStore   {...p} /> },
+  { href: "/offsets",    label: "Offsets",    tKey: "nav.offsets",   icon: (p) => <IconOffsets    {...p} /> },
+  { href: "/groups",     label: "Groups",     tKey: "nav.groups",    icon: (p) => <IconGroups     {...p} /> },
+  { href: "/report",     label: "Reports",    tKey: "nav.reports",   icon: (p) => <IconReport     {...p} /> },
+  { href: "/profile",    label: "Profile",    tKey: "nav.profile",   icon: (p) => <IconProfile    {...p} /> },
 ];
 
 /* ─── MOBILE: Bottom nav shows 4 items + "More" button ─── */
@@ -151,12 +152,14 @@ function MobileDrawer({
   pathname,
   hasUser,
   onSignOut,
+  t,
 }: {
   open: boolean;
   onClose: () => void;
   pathname: string | null;
   hasUser: boolean;
   onSignOut: () => void;
+  t: (key: string) => string;
 }) {
   const drawerRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -227,11 +230,11 @@ function MobileDrawer({
       >
         {/* Drawer header */}
         <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-line dark:border-white/10">
-          <span className="text-sm font-extrabold text-[#1B4332] dark:text-white">More</span>
+          <span className="text-sm font-extrabold text-[#1B4332] dark:text-white">{t("drawer.more")}</span>
           <button
             ref={closeButtonRef}
             onClick={onClose}
-            aria-label="Close menu"
+            aria-label={t("header.closeMenu")}
             className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-[#F0FDF4] dark:hover:bg-white/10 transition text-[#6B7C6E] dark:text-white/60"
           >
             <CloseIcon size={20} />
@@ -257,7 +260,7 @@ function MobileDrawer({
                 )}
               >
                 <Icon size={19} />
-                <span className="flex-1">{item.label}</span>
+                <span className="flex-1">{t(item.tKey)}</span>
                 <ChevronRightIcon size={14} />
               </Link>
             );
@@ -276,7 +279,7 @@ function MobileDrawer({
             )}
           >
             <SettingsIcon size={19} />
-            <span className="flex-1">Settings</span>
+            <span className="flex-1">{t("nav.settings")}</span>
             <ChevronRightIcon size={14} />
           </Link>
         </nav>
@@ -289,7 +292,7 @@ function MobileDrawer({
               className="flex w-full min-h-[48px] items-center gap-3 rounded-xl px-3 text-sm font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
             >
               <IconSignOut size={19} />
-              <span className="flex-1 text-left">Sign out</span>
+              <span className="flex-1 text-left">{t("auth.signOut")}</span>
             </button>
           ) : (
             <Link
@@ -298,7 +301,7 @@ function MobileDrawer({
               className="flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-[#2D6A4F] px-4 text-sm font-bold text-white shadow-md hover:bg-[#1B4332] transition"
             >
               <IconSignIn size={19} />
-              Sign in / Sign up
+              {t("auth.signInSignUp")}
             </Link>
           )}
         </div>
@@ -314,6 +317,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { profile } = useSettings();
+  const { t } = useT();
   const [mounted, setMounted] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const isLanding = pathname === "/";
@@ -374,7 +378,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   className="hidden min-h-11 items-center rounded-pill px-4 text-sm font-bold text-primary-dark hover:bg-primary-light dark:text-white dark:hover:bg-white/10 sm:inline-flex"
                   href="/onboarding"
                 >
-                  Onboarding
+                  {t("header.onboarding")}
                 </Link>
               )}
               {!isBare && <NotificationBell />}
@@ -384,7 +388,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               {!isBare && (
                 <button
                   onClick={toggleDrawer}
-                  aria-label="Open menu"
+                  aria-label={t("header.openMenu")}
                   aria-expanded={drawerOpen}
                   className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-[#F0FDF4] dark:hover:bg-white/10 transition text-[#2D6A4F] dark:text-[#52B788] md:hidden"
                 >
@@ -412,6 +416,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           pathname={pathname}
           hasUser={hasUser}
           onSignOut={handleSignOut}
+          t={t}
         />
       )}
 
@@ -431,7 +436,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               return (
                 <Link
                   aria-current={active ? "page" : undefined}
-                  aria-label={item.label}
+                  aria-label={t(item.tKey)}
                   className={cn(
                     "flex min-h-[44px] flex-col items-center justify-center gap-1 rounded-card text-[11px] font-bold transition",
                     active
@@ -442,7 +447,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   key={item.href}
                 >
                   <Icon size={19} />
-                  <span>{item.label}</span>
+                  <span>{t(item.tKey)}</span>
                 </Link>
               );
             })}
@@ -450,7 +455,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             {/* "More" button — opens the slide-in drawer */}
             <button
               onClick={toggleDrawer}
-              aria-label="More options"
+              aria-label={t("drawer.moreOptions")}
               aria-expanded={drawerOpen}
               className={cn(
                 "flex min-h-[44px] flex-col items-center justify-center gap-1 rounded-card text-[11px] font-bold transition",
@@ -460,7 +465,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               )}
             >
               <MoreIcon size={19} />
-              <span>More</span>
+              <span>{t("nav.more")}</span>
             </button>
           </div>
         </nav>
@@ -476,15 +481,15 @@ export function AppShell({ children }: { children: ReactNode }) {
                 {mounted && safeProfile.avatar ? (
                   <img src={safeProfile.avatar} alt="" className="h-full w-full object-cover" />
                 ) : (
-                  getInitials(safeProfile.name || "Guest")
+                  getInitials(safeProfile.name || t("common.guest"))
                 )}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-bold text-ink dark:text-white">
-                  {safeProfile.name || "Guest"}
+                  {safeProfile.name || t("common.guest")}
                 </p>
                 <p className="truncate text-[11px] text-ink/55 dark:text-white/50">
-                  {safeProfile.email || "Not signed in"}
+                  {safeProfile.email || t("common.notSignedIn")}
                 </p>
               </div>
             </div>
@@ -508,7 +513,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   key={item.href}
                 >
                   <Icon size={17} />
-                  {item.label}
+                  {t(item.tKey)}
                 </Link>
               );
             })}
@@ -529,7 +534,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               )}
             >
               <SettingsIcon size={17} />
-              Settings
+              {t("nav.settings")}
             </Link>
 
             {/* Sign in / out */}
@@ -539,7 +544,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 className="flex w-full min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
               >
               <IconSignOut size={17} />
-              Sign out
+              {t("auth.signOut")}
               </button>
             ) : (
               <Link
@@ -547,7 +552,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 className="flex min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold text-primary-dark hover:bg-primary-light dark:text-[#52B788] dark:hover:bg-white/10 transition"
               >
                 <IconSignIn size={17} />
-                Sign in
+                {t("auth.signIn")}
               </Link>
             )}
           </div>

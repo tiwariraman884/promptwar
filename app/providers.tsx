@@ -5,6 +5,7 @@ import { PostHogProvider } from "posthog-js/react";
 import { usePathname } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 import { SettingsProvider } from "@/lib/settings-context";
+import { I18nProvider } from "@/lib/i18n-context";
 import { SettingsToastContainer } from "@/components/settings/SettingsToast";
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -34,7 +35,9 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <PostHogProvider client={posthog}>
       <SettingsProvider>
-        {children}
+        <I18nProvider>
+          {children}
+        </I18nProvider>
         <SettingsToastContainer />
       </SettingsProvider>
     </PostHogProvider>
