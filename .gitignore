@@ -17,3 +17,5 @@ next-start.*.log
 scratch.json
 typecheck_out*.txt
 auto-git-sync.ps1
+
+.vercel
