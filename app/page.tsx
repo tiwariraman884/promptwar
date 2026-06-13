@@ -3,17 +3,27 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowUpRight, Leaf, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { featurePages } from "@/lib/v2-data";
 
 export default function LandingPage() {
   const [startHref, setStartHref] = useState("/onboarding");
+  const router = useRouter();
 
+  // AUTH GATE (RULE 1): Root "/" must redirect unauthenticated users to /auth.
+  // This client-side check covers the localStorage-based mock auth flow,
+  // since Next.js middleware cannot read localStorage.
   useEffect(() => {
+    const user = window.localStorage.getItem("eco_user");
+    if (!user) {
+      router.replace("/auth");
+      return;
+    }
     const onboarding = window.localStorage.getItem("greenstep-onboarding");
     setStartHref(onboarding ? "/dashboard" : "/onboarding");
-  }, []);
+  }, [router]);
 
   return (
     <main className="min-h-screen overflow-hidden bg-mist text-ink dark:bg-[#0B1815] dark:text-white">

@@ -106,14 +106,32 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   useEffect(() => { setMounted(true); }, []);
 
+  // AUTH GATE (client-side, RULE 1): Redirect unauthenticated users to /auth
+  // on ANY protected route. This is the client-side enforcement layer for the
+  // localStorage-based mock auth, complementing the server-side middleware.
+  useEffect(() => {
+    if (!mounted) return;
+    // Auth-related pages and landing are allowed without login
+    if (isAuth) return;
+    const user = localStorage.getItem("eco_user");
+    if (!user) {
+      // RULE 1: Use replace so the browser back button cannot return to the
+      // protected page after being redirected (RULE 3 principle applied here).
+      router.replace("/auth");
+    }
+  }, [mounted, pathname, isAuth, router]);
+
   // Use safe values during SSR to prevent hydration mismatch
   const safeProfile = mounted ? profile : { name: "", email: "", avatar: "" };
   const hasUser = mounted && !!profile.name;
 
+  // AUTH GATE (RULE 3): Sign out clears ALL auth state and redirects to /auth.
+  // Uses router.replace so the browser back button cannot return to a
+  // protected page after sign-out.
   function handleSignOut() {
     localStorage.removeItem("eco_user");
     localStorage.removeItem("eco_settings_profile");
-    router.push("/");
+    router.replace("/auth");
   }
 
   return (

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import PasswordStrength from "./PasswordStrength";
 import SocialButtons from "./SocialButtons";
 
@@ -20,6 +20,10 @@ export default function SignUpForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  // AUTH GATE (RULE 2): Read the ?next= param so we can pass it along through
+  // the sign-up flow and redirect the user to their intended page after completion.
+  const searchParams = useSearchParams();
+  const nextUrl = searchParams.get("next") || "/dashboard";
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -37,7 +41,8 @@ export default function SignUpForm() {
     setLoading(true);
     setTimeout(() => {
       localStorage.setItem("eco_user", JSON.stringify({ name, email, country, role }));
-      router.push("/auth/verify");
+      // AUTH GATE (RULE 2): Redirect to the intended destination after successful sign-up
+      router.push(nextUrl as any);
     }, 800);
   }
 

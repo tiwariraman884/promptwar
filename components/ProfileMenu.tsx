@@ -65,11 +65,14 @@ export default function ProfileMenu() {
     };
   }, [open]);
 
+  // AUTH GATE (RULE 3): Sign out clears session and redirects to /auth.
+  // Uses router.replace to prevent the browser back button from returning
+  // to a protected page after sign-out.
   function handleSignOut() {
     localStorage.removeItem("eco_user");
     setUser(null);
     setOpen(false);
-    router.push("/");
+    router.replace("/auth");
   }
 
   const menuItems = [

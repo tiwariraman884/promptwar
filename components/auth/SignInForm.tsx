@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import SocialButtons from "./SocialButtons";
 
 export default function SignInForm() {
@@ -13,6 +13,10 @@ export default function SignInForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  // AUTH GATE (RULE 2): Read the ?next= param so we redirect the user
+  // back to the page they originally tried to visit after sign-in.
+  const searchParams = useSearchParams();
+  const nextUrl = searchParams.get("next") || "/dashboard";
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -27,7 +31,8 @@ export default function SignInForm() {
       const name = email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
       localStorage.setItem("eco_user", JSON.stringify({ name, email }));
       if (remember) localStorage.setItem("eco_remember", "true");
-      router.push("/dashboard");
+      // AUTH GATE (RULE 2): Redirect to the originally requested page after sign-in
+      router.push(nextUrl as any);
     }, 800);
   }
 

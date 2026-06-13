@@ -169,15 +169,99 @@ export const ECO_PRODUCTS = [
   },
 ];
 
+/* City center coordinates for the Green Map */
+export const CITY_COORDS: Record<string, { lat: number; lng: number }> = {
+  Delhi:          { lat: 28.6139, lng: 77.2090 },
+  Mumbai:         { lat: 19.0760, lng: 72.8777 },
+  Bengaluru:      { lat: 12.9716, lng: 77.5946 },
+  Hyderabad:      { lat: 17.3850, lng: 78.4867 },
+  Chennai:        { lat: 13.0827, lng: 80.2707 },
+  Kolkata:        { lat: 22.5726, lng: 88.3639 },
+  Pune:           { lat: 18.5204, lng: 73.8567 },
+  Ahmedabad:      { lat: 23.0225, lng: 72.5714 },
+  Jaipur:         { lat: 26.9124, lng: 75.7873 },
+  Lucknow:        { lat: 26.8467, lng: 80.9462 },
+  Chandigarh:     { lat: 30.7333, lng: 76.7794 },
+  Kochi:          { lat: 9.9312,  lng: 76.2673 },
+  Surat:          { lat: 21.1702, lng: 72.8311 },
+  Nagpur:         { lat: 21.1458, lng: 79.0882 },
+  Bhopal:         { lat: 23.2599, lng: 77.4126 },
+  Visakhapatnam:  { lat: 17.6868, lng: 83.2185 },
+};
+
 export const GREEN_MAP_LOCATIONS = [
-  { id: 1, name: "EV Charging Station — Connaught Place", type: "ev_charging", lat: 28.6315, lng: 77.2167, city: "Delhi" },
-  { id: 2, name: "Metro Station — Rajiv Chowk", type: "public_transit", lat: 28.6328, lng: 77.2197, city: "Delhi" },
-  { id: 3, name: "Community Composting Hub — Lajpat Nagar", type: "composting", lat: 28.5677, lng: 77.2433, city: "Delhi" },
-  { id: 4, name: "Eco Store — Hauz Khas Village", type: "eco_store", lat: 28.5494, lng: 77.2001, city: "Delhi" },
-  { id: 5, name: "Urban Rooftop Garden — Vasant Vihar", type: "urban_garden", lat: 28.5571, lng: 77.1588, city: "Delhi" },
-  { id: 6, name: "Solar Rooftop Facility — BKC", type: "solar_facility", lat: 19.0596, lng: 72.8656, city: "Mumbai" },
-  { id: 7, name: "EV Charging — Juhu", type: "ev_charging", lat: 19.1075, lng: 72.8263, city: "Mumbai" },
-  { id: 8, name: "Recycling Center — Dharavi", type: "recycling", lat: 19.0420, lng: 72.8570, city: "Mumbai" },
+  // Delhi (5)
+  { id: 1,  name: "EV Charging Station — Connaught Place",    type: "ev_charging",    lat: 28.6315, lng: 77.2167, city: "Delhi" },
+  { id: 2,  name: "Metro Station — Rajiv Chowk",              type: "public_transit",  lat: 28.6328, lng: 77.2197, city: "Delhi" },
+  { id: 3,  name: "Community Composting Hub — Lajpat Nagar",   type: "composting",      lat: 28.5677, lng: 77.2433, city: "Delhi" },
+  { id: 4,  name: "Eco Store — Hauz Khas Village",            type: "eco_store",       lat: 28.5494, lng: 77.2001, city: "Delhi" },
+  { id: 5,  name: "Urban Rooftop Garden — Vasant Vihar",      type: "urban_garden",    lat: 28.5571, lng: 77.1588, city: "Delhi" },
+
+  // Mumbai (3)
+  { id: 6,  name: "Solar Rooftop Facility — BKC",             type: "solar_facility",  lat: 19.0596, lng: 72.8656, city: "Mumbai" },
+  { id: 7,  name: "EV Charging — Juhu",                       type: "ev_charging",     lat: 19.1075, lng: 72.8263, city: "Mumbai" },
+  { id: 8,  name: "Recycling Center — Dharavi",               type: "recycling",       lat: 19.0420, lng: 72.8570, city: "Mumbai" },
+
+  // Bengaluru (3)
+  { id: 9,  name: "EV Charging Hub — Koramangala",            type: "ev_charging",     lat: 12.9352, lng: 77.6245, city: "Bengaluru" },
+  { id: 10, name: "Organic Eco Store — Indiranagar",          type: "eco_store",       lat: 12.9784, lng: 77.6408, city: "Bengaluru" },
+  { id: 11, name: "Cubbon Park Community Garden",             type: "urban_garden",    lat: 12.9763, lng: 77.5929, city: "Bengaluru" },
+
+  // Hyderabad (3)
+  { id: 12, name: "Metro Station — Ameerpet",                 type: "public_transit",  lat: 17.4375, lng: 78.4483, city: "Hyderabad" },
+  { id: 13, name: "Solar Facility — HITEC City",              type: "solar_facility",  lat: 17.4435, lng: 78.3772, city: "Hyderabad" },
+  { id: 14, name: "Composting Hub — Jubilee Hills",           type: "composting",      lat: 17.4326, lng: 78.4071, city: "Hyderabad" },
+
+  // Chennai (3)
+  { id: 15, name: "Recycling Center — T. Nagar",              type: "recycling",       lat: 13.0418, lng: 80.2341, city: "Chennai" },
+  { id: 16, name: "EV Charging — Adyar",                      type: "ev_charging",     lat: 13.0067, lng: 80.2567, city: "Chennai" },
+  { id: 17, name: "Eco Store — Besant Nagar",                 type: "eco_store",       lat: 13.0002, lng: 80.2668, city: "Chennai" },
+
+  // Kolkata (3)
+  { id: 18, name: "Metro Station — Park Street",              type: "public_transit",  lat: 22.5512, lng: 88.3592, city: "Kolkata" },
+  { id: 19, name: "Urban Garden — Salt Lake",                 type: "urban_garden",    lat: 22.5804, lng: 88.4127, city: "Kolkata" },
+  { id: 20, name: "Recycling Hub — Howrah",                   type: "recycling",       lat: 22.5958, lng: 88.2636, city: "Kolkata" },
+
+  // Pune (3)
+  { id: 21, name: "EV Charging — Hinjewadi IT Park",          type: "ev_charging",     lat: 18.5912, lng: 73.7390, city: "Pune" },
+  { id: 22, name: "Composting Hub — Koregaon Park",           type: "composting",      lat: 18.5362, lng: 73.8930, city: "Pune" },
+  { id: 23, name: "Solar Rooftop — Kothrud",                  type: "solar_facility",  lat: 18.5074, lng: 73.8077, city: "Pune" },
+
+  // Ahmedabad (2)
+  { id: 24, name: "Eco Store — SG Highway",                   type: "eco_store",       lat: 23.0302, lng: 72.5271, city: "Ahmedabad" },
+  { id: 25, name: "Recycling Center — Navrangpura",           type: "recycling",       lat: 23.0369, lng: 72.5601, city: "Ahmedabad" },
+
+  // Jaipur (2)
+  { id: 26, name: "Solar Facility — Sanganer",                type: "solar_facility",  lat: 26.8288, lng: 75.7897, city: "Jaipur" },
+  { id: 27, name: "Community Garden — C-Scheme",              type: "urban_garden",    lat: 26.9056, lng: 75.7906, city: "Jaipur" },
+
+  // Lucknow (2)
+  { id: 28, name: "Metro Station — Hazratganj",               type: "public_transit",  lat: 26.8530, lng: 80.9455, city: "Lucknow" },
+  { id: 29, name: "EV Charging — Gomti Nagar",                type: "ev_charging",     lat: 26.8563, lng: 80.9925, city: "Lucknow" },
+
+  // Chandigarh (2)
+  { id: 30, name: "Eco Store — Sector 17",                    type: "eco_store",       lat: 30.7415, lng: 76.7843, city: "Chandigarh" },
+  { id: 31, name: "Urban Garden — Rock Garden",               type: "urban_garden",    lat: 30.7525, lng: 76.8108, city: "Chandigarh" },
+
+  // Kochi (2)
+  { id: 32, name: "Solar Facility — Kakkanad",                type: "solar_facility",  lat: 10.0158, lng: 76.3419, city: "Kochi" },
+  { id: 33, name: "Metro Station — Aluva",                    type: "public_transit",  lat: 10.1100, lng: 76.3514, city: "Kochi" },
+
+  // Surat (2)
+  { id: 34, name: "Recycling Hub — Varachha",                 type: "recycling",       lat: 21.2063, lng: 72.8470, city: "Surat" },
+  { id: 35, name: "EV Charging — Athwa",                      type: "ev_charging",     lat: 21.1653, lng: 72.7981, city: "Surat" },
+
+  // Nagpur (2)
+  { id: 36, name: "Metro Station — Sitabuldi",                type: "public_transit",  lat: 21.1440, lng: 79.0831, city: "Nagpur" },
+  { id: 37, name: "Composting Hub — Dharampeth",              type: "composting",      lat: 21.1502, lng: 79.0704, city: "Nagpur" },
+
+  // Bhopal (2)
+  { id: 38, name: "Eco Store — New Market",                   type: "eco_store",       lat: 23.2332, lng: 77.4126, city: "Bhopal" },
+  { id: 39, name: "Solar Rooftop — Arera Colony",             type: "solar_facility",  lat: 23.2200, lng: 77.4340, city: "Bhopal" },
+
+  // Visakhapatnam (2)
+  { id: 40, name: "Recycling Center — MVP Colony",            type: "recycling",       lat: 17.7365, lng: 83.3236, city: "Visakhapatnam" },
+  { id: 41, name: "Community Garden — Beach Road",            type: "urban_garden",    lat: 17.7220, lng: 83.3253, city: "Visakhapatnam" },
 ];
 
 export const AI_COACH_TIPS = [

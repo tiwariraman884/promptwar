@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 function GoogleIcon() {
   return (
@@ -38,13 +38,18 @@ interface SocialButtonsProps {
 
 export default function SocialButtons({ mode }: SocialButtonsProps) {
   const router = useRouter();
+  // AUTH GATE (RULE 2): Read the ?next= param so social sign-in also
+  // redirects users to the page they originally tried to visit.
+  const searchParams = useSearchParams();
+  const nextUrl = searchParams.get("next") || "/dashboard";
   const label = mode === "signin" ? "Sign in with" : "Continue with";
 
   function mockSocial(provider: string) {
     const name = `${provider} User`;
     const email = `user@${provider.toLowerCase()}.com`;
     localStorage.setItem("eco_user", JSON.stringify({ name, email, provider }));
-    router.push("/dashboard");
+    // AUTH GATE (RULE 2): Redirect to intended destination after social auth
+    router.push(nextUrl as any);
   }
 
   const buttons = [
