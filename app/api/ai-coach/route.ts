@@ -48,10 +48,34 @@ export async function POST(req: NextRequest) {
   try {
     const { messages, userContext } = await req.json();
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    // PERMANENT FIX: Try process.env first, then fall back to reading .env.local
+    // directly. This prevents the "key not configured" error that happens when
+    // the dev server wasn't restarted after editing .env.local.
+    let apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      try {
+        const fs = await import("fs");
+        const path = await import("path");
+        const envPath = path.join(process.cwd(), ".env.local");
+        if (fs.existsSync(envPath)) {
+          const envContent = fs.readFileSync(envPath, "utf-8");
+          const match = envContent.match(/^GEMINI_API_KEY=(.+)$/m);
+          if (match) apiKey = match[1].trim();
+        }
+        // Also try .env as backup
+        if (!apiKey) {
+          const envPath2 = path.join(process.cwd(), ".env");
+          if (fs.existsSync(envPath2)) {
+            const envContent2 = fs.readFileSync(envPath2, "utf-8");
+            const match2 = envContent2.match(/^GEMINI_API_KEY=(.+)$/m);
+            if (match2) apiKey = match2[1].trim();
+          }
+        }
+      } catch {}
+    }
     if (!apiKey) {
       return NextResponse.json(
-        { error: "Gemini API key not configured. Add GEMINI_API_KEY to .env.local" },
+        { error: "Gemini API key not configured. Add GEMINI_API_KEY to .env.local and restart the dev server." },
         { status: 500 }
       );
     }

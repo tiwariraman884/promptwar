@@ -9,10 +9,10 @@ interface LogoProps {
 }
 
 export default function Logo({ size = "md", variant = "full", href }: LogoProps) {
-  const sizes = { sm: 28, md: 36, lg: 48 };
+  const sizes = { sm: 28, md: 44, lg: 52 };
   const s = sizes[size];
-  const textSizes = { sm: "text-sm", md: "text-lg", lg: "text-xl" };
-  const subSizes = { sm: "text-[7px]", md: "text-[9px]", lg: "text-[11px]" };
+  const textSizes = { sm: "text-sm", md: "text-xl", lg: "text-2xl" };
+  const subSizes = { sm: "text-[7px]", md: "text-[10px]", lg: "text-[11px]" };
 
   const logo = (
     <div className="flex items-center gap-2.5 select-none group">
