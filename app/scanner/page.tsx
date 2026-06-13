@@ -107,8 +107,12 @@ export default function ScannerPage() {
   const [showHistory, setShowHistory] = useState(false);
   const [cameraActive, setCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState("");
+  const [detectedCode, setDetectedCode] = useState("");
+  const [barcodeSupported, setBarcodeSupported] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const scanningRef = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Load history
@@ -176,8 +180,77 @@ export default function ScannerPage() {
   };
 
   /* ─── Camera ─── */
+
+  // Check if BarcodeDetector is supported (Chrome, Edge, Android)
+  useEffect(() => {
+    if (typeof window !== "undefined" && !("BarcodeDetector" in window)) {
+      setBarcodeSupported(false);
+    }
+  }, []);
+
+  // Barcode scanning loop — captures frames from <video> to <canvas>,
+  // then uses BarcodeDetector.detect() to find barcodes.
+  // WHAT WAS BROKEN: The original code opened the camera and displayed the
+  // video feed, but NEVER attempted to read/decode any barcodes from it.
+  // The camera was purely visual — no decoding logic existed.
+  const startScanningLoop = useCallback(() => {
+    if (!barcodeSupported || !("BarcodeDetector" in window)) return;
+
+    const detector = new (window as any).BarcodeDetector({
+      formats: ["ean_13", "ean_8", "upc_a", "upc_e", "qr_code", "code_128", "code_39"],
+    });
+
+    scanningRef.current = true;
+
+    const scan = async () => {
+      if (!scanningRef.current || !videoRef.current || !canvasRef.current) return;
+
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+
+      // Only scan when video has actual frames
+      if (video.readyState >= video.HAVE_ENOUGH_DATA && video.videoWidth > 0) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          try {
+            const barcodes = await detector.detect(canvas);
+            if (barcodes.length > 0) {
+              const code = barcodes[0].rawValue;
+              if (code) {
+                // Stop scanning, show detected code, and trigger lookup
+                scanningRef.current = false;
+                setDetectedCode(code);
+                setBarcodeInput(code);
+                // Auto-trigger the scan after a brief visual flash
+                setTimeout(() => {
+                  handleScan(code, "barcode");
+                  stopCamera();
+                }, 600);
+                return; // Don't continue the loop
+              }
+            }
+          } catch {
+            // Detection can throw on invalid frames — just continue
+          }
+        }
+      }
+
+      // Continue loop at ~10fps (every 100ms) to balance performance
+      if (scanningRef.current) {
+        requestAnimationFrame(() => setTimeout(scan, 100));
+      }
+    };
+
+    // Start after a short delay to let camera warm up
+    setTimeout(scan, 300);
+  }, [barcodeSupported]);
+
   const startCamera = async () => {
     setCameraError("");
+    setDetectedCode("");
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
@@ -188,6 +261,8 @@ export default function ScannerPage() {
         await videoRef.current.play();
       }
       setCameraActive(true);
+      // FIX: Start the barcode decoding loop when camera starts
+      startScanningLoop();
     } catch (err) {
       setCameraError("Camera access denied. Please allow camera permissions in your browser settings.");
       setCameraActive(false);
@@ -195,6 +270,7 @@ export default function ScannerPage() {
   };
 
   const stopCamera = () => {
+    scanningRef.current = false; // Stop the scanning loop
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
@@ -390,7 +466,18 @@ export default function ScannerPage() {
                 <div className="flex flex-col items-center justify-center h-full text-white/60 p-8">
                   <span className="text-4xl mb-3">📷</span>
                   <p className="text-sm font-semibold text-center">Camera preview will appear here</p>
-                  <p className="text-xs mt-1 text-center text-white/40">Scan the &quot;barcode&quot; on the package</p>
+                  <p className="text-xs mt-1 text-center text-white/40">Scan the barcode on the package</p>
+                </div>
+              )}
+              {/* Hidden canvas for barcode frame capture */}
+              <canvas ref={canvasRef} className="hidden" />
+              {/* Visual feedback when barcode is detected */}
+              {detectedCode && (
+                <div className="absolute inset-0 flex items-center justify-center bg-green-500/20 backdrop-blur-sm animate-pulse">
+                  <div className="rounded-2xl bg-white dark:bg-[#1A2F2A] px-6 py-4 shadow-xl text-center">
+                    <p className="text-sm font-bold text-green-600 dark:text-green-400">✅ Barcode detected!</p>
+                    <p className="text-lg font-mono font-bold mt-1">{detectedCode}</p>
+                  </div>
                 </div>
               )}
             </div>
@@ -424,9 +511,17 @@ export default function ScannerPage() {
               </Button>
             </div>
 
+            {!barcodeSupported && (
+              <div className="rounded-2xl border border-amber-200 dark:border-amber-900/30 bg-amber-50 dark:bg-amber-900/10 p-3">
+                <p className="text-xs font-medium text-amber-700 dark:text-amber-400">
+                  ⚠️ Barcode scanning is not supported in this browser. Use the <strong>Type Code</strong> button or switch to Chrome/Edge.
+                </p>
+              </div>
+            )}
+
             <div className="rounded-2xl border border-amber-200 dark:border-amber-900/30 bg-amber-50 dark:bg-amber-900/10 p-3">
               <p className="text-xs font-medium text-amber-700 dark:text-amber-400">
-                💡 <strong>Tip:</strong>Scan the &quot;barcode&quot; on the package
+                💡 <strong>Tip:</strong> Point your camera at a barcode. It will be detected and looked up automatically.
               </p>
             </div>
           </div>
