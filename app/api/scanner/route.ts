@@ -1,10 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
+import { existsSync, readFileSync } from "fs";
+import { join } from "path";
 
 /**
  * POST /api/scanner
  * Analyzes products for carbon footprint using Gemini AI.
  * Supports: product name search, barcode lookup, image analysis.
  */
+
+// PERMANENT FIX: Helper that reads GEMINI_API_KEY from process.env first,
+// then falls back to reading .env.local / .env files directly.
+// This prevents the "key not configured" error when the dev server
+// wasn't restarted after editing .env.local.
+function getGeminiKey(): string | undefined {
+  if (process.env.GEMINI_API_KEY) return process.env.GEMINI_API_KEY;
+  try {
+    for (const file of [".env.local", ".env"]) {
+      const p = join(process.cwd(), file);
+      if (existsSync(p)) {
+        const match = readFileSync(p, "utf-8").match(/^GEMINI_API_KEY=(.+)$/m);
+        if (match) return match[1].trim();
+      }
+    }
+  } catch {}
+  return undefined;
+}
 
 const SYSTEM_INSTRUCTION = `You are a product sustainability and carbon footprint analyst for the GreenStep India platform.
 
@@ -267,7 +287,7 @@ export async function POST(req: NextRequest) {
       const offData = await lookupOpenFoodFacts(cleanQuery);
       if (offData) {
         // Use Gemini to analyze the product found in OpenFoodFacts
-        const apiKey = process.env.GEMINI_API_KEY;
+        const apiKey = getGeminiKey();
         if (apiKey) {
           try {
             const aiResult = await analyzeWithGemini(
@@ -300,7 +320,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Step 3: Use Gemini AI for analysis
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = getGeminiKey();
     if (!apiKey) {
       return NextResponse.json({
         error: "Product not found in local database. Add GEMINI_API_KEY for AI-powered analysis.",
