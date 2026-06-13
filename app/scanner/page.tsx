@@ -390,7 +390,7 @@ export default function ScannerPage() {
                 <div className="flex flex-col items-center justify-center h-full text-white/60 p-8">
                   <span className="text-4xl mb-3">📷</span>
                   <p className="text-sm font-semibold text-center">Camera preview will appear here</p>
-                  <p className="text-xs mt-1 text-center text-white/40">Click "Start Camera" to begin scanning</p>
+                  <p className="text-xs mt-1 text-center text-white/40">Scan the &quot;barcode&quot; on the package</p>
                 </div>
               )}
             </div>
@@ -426,7 +426,7 @@ export default function ScannerPage() {
 
             <div className="rounded-2xl border border-amber-200 dark:border-amber-900/30 bg-amber-50 dark:bg-amber-900/10 p-3">
               <p className="text-xs font-medium text-amber-700 dark:text-amber-400">
-                💡 <strong>Tip:</strong> For best results, hold the camera steady 15-20cm from the barcode. Use the "Barcode / Code" tab to manually enter codes for faster lookup.
+                💡 <strong>Tip:</strong>Scan the &quot;barcode&quot; on the package
               </p>
             </div>
           </div>
