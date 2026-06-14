@@ -88,3 +88,27 @@ html {
   animation: pulse-ring 1.5s ease-out infinite;
 }
 
+/* Quick Wins modal entrance animation */
+@keyframes modalIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-ring,
+  .animate-float {
+    animation: none !important;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
