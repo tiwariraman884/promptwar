@@ -63,7 +63,7 @@ export default function PrivacySettingsPage() {
                   <span className="text-xl">{option.emoji}</span>
                   <div className="flex-1">
                     <p className="text-sm font-bold">{option.label}</p>
-                    <p className="text-xs text-[#6B7C6E] dark:text-white/40">{option.description}</p>
+                    <p className="text-xs text-[#6B7C6E] dark:text-white/60">{option.description}</p>
                   </div>
                   {active && (
                     <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#2D6A4F] text-white text-[10px] shrink-0">✓</span>
@@ -82,7 +82,7 @@ export default function PrivacySettingsPage() {
             <div className="flex items-center justify-between px-5 py-3.5">
               <div>
                 <p className="text-sm font-medium">Anonymous analytics</p>
-                <p className="text-xs text-[#6B7C6E] dark:text-white/40 mt-0.5">Help us improve with anonymized usage data</p>
+                <p className="text-xs text-[#6B7C6E] dark:text-white/60 mt-0.5">Help us improve with anonymized usage data</p>
               </div>
               <SettingsToggle
                 checked={privacy.dataSharing}
@@ -95,7 +95,7 @@ export default function PrivacySettingsPage() {
             <div className="flex items-center justify-between px-5 py-3.5 border-t border-[#D1FAE5]/60 dark:border-white/5">
               <div>
                 <p className="text-sm font-medium">Improvement program</p>
-                <p className="text-xs text-[#6B7C6E] dark:text-white/40 mt-0.5">Share feature usage patterns to improve GreenStep</p>
+                <p className="text-xs text-[#6B7C6E] dark:text-white/60 mt-0.5">Share feature usage patterns to improve GreenStep</p>
               </div>
               <SettingsToggle
                 checked={privacy.analyticsOptIn}
@@ -119,7 +119,7 @@ export default function PrivacySettingsPage() {
             >
               📦 Export All Data (JSON)
             </button>
-            <p className="text-xs text-[#6B7C6E] dark:text-white/40 text-center">
+            <p className="text-xs text-[#6B7C6E] dark:text-white/60 text-center">
               Downloads all your profile data, settings, and activity history.
             </p>
           </div>

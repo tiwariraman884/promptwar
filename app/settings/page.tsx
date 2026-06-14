@@ -93,7 +93,7 @@ export default function SettingsHubPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-[#1B4332] dark:text-white">{section.label}</p>
-                  <p className="text-xs text-[#6B7C6E] dark:text-white/40">{section.description}</p>
+                  <p className="text-xs text-[#6B7C6E] dark:text-white/60">{section.description}</p>
                 </div>
                 <svg className="shrink-0 text-[#6B7C6E] dark:text-white/30" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6"/></svg>
               </Link>

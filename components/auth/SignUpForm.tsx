@@ -169,7 +169,7 @@ export default function SignUpForm() {
                 className={`flex-1 rounded-lg border px-1 py-2 text-[10px] font-bold transition-all ${
                   role === r
                     ? "border-[#00E676] bg-[#00E676]/10 text-[#00E676]"
-                    : "border-white/10 text-white/40 hover:border-white/20 hover:text-white/60"
+                    : "border-white/10 text-white/70 hover:border-white/20 hover:text-white/80"
                 }`}
               >
                 {r}
@@ -196,7 +196,7 @@ export default function SignUpForm() {
             )}
           </div>
         </div>
-        <span className="text-[11px] text-white/40 leading-relaxed group-hover:text-white/60 transition">
+        <span className="text-[11px] text-white/60 leading-relaxed group-hover:text-white/70 transition">
           I agree to the <span className="text-[#00E676]/70 underline cursor-pointer">Terms of Service</span> and <span className="text-[#00E676]/70 underline cursor-pointer">Privacy Policy</span>
         </span>
       </label>

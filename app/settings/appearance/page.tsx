@@ -78,7 +78,7 @@ export default function AppearanceSettingsPage() {
                     <span className="text-lg">{theme.emoji}</span>
                     <div>
                       <p className="text-sm font-bold">{theme.label}</p>
-                      <p className="text-[11px] text-[#6B7C6E] dark:text-white/40">{theme.description}</p>
+                      <p className="text-[11px] text-[#6B7C6E] dark:text-white/60">{theme.description}</p>
                     </div>
                   </div>
 

@@ -361,7 +361,7 @@ export default function ScannerPage() {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <span className="text-xs font-bold text-[#6B7C6E] dark:text-white/40 py-1.5">Try:</span>
+              <span className="text-xs font-bold text-[#6B7C6E] dark:text-white/60 py-1.5">Try:</span>
               {QUICK_SEARCHES.map((item) => (
                 <button
                   key={item.name}
@@ -405,13 +405,13 @@ export default function ScannerPage() {
                 className="w-full min-h-14 rounded-xl border-2 border-[#E5E7EB] dark:border-white/10 bg-[#F8FAF5] dark:bg-white/[0.02] px-4 text-lg font-mono font-bold tracking-wider focus:border-[#2D6A4F] focus:outline-none transition"
                 maxLength={20}
               />
-              <p className="mt-2 text-xs text-[#6B7C6E] dark:text-white/40">
+              <p className="mt-2 text-xs text-[#6B7C6E] dark:text-white/60">
                 Supports: EAN-13, EAN-8, UPC-A, GTIN, SKU codes
               </p>
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <span className="text-xs font-bold text-[#6B7C6E] dark:text-white/40 py-1.5">Try:</span>
+              <span className="text-xs font-bold text-[#6B7C6E] dark:text-white/60 py-1.5">Try:</span>
               {EXAMPLE_BARCODES.map((item) => (
                 <button
                   key={item.code}
@@ -587,7 +587,7 @@ export default function ScannerPage() {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   {result.brand && result.brand !== "Generic" && (
-                    <p className="text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/40 mb-1">{result.brand}</p>
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/60 mb-1">{result.brand}</p>
                   )}
                   <h2 className="text-xl font-extrabold capitalize truncate">{result.product}</h2>
                   {result.category && (
@@ -637,7 +637,7 @@ export default function ScannerPage() {
             {/* Lifecycle breakdown */}
             {totalBreakdown > 0 && (
               <div className="rounded-2xl border-2 border-[#D1FAE5]/80 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] p-5">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/40 mb-3">Lifecycle Breakdown</h3>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/60 mb-3">Lifecycle Breakdown</h3>
                 <div className="flex h-3 w-full overflow-hidden rounded-full">
                   <div style={{ width: `${(result.breakdown.production / totalBreakdown) * 100}%` }} className="bg-[#1B4332]" title="Production" />
                   <div style={{ width: `${(result.breakdown.transport / totalBreakdown) * 100}%` }} className="bg-[#2D6A4F]" title="Transport" />
@@ -664,7 +664,7 @@ export default function ScannerPage() {
             {/* Packaging info */}
             {result.packaging && (
               <div className="rounded-2xl border-2 border-[#D1FAE5]/80 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] p-5">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/40 mb-3">📦 Packaging</h3>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/60 mb-3">📦 Packaging</h3>
                 <div className="flex flex-wrap gap-2">
                   <span className="rounded-full bg-[#F0FDF4] dark:bg-[#2D6A4F]/15 px-3 py-1.5 text-xs font-bold text-[#2D6A4F] dark:text-[#52B788]">
                     {result.packaging.type}
@@ -693,7 +693,7 @@ export default function ScannerPage() {
               </div>
 
               <div className="rounded-2xl border-2 border-[#D1FAE5]/80 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] p-5">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/40 mb-2">💡 Eco Tip</h3>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/60 mb-2">💡 Eco Tip</h3>
                 <p className="text-sm leading-relaxed text-[#1B4332] dark:text-white/80">{result.tip}</p>
               </div>
             </div>
@@ -701,7 +701,7 @@ export default function ScannerPage() {
             {/* Eco facts */}
             {result.eco_facts && result.eco_facts.length > 0 && (
               <div className="rounded-2xl border-2 border-[#D1FAE5]/80 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] p-5">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/40 mb-3">📖 Did You Know?</h3>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/60 mb-3">📖 Did You Know?</h3>
                 <div className="space-y-2">
                   {result.eco_facts.map((fact, i) => (
                     <div key={i} className="flex items-start gap-2">
@@ -742,7 +742,7 @@ export default function ScannerPage() {
         {history.length > 0 && !isScanning && !result && (
           <div className="rounded-2xl border-2 border-[#D1FAE5]/80 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] p-5">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/40">📋 Scan History</h3>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/60">📋 Scan History</h3>
               <button onClick={clearHistory} className="text-[10px] font-bold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition">
                 Clear all
               </button>

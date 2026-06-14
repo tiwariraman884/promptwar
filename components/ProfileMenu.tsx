@@ -178,7 +178,7 @@ export default function ProfileMenu() {
                 >
                   <span className="text-[#2D6A4F] dark:text-[#52B788]">{item.icon}</span>
                   <span className="flex-1">{item.label}</span>
-                  <IconChevronRight size={14} className="text-[#6B7C6E] dark:text-white/40" />
+                  <IconChevronRight size={14} className="text-[#6B7C6E] dark:text-white/60" />
                 </Link>
               ))}
             </div>

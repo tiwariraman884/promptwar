@@ -265,7 +265,7 @@ export default function EditAccountPage() {
                 maxLength={200}
                 className={`w-full rounded-xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 transition resize-none bg-[#F8FAF5] dark:bg-[#1A2F2A] ${errors.bio ? "border-red-400 focus:ring-red-300" : "border-[#52B788]/30 focus:ring-[#52B788]/30 focus:border-[#2D6A4F]"}`}
               />
-              <p className="mt-1 text-right text-xs text-[#6B7C6E] dark:text-white/40">{bio.length}/200</p>
+              <p className="mt-1 text-right text-xs text-[#6B7C6E] dark:text-white/60">{bio.length}/200</p>
             </div>
 
             <button
@@ -370,15 +370,15 @@ export default function EditAccountPage() {
         }>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <p className="text-xs font-semibold text-[#6B7C6E] dark:text-white/40 uppercase tracking-wider mb-1">Account Created</p>
+              <p className="text-xs font-semibold text-[#6B7C6E] dark:text-white/60 uppercase tracking-wider mb-1">Account Created</p>
               <p className="text-sm font-medium">{createdDate}</p>
             </div>
             <div>
-              <p className="text-xs font-semibold text-[#6B7C6E] dark:text-white/40 uppercase tracking-wider mb-1">Last Login</p>
+              <p className="text-xs font-semibold text-[#6B7C6E] dark:text-white/60 uppercase tracking-wider mb-1">Last Login</p>
               <p className="text-sm font-medium">{lastLogin}</p>
             </div>
             <div>
-              <p className="text-xs font-semibold text-[#6B7C6E] dark:text-white/40 uppercase tracking-wider mb-1">Account ID</p>
+              <p className="text-xs font-semibold text-[#6B7C6E] dark:text-white/60 uppercase tracking-wider mb-1">Account ID</p>
               <p className="text-sm font-mono text-[#6B7C6E] dark:text-white/50">{profile.id?.slice(0, 8)}…</p>
             </div>
           </div>

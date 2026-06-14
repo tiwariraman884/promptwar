@@ -134,7 +134,7 @@ export default function NotificationSettingsPage() {
                   <div className="flex items-center gap-2">
                     <label className="text-sm font-medium cursor-pointer">{item.label}</label>
                     {item.locked && (
-                      <span className="text-[10px] font-bold text-[#6B7C6E] dark:text-white/40 bg-gray-100 dark:bg-white/10 px-1.5 py-0.5 rounded-full">Required</span>
+                      <span className="text-[10px] font-bold text-[#6B7C6E] dark:text-white/70 bg-gray-100 dark:bg-white/10 px-1.5 py-0.5 rounded-full">Required</span>
                     )}
                   </div>
                   <SettingsToggle
