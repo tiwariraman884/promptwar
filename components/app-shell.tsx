@@ -427,9 +427,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       {!isBare && (
         <nav
           aria-label="Primary"
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-10px_30px_rgba(8,80,65,0.08)] backdrop-blur dark:border-white/10 dark:bg-[#0B1815]/95 md:hidden"
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-[#52B788]/10 dark:border-white/[0.06] bg-white/80 dark:bg-[#0B1815]/80 backdrop-blur-2xl backdrop-saturate-150 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-8px_32px_rgba(8,80,65,0.1)] dark:shadow-[0_-8px_32px_rgba(0,0,0,0.3)] md:hidden"
         >
-          <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
+          <div className="mx-auto grid max-w-md grid-cols-5 gap-0.5">
             {/* 4 main nav items */}
             {mobileBottomItems.map((item) => {
               const active = pathname?.startsWith(item.href);
@@ -439,16 +439,29 @@ export function AppShell({ children }: { children: ReactNode }) {
                   aria-current={active ? "page" : undefined}
                   aria-label={t(item.tKey)}
                   className={cn(
-                    "flex min-h-[44px] flex-col items-center justify-center gap-1 rounded-card text-[11px] font-bold transition",
+                    "relative flex min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-2xl text-[10px] font-bold transition-all duration-300",
                     active
-                      ? "bg-primary-light text-primary-dark"
-                      : "text-ink/60 hover:bg-primary-light/70 dark:text-white/65"
+                      ? "text-[#2D6A4F] dark:text-[#52B788]"
+                      : "text-[#6B7C6E]/70 dark:text-white/50 hover:text-[#2D6A4F] dark:hover:text-[#52B788]/80"
                   )}
                   href={item.href as any}
                   key={item.href}
                 >
-                  <Icon size={19} />
-                  <span>{t(item.tKey)}</span>
+                  {/* Active background pill */}
+                  {active && (
+                    <span className="absolute inset-x-1 inset-y-0.5 rounded-2xl bg-gradient-to-b from-[#D1FAE5]/70 to-[#D1FAE5]/30 dark:from-[#2D6A4F]/30 dark:to-[#2D6A4F]/10 border border-[#52B788]/15 dark:border-[#52B788]/10" />
+                  )}
+                  {/* Active top indicator dot */}
+                  {active && (
+                    <span className="absolute -top-1.5 left-1/2 -translate-x-1/2 h-[3px] w-5 rounded-full bg-gradient-to-r from-[#2D6A4F] to-[#52B788]" />
+                  )}
+                  <span className={cn(
+                    "relative z-10 transition-transform duration-300",
+                    active ? "scale-110" : "scale-100"
+                  )}>
+                    <Icon size={20} />
+                  </span>
+                  <span className="relative z-10">{t(item.tKey)}</span>
                 </Link>
               );
             })}
@@ -459,14 +472,26 @@ export function AppShell({ children }: { children: ReactNode }) {
               aria-label={t("drawer.moreOptions")}
               aria-expanded={drawerOpen}
               className={cn(
-                "flex min-h-[44px] flex-col items-center justify-center gap-1 rounded-card text-[11px] font-bold transition",
+                "relative flex min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-2xl text-[10px] font-bold transition-all duration-300",
                 drawerOpen || isDrawerItemActive
-                  ? "bg-primary-light text-primary-dark"
-                  : "text-ink/60 hover:bg-primary-light/70 dark:text-white/65"
+                  ? "text-[#2D6A4F] dark:text-[#52B788]"
+                  : "text-[#6B7C6E]/70 dark:text-white/50 hover:text-[#2D6A4F] dark:hover:text-[#52B788]/80"
               )}
             >
-              <MoreIcon size={19} />
-              <span>{t("nav.more")}</span>
+              {/* Active background pill */}
+              {(drawerOpen || isDrawerItemActive) && (
+                <span className="absolute inset-x-1 inset-y-0.5 rounded-2xl bg-gradient-to-b from-[#D1FAE5]/70 to-[#D1FAE5]/30 dark:from-[#2D6A4F]/30 dark:to-[#2D6A4F]/10 border border-[#52B788]/15 dark:border-[#52B788]/10" />
+              )}
+              {(drawerOpen || isDrawerItemActive) && (
+                <span className="absolute -top-1.5 left-1/2 -translate-x-1/2 h-[3px] w-5 rounded-full bg-gradient-to-r from-[#2D6A4F] to-[#52B788]" />
+              )}
+              <span className={cn(
+                "relative z-10 transition-transform duration-300",
+                (drawerOpen || isDrawerItemActive) ? "scale-110" : "scale-100"
+              )}>
+                <MoreIcon size={20} />
+              </span>
+              <span className="relative z-10">{t("nav.more")}</span>
             </button>
           </div>
         </nav>
