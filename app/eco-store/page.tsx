@@ -38,6 +38,155 @@ const INDIAN_STATES = [
   "Uttar Pradesh", "Uttarakhand", "West Bengal", "Delhi", "Chandigarh",
 ];
 
+/* ─── Animated Counter Hook ─── */
+function useCountUp(target: number, duration: number = 2000) {
+  const [count, setCount] = useState(0);
+  const [started, setStarted] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setStarted(true); observer.disconnect(); } },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!started) return;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) { setCount(target); return; }
+    const startTime = performance.now();
+    let raf: number;
+    const animate = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.round(eased * target));
+      if (progress < 1) raf = requestAnimationFrame(animate);
+    };
+    raf = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(raf);
+  }, [started, target, duration]);
+
+  return { count, ref, started };
+}
+
+/* ─── Hero Banner Component ─── */
+const COMMUNITY_CO2_SAVED = 4280;
+const MONTHLY_GOAL = 5000;
+const TREES_EQUIVALENT = Math.round(COMMUNITY_CO2_SAVED / 21.77); // 1 tree absorbs ~21.77 kg CO2/year
+const CARS_OFF_ROAD_DAYS = Math.round(COMMUNITY_CO2_SAVED / 12.1); // avg car emits ~12.1 kg CO2/day
+
+function HeroBanner({ cartRef }: { cartRef: React.RefObject<HTMLDivElement | null> }) {
+  const { count, ref: counterRef, started } = useCountUp(COMMUNITY_CO2_SAVED, 2200);
+  const progressPercent = Math.min((COMMUNITY_CO2_SAVED / MONTHLY_GOAL) * 100, 100);
+
+  const scrollToProducts = () => {
+    cartRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  return (
+    <div className="relative overflow-hidden bg-gradient-to-br from-[#1B4332] via-[#2D6A4F] to-[#40916C] text-white">
+      {/* Background pattern */}
+      <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(#F8FAF5 1.2px, transparent 1.2px)', backgroundSize: '28px 28px' }} />
+      {/* Gradient glow orb */}
+      <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-[#52B788]/20 blur-[100px]" />
+      <div className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-[#B7E4C7]/10 blur-[80px]" />
+
+      <div ref={counterRef} className="relative z-10 max-w-6xl mx-auto px-4 md:px-8 py-14 md:py-20">
+        <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
+
+          {/* ── Left: Text Content ── */}
+          <div className={`space-y-6 ${started ? "animate-[fadeSlideUp_700ms_ease-out_forwards]" : "opacity-0 translate-y-4"}`}>
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 px-4 py-1.5">
+              <Leaf size={14} className="text-[#52B788]" />
+              <span className="text-xs font-bold tracking-wide uppercase text-[#B7E4C7]">Eco Store</span>
+            </div>
+
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black leading-[1.1] tracking-tight">
+              Every purchase is a{" "}
+              <span className="bg-gradient-to-r from-[#52B788] to-[#B7E4C7] bg-clip-text text-transparent">
+                vote for the planet
+              </span>
+            </h1>
+
+            <p className="text-base md:text-lg text-white/70 leading-relaxed max-w-lg">
+              Small choices, made together, shape a healthier planet.
+              Browse <span className="font-bold text-white">{ECO_PRODUCTS.length} eco products</span> across{" "}
+              {new Set(ECO_PRODUCTS.map(p => p.category)).size} categories — every item makes a difference.
+            </p>
+
+            <button
+              onClick={scrollToProducts}
+              className="inline-flex items-center gap-2.5 rounded-2xl bg-white text-[#1B4332] px-7 py-3.5 font-extrabold text-sm shadow-lg shadow-black/10 hover:bg-[#F8FAF5] hover:shadow-xl transition-all active:scale-95"
+            >
+              <ShoppingCart size={18} />
+              Shop Sustainably
+            </button>
+          </div>
+
+          {/* ── Right: Animated Stat Card ── */}
+          <div className={`${started ? "animate-[fadeSlideUp_700ms_200ms_ease-out_forwards]" : "opacity-0 translate-y-4"}`}>
+            <div className="rounded-3xl bg-white/[0.08] backdrop-blur-xl border border-white/[0.12] p-6 md:p-8 shadow-2xl shadow-black/10">
+
+              {/* Counter */}
+              <p className="text-xs font-bold uppercase tracking-widest text-[#52B788] mb-2">Community Impact This Month</p>
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="text-5xl md:text-6xl font-black tabular-nums tracking-tight">
+                  {count.toLocaleString("en-IN")}
+                </span>
+                <span className="text-lg md:text-xl font-bold text-white/60">kg CO₂</span>
+              </div>
+              <p className="text-sm text-white/50 font-medium mb-5">saved by our community this month</p>
+
+              {/* Equivalents */}
+              <div className="grid grid-cols-2 gap-3 mb-6">
+                <div className="rounded-2xl bg-white/[0.06] border border-white/[0.08] p-3.5 text-center">
+                  <span className="text-2xl block mb-1">🌳</span>
+                  <p className="text-xl font-black tabular-nums">{started ? TREES_EQUIVALENT : 0}</p>
+                  <p className="text-[11px] font-bold text-white/50 leading-tight">trees planted equivalent</p>
+                </div>
+                <div className="rounded-2xl bg-white/[0.06] border border-white/[0.08] p-3.5 text-center">
+                  <span className="text-2xl block mb-1">🚗</span>
+                  <p className="text-xl font-black tabular-nums">{started ? CARS_OFF_ROAD_DAYS : 0}</p>
+                  <p className="text-[11px] font-bold text-white/50 leading-tight">cars off road for a day</p>
+                </div>
+              </div>
+
+              {/* Progress bar toward monthly goal */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs font-bold">
+                  <span className="text-white/60">Monthly Goal</span>
+                  <span className="text-[#52B788]">{COMMUNITY_CO2_SAVED.toLocaleString("en-IN")} / {MONTHLY_GOAL.toLocaleString("en-IN")} kg</span>
+                </div>
+                <div className="h-3 rounded-full bg-white/10 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-[#52B788] to-[#B7E4C7] transition-all duration-[2500ms] ease-out"
+                    style={{ width: started ? `${progressPercent}%` : "0%" }}
+                  />
+                </div>
+                <p className="text-[10px] text-white/40 text-right font-medium">
+                  {(MONTHLY_GOAL - COMMUNITY_CO2_SAVED).toLocaleString("en-IN")} kg remaining to reach goal 🎯
+                </p>
+              </div>
+            </div>
+
+            {/* Disclaimer */}
+            <p className="mt-3 text-[10px] text-white/30 text-center leading-relaxed px-2">
+              * Community-aggregated estimate based on eco product purchases. Updated monthly. Actual CO₂ savings may vary.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Add-to-Cart Modal ─── */
 function AddToCartModal({
   product,
@@ -471,6 +620,7 @@ export default function EcoStorePage() {
   const [expandedDesc, setExpandedDesc] = useState<Record<string, boolean>>({});
   const [addModalProduct, setAddModalProduct] = useState<(typeof ECO_PRODUCTS)[0] | null>(null);
   const [showPurchaseForm, setShowPurchaseForm] = useState(false);
+  const cartBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem("eco_cart");
@@ -536,20 +686,11 @@ export default function EcoStorePage() {
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-[#F8FAF5] dark:bg-[#0B1815] text-[#1B4332] dark:text-[#F8FAF5] pb-24 md:pb-8">
 
-      {/* Hero Banner */}
-      <div className="bg-[#2D6A4F] text-white py-12 px-4 text-center relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#F8FAF5 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
-        <div className="relative z-10 max-w-4xl mx-auto">
-          <Leaf className="mx-auto mb-4 h-12 w-12 text-[#52B788]" />
-          <h1 className="text-3xl md:text-5xl font-black mb-4 tracking-tight">Every purchase is a vote for the planet</h1>
-          <p className="text-lg md:text-xl text-[#B7E4C7] font-medium">
-            <span className="font-bold text-white">{ECO_PRODUCTS.length} eco products</span> across {new Set(ECO_PRODUCTS.map(p => p.category)).size} categories
-          </p>
-        </div>
-      </div>
+      {/* ══════════ HERO BANNER ══════════ */}
+      <HeroBanner cartRef={cartBarRef} />
 
       {/* ── Horizontal Cart Bar ── */}
-      <div className="sticky top-0 z-30">
+      <div ref={cartBarRef} className="sticky top-0 z-30">
         <div className="bg-white/90 dark:bg-[#1A2F2A]/90 backdrop-blur-xl border-b border-[#52B788]/15 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 md:px-8">
             {cart.length === 0 ? (
