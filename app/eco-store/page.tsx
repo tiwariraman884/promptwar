@@ -851,6 +851,8 @@ export default function EcoStorePage() {
           onConfirm={(qty) => {
             addToCart(addModalProduct.id, qty);
             setAddModalProduct(null);
+            // Scroll to cart bar so user sees the added item
+            setTimeout(() => cartBarRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
           }}
         />
       )}
