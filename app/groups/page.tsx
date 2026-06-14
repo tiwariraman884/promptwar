@@ -174,7 +174,7 @@ export default function GroupsPage() {
                         }`}>
                           {initials}
                         </div>
-                        {i === 1 && <span className="text-[10px] font-bold text-yellow-500">👑</span>}
+                        {i === 1 && <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">👑</span>}
                       </div>
                     ))}
                   </div>

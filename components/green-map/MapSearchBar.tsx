@@ -119,7 +119,7 @@ export function MapSearchBar({ onSearchResult, onClear }: MapSearchBarProps) {
         </div>
       </div>
       {error && (
-        <p className="mt-1.5 text-xs text-red-500 dark:text-red-400 pl-1">
+        <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 pl-1">
           {error}
         </p>
       )}

@@ -261,7 +261,7 @@ export default function AiCoachPage() {
             </div>
             <div>
               <h2 className="text-sm font-extrabold text-[#1B4332] dark:text-white">EcoCoach AI</h2>
-              <p className="text-[10px] font-medium text-[#6B7C6E] dark:text-white/50">Powered by Gemini</p>
+              <p className="text-[10px] font-medium text-[#6B7C6E] dark:text-white/70">Powered by Gemini</p>
             </div>
           </div>
 
@@ -269,16 +269,16 @@ export default function AiCoachPage() {
           <div className="mb-4 grid grid-cols-2 gap-2">
             <div className="rounded-xl bg-[#F0FDF4] dark:bg-[#2D6A4F]/15 p-2.5 text-center">
               <p className="text-lg font-extrabold text-[#2D6A4F] dark:text-[#52B788]">{userFootprint}</p>
-              <p className="text-[9px] font-bold uppercase text-[#6B7C6E] dark:text-white/40">kg CO₂/yr</p>
+              <p className="text-[9px] font-bold uppercase text-[#6B7C6E] dark:text-white/60">kg CO₂/yr</p>
             </div>
             <div className="rounded-xl bg-[#F0FDF4] dark:bg-[#2D6A4F]/15 p-2.5 text-center">
               <p className="text-lg font-extrabold text-[#2D6A4F] dark:text-[#52B788]">{messageCount}</p>
-              <p className="text-[9px] font-bold uppercase text-[#6B7C6E] dark:text-white/40">Questions</p>
+              <p className="text-[9px] font-bold uppercase text-[#6B7C6E] dark:text-white/60">Questions</p>
             </div>
           </div>
 
           {/* Quick topics */}
-          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/40">Quick topics</p>
+          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/60">Quick topics</p>
           <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-visible hide-scrollbar">
             {QUICK_TOPICS.map((topic) => (
               <button
@@ -344,7 +344,7 @@ export default function AiCoachPage() {
                     ) : (
                       <div>{formatMessage(msg.content)}</div>
                     )}
-                    <p className={`mt-1.5 text-[10px] ${msg.role === "user" ? "text-white/40" : "text-[#6B7C6E]/60 dark:text-white/25"}`}>
+                    <p className={`mt-1.5 text-[10px] ${msg.role === "user" ? "text-white/60" : "text-[#6B7C6E]/80 dark:text-white/50"}`}>
                       {msg.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </p>
                   </div>
@@ -369,7 +369,7 @@ export default function AiCoachPage() {
                       <div className="h-2 w-2 rounded-full bg-[#52B788] animate-bounce" style={{ animationDelay: "0ms" }} />
                       <div className="h-2 w-2 rounded-full bg-[#52B788] animate-bounce" style={{ animationDelay: "150ms" }} />
                       <div className="h-2 w-2 rounded-full bg-[#52B788] animate-bounce" style={{ animationDelay: "300ms" }} />
-                      <span className="ml-2 text-xs text-[#6B7C6E] dark:text-white/40">Thinking...</span>
+                      <span className="ml-2 text-xs text-[#6B7C6E] dark:text-white/60">Thinking...</span>
                     </div>
                   </div>
                 </div>
@@ -419,7 +419,7 @@ export default function AiCoachPage() {
                 <Send size={18} />
               </button>
             </div>
-            <p className="mt-2 text-center text-[10px] text-[#6B7C6E]/60 dark:text-white/25">
+            <p className="mt-2 text-center text-[10px] text-[#6B7C6E]/80 dark:text-white/50">
               Powered by Google Gemini • Responses are AI-generated and may not be 100% accurate
             </p>
           </div>

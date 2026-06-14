@@ -205,7 +205,7 @@ export default function EditAccountPage() {
                 onBlur={() => handleFieldBlur("name", name)}
                 className={`w-full rounded-xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 transition bg-[#F8FAF5] dark:bg-[#1A2F2A] ${errors.name ? "border-red-400 focus:ring-red-300" : "border-[#52B788]/30 focus:ring-[#52B788]/30 focus:border-[#2D6A4F]"}`}
               />
-              {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
+              {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
             </div>
 
             {/* Username */}
@@ -222,7 +222,7 @@ export default function EditAccountPage() {
                   className={`w-full rounded-xl border pl-8 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 transition bg-[#F8FAF5] dark:bg-[#1A2F2A] ${errors.username ? "border-red-400 focus:ring-red-300" : "border-[#52B788]/30 focus:ring-[#52B788]/30 focus:border-[#2D6A4F]"}`}
                 />
               </div>
-              {errors.username && <p className="mt-1 text-xs text-red-500">{errors.username}</p>}
+              {errors.username && <p className="mt-1 text-xs text-red-600">{errors.username}</p>}
             </div>
 
             {/* Email */}
@@ -236,7 +236,7 @@ export default function EditAccountPage() {
                 placeholder="you@example.com"
                 className={`w-full rounded-xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 transition bg-[#F8FAF5] dark:bg-[#1A2F2A] ${errors.email ? "border-red-400 focus:ring-red-300" : "border-[#52B788]/30 focus:ring-[#52B788]/30 focus:border-[#2D6A4F]"}`}
               />
-              {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
+              {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
             </div>
 
             {/* Phone */}
@@ -250,7 +250,7 @@ export default function EditAccountPage() {
                 placeholder="+91 98765 43210"
                 className={`w-full rounded-xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 transition bg-[#F8FAF5] dark:bg-[#1A2F2A] ${errors.phone ? "border-red-400 focus:ring-red-300" : "border-[#52B788]/30 focus:ring-[#52B788]/30 focus:border-[#2D6A4F]"}`}
               />
-              {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
+              {errors.phone && <p className="mt-1 text-xs text-red-600">{errors.phone}</p>}
             </div>
 
             {/* Bio */}
@@ -343,7 +343,7 @@ export default function EditAccountPage() {
                     : "border-[#52B788]/30 focus:ring-[#52B788]/30"
                 }`}
               />
-              {confirmPw && confirmPw !== newPw && <p className="mt-1 text-xs text-red-500">Passwords don&apos;t match</p>}
+              {confirmPw && confirmPw !== newPw && <p className="mt-1 text-xs text-red-600">Passwords don&apos;t match</p>}
               {confirmPw && confirmPw === newPw && <p className="mt-1 text-xs text-emerald-600 dark:text-emerald-400">✓ Passwords match</p>}
             </div>
 

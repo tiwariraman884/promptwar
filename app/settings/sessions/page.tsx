@@ -65,7 +65,7 @@ export default function SessionsPage() {
               <span className="text-3xl">{DEVICE_ICONS[currentSession.device] || "💻"}</span>
               <div className="flex-1 min-w-0">
                 <p className="font-bold text-sm">{currentSession.browser} on {currentSession.os}</p>
-                <p className="text-xs text-[#6B7C6E] dark:text-white/40 mt-0.5">
+                <p className="text-xs text-[#6B7C6E] dark:text-white/60 mt-0.5">
                   📍 {currentSession.location}
                 </p>
                 <div className="flex items-center gap-2 mt-1">
@@ -96,13 +96,13 @@ export default function SessionsPage() {
                   <span className="text-2xl shrink-0">{DEVICE_ICONS[session.device] || "💻"}</span>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm">{session.browser} on {session.os}</p>
-                    <p className="text-xs text-[#6B7C6E] dark:text-white/40">
+                    <p className="text-xs text-[#6B7C6E] dark:text-white/60">
                       📍 {session.location} · {timeAgo(session.lastActive)}
                     </p>
                   </div>
                   <button
                     onClick={() => handleRemoveSession(session.id)}
-                    className="shrink-0 rounded-xl border border-red-200 dark:border-red-900/40 px-3 py-1.5 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
+                    className="shrink-0 rounded-xl border border-red-200 dark:border-red-900/40 px-3 py-1.5 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
                   >
                     End
                   </button>
@@ -116,7 +116,7 @@ export default function SessionsPage() {
           <div className="text-center py-10 rounded-2xl border border-[#D1FAE5]/60 dark:border-white/[0.06] bg-white/60 dark:bg-white/[0.02]">
             <p className="text-3xl mb-2">✅</p>
             <p className="font-bold text-[#6B7C6E] dark:text-white/50">No other active sessions</p>
-            <p className="text-xs text-[#6B7C6E]/70 dark:text-white/30 mt-1">Only this device is logged in.</p>
+            <p className="text-xs text-[#6B7C6E]/70 dark:text-white/50 mt-1">Only this device is logged in.</p>
           </div>
         )}
 

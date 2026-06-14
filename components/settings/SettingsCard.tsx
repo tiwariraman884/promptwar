@@ -28,7 +28,7 @@ export function SettingsCard({ children, title, description, icon, className = "
       {(title || icon) && (
         <div className="flex items-start gap-3 px-5 pt-5 pb-1">
           {icon && (
-            <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${danger ? "bg-red-50 text-red-500 dark:bg-red-900/20 dark:text-red-400" : "bg-[#D1FAE5] text-[#2D6A4F] dark:bg-[#2D6A4F]/30 dark:text-[#52B788]"}`}>
+            <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${danger ? "bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400" : "bg-[#D1FAE5] text-[#2D6A4F] dark:bg-[#2D6A4F]/30 dark:text-[#52B788]"}`}>
               {icon}
             </div>
           )}

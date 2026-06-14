@@ -97,7 +97,7 @@ export default function AuthHero() {
           >
             <span className="text-lg">{s.emoji}</span>
             <p className="mt-1 text-xl font-extrabold text-white">{s.value}</p>
-            <p className="mt-0.5 text-[11px] font-medium text-white/40 leading-tight">{s.label}</p>
+            <p className="mt-0.5 text-[11px] font-medium text-white/70 leading-tight">{s.label}</p>
           </div>
         ))}
       </div>
@@ -118,7 +118,7 @@ export default function AuthHero() {
             </div>
             <div>
               <p className="text-xs font-bold text-white">{t.name}</p>
-              <p className="text-[10px] text-white/40">{t.role}</p>
+              <p className="text-[10px] text-white/70">{t.role}</p>
             </div>
           </div>
         </div>

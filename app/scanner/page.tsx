@@ -538,7 +538,7 @@ export default function ScannerPage() {
             <p className="text-sm font-bold text-[#2D6A4F] dark:text-[#52B788] animate-pulse">
               Analyzing lifecycle emissions...
             </p>
-            <p className="text-xs text-[#6B7C6E] dark:text-white/40">
+            <p className="text-xs text-[#6B7C6E] dark:text-white/60">
               Checking databases & calculating carbon footprint
             </p>
           </div>
@@ -743,7 +743,7 @@ export default function ScannerPage() {
           <div className="rounded-2xl border-2 border-[#D1FAE5]/80 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] p-5">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7C6E] dark:text-white/40">📋 Scan History</h3>
-              <button onClick={clearHistory} className="text-[10px] font-bold text-red-400 hover:text-red-600 transition">
+              <button onClick={clearHistory} className="text-[10px] font-bold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition">
                 Clear all
               </button>
             </div>
@@ -766,7 +766,7 @@ export default function ScannerPage() {
                   <span className="text-base">{item.type === "barcode" ? "📊" : "🔍"}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold truncate">{item.product}</p>
-                    <p className="text-[10px] text-[#6B7C6E] dark:text-white/40">
+                    <p className="text-[10px] text-[#6B7C6E] dark:text-white/60">
                       {item.footprint_kg} kg CO₂e • {new Date(item.timestamp).toLocaleDateString()}
                     </p>
                   </div>

@@ -130,13 +130,13 @@ export function AvatarUpload({ currentAvatar, name, onUpload, onRemove }: Avatar
           <button
             type="button"
             onClick={onRemove}
-            className="rounded-xl border border-red-200 dark:border-red-900/40 px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
+            className="rounded-xl border border-red-200 dark:border-red-900/40 px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
           >
             Remove photo
           </button>
         )}
-        {error && <p className="text-xs font-medium text-red-500">{error}</p>}
-        <p className="text-[11px] text-[#6B7C6E] dark:text-white/40">
+        {error && <p className="text-xs font-medium text-red-600 dark:text-red-400">{error}</p>}
+        <p className="text-[11px] text-[#6B7C6E] dark:text-white/60">
           JPG, PNG or GIF. Max 2MB.
         </p>
       </div>

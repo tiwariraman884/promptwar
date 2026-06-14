@@ -214,6 +214,7 @@ function MobileDrawer({
         )}
         onClick={onClose}
         aria-hidden="true"
+        tabIndex={-1}
       />
 
       {/* Drawer panel — slides in from right, 250ms ease-out */}
@@ -289,7 +290,7 @@ function MobileDrawer({
           {hasUser ? (
             <button
               onClick={() => { onSignOut(); onClose(); }}
-              className="flex w-full min-h-[48px] items-center gap-3 rounded-xl px-3 text-sm font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
+              className="flex w-full min-h-[48px] items-center gap-3 rounded-xl px-3 text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
             >
               <IconSignOut size={19} />
               <span className="flex-1 text-left">{t("auth.signOut")}</span>
@@ -488,7 +489,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <p className="truncate text-sm font-bold text-ink dark:text-white">
                   {safeProfile.name || t("common.guest")}
                 </p>
-                <p className="truncate text-[11px] text-ink/55 dark:text-white/50">
+                <p className="truncate text-[11px] text-ink/70 dark:text-white/70">
                   {safeProfile.email || t("common.notSignedIn")}
                 </p>
               </div>
@@ -541,7 +542,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             {hasUser ? (
               <button
                 onClick={handleSignOut}
-                className="flex w-full min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
+                className="flex w-full min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
               >
               <IconSignOut size={17} />
               {t("auth.signOut")}

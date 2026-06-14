@@ -19,7 +19,7 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
   const score = Math.min(passed, 5);
   const labels = ["", "Weak", "Fair", "Good", "Strong", "Very Strong"];
   const colors = ["", "bg-red-500", "bg-orange-400", "bg-amber-400", "bg-emerald-500", "bg-[#2D6A4F]"];
-  const textColors = ["", "text-red-500", "text-orange-500", "text-amber-600", "text-emerald-600", "text-[#2D6A4F] dark:text-[#52B788]"];
+  const textColors = ["", "text-red-600", "text-orange-500", "text-amber-600", "text-emerald-600", "text-[#2D6A4F] dark:text-[#52B788]"];
 
   return (
     <div className="mt-3 space-y-2.5">

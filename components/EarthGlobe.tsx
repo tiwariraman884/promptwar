@@ -341,7 +341,7 @@ export default function EarthGlobe({ selectedCity }: GlobeProps) {
             </span>
             <span className="text-xs font-bold text-white">{selectedCity}</span>
             {coords && (
-              <span className="text-[10px] text-white/40">
+              <span className="text-[10px] text-white/70">
                 {coords.lat.toFixed(1)}°N, {coords.lng.toFixed(1)}°E
               </span>
             )}
@@ -351,7 +351,7 @@ export default function EarthGlobe({ selectedCity }: GlobeProps) {
 
       {/* Title overlay */}
       <div className="absolute left-3 top-3 z-20">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-[#52B788]/50">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-[#52B788]/80">
           Live Globe
         </p>
       </div>

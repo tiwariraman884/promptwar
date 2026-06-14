@@ -26,7 +26,7 @@ export default function LandingPage() {
   }, [router]);
 
   return (
-    <main className="min-h-screen overflow-hidden bg-mist text-ink dark:bg-[#0B1815] dark:text-white">
+    <div className="min-h-screen overflow-hidden bg-mist text-ink dark:bg-[#0B1815] dark:text-white">
       <section className="relative grid min-h-[92vh] place-items-center px-4 py-10">
         <img
           alt=""
@@ -100,6 +100,6 @@ export default function LandingPage() {
           </Link>
         ))}
       </section>
-    </main>
+    </div>
   );
 }

@@ -220,7 +220,7 @@ export default function IndiaMapOfficial({ selectedCity, step, diet, vehicle, go
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-3 pb-1 z-20 relative">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#52B788]/50">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#52B788]/80">
             India
           </p>
           <p className="text-xs font-bold text-white/70">{config.sublabel}</p>
@@ -395,7 +395,7 @@ export default function IndiaMapOfficial({ selectedCity, step, diet, vehicle, go
           {step === 0 && coords && (
             <>
               <span className="text-xs font-bold text-white">{selectedCity}</span>
-              <span className="text-[10px] text-white/40">{coords.state}</span>
+              <span className="text-[10px] text-white/70">{coords.state}</span>
             </>
           )}
           {step === 1 && (

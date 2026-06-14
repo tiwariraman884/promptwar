@@ -175,7 +175,7 @@ export function SubmitDrawer({ onNewMarker }: SubmitDrawerProps) {
                     className="w-full rounded-xl border border-[#52B788]/30 bg-[#F8FAF5] dark:bg-[#1A2F2A] px-4 py-2.5 text-sm focus:border-[#2D6A4F] focus:outline-none focus:ring-2 focus:ring-[#52B788]/20 transition"
                   />
                   {errors.name && (
-                    <p className="mt-1 text-xs text-red-500">{errors.name}</p>
+                    <p className="mt-1 text-xs text-red-600">{errors.name}</p>
                   )}
                 </div>
 
@@ -196,7 +196,7 @@ export function SubmitDrawer({ onNewMarker }: SubmitDrawerProps) {
                     ))}
                   </select>
                   {errors.type && (
-                    <p className="mt-1 text-xs text-red-500">{errors.type}</p>
+                    <p className="mt-1 text-xs text-red-600">{errors.type}</p>
                   )}
                 </div>
 
@@ -217,7 +217,7 @@ export function SubmitDrawer({ onNewMarker }: SubmitDrawerProps) {
                     ))}
                   </select>
                   {errors.city && (
-                    <p className="mt-1 text-xs text-red-500">{errors.city}</p>
+                    <p className="mt-1 text-xs text-red-600">{errors.city}</p>
                   )}
                 </div>
 
@@ -242,7 +242,7 @@ export function SubmitDrawer({ onNewMarker }: SubmitDrawerProps) {
                     )}
                   </div>
                   {errors.address && (
-                    <p className="mt-1 text-xs text-red-500">
+                    <p className="mt-1 text-xs text-red-600">
                       {errors.address}
                     </p>
                   )}
@@ -261,7 +261,7 @@ export function SubmitDrawer({ onNewMarker }: SubmitDrawerProps) {
                     className="w-full rounded-xl border border-[#52B788]/30 bg-[#F8FAF5] dark:bg-[#1A2F2A] px-4 py-2.5 text-sm focus:border-[#2D6A4F] focus:outline-none transition"
                   />
                   {errors.lat && (
-                    <p className="mt-1 text-xs text-red-500">{errors.lat}</p>
+                    <p className="mt-1 text-xs text-red-600">{errors.lat}</p>
                   )}
                 </div>
                 <div>
@@ -276,7 +276,7 @@ export function SubmitDrawer({ onNewMarker }: SubmitDrawerProps) {
                     className="w-full rounded-xl border border-[#52B788]/30 bg-[#F8FAF5] dark:bg-[#1A2F2A] px-4 py-2.5 text-sm focus:border-[#2D6A4F] focus:outline-none transition"
                   />
                   {errors.lng && (
-                    <p className="mt-1 text-xs text-red-500">{errors.lng}</p>
+                    <p className="mt-1 text-xs text-red-600">{errors.lng}</p>
                   )}
                 </div>
 

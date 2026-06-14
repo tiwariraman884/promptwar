@@ -402,7 +402,7 @@ export default function GreenMapPage() {
                 ? userLocation.address.split(",").slice(0, 3).join(",")
                 : `${userLocation.lat.toFixed(4)}°N, ${userLocation.lng.toFixed(4)}°E`}
             </p>
-            <p className="text-[10px] text-[#1B4332]/40 dark:text-white/30 mt-0.5">
+            <p className="text-[10px] text-[#1B4332]/70 dark:text-white/60 mt-0.5">
               Accuracy: ±{Math.round(userLocation.accuracy)}m
             </p>
           </div>
