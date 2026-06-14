@@ -46,12 +46,12 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
                 className={`flex h-4 w-4 items-center justify-center rounded-full text-[9px] transition-all duration-200 ${
                   met
                     ? "bg-[#2D6A4F] text-white scale-100"
-                    : "bg-gray-100 dark:bg-white/10 text-gray-400 dark:text-white/30 scale-90"
+                    : "bg-gray-100 dark:bg-white/10 text-gray-400 dark:text-white/50 scale-90"
                 }`}
               >
                 {met ? "✓" : "·"}
               </span>
-              <span className={`text-xs transition-colors ${met ? "text-[#2D6A4F] dark:text-[#52B788] font-medium" : "text-gray-400 dark:text-white/40"}`}>
+              <span className={`text-xs transition-colors ${met ? "text-[#2D6A4F] dark:text-[#52B788] font-medium" : "text-gray-400 dark:text-white/60"}`}>
                 {c.label}
               </span>
             </div>

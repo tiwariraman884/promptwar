@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSettings } from "@/lib/settings-context";
 import {
@@ -49,7 +50,7 @@ export default function SettingsHubPage() {
         <div className="mb-6 flex items-center gap-4 rounded-2xl border border-[#D1FAE5]/80 dark:border-white/[0.08] bg-white/80 dark:bg-white/[0.03] backdrop-blur-sm p-5 shadow-sm">
           <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full">
             {profile.avatar ? (
-              <img src={profile.avatar} alt="" className="h-full w-full object-cover" />
+              <Image src={profile.avatar} alt="" width={56} height={56} className="h-full w-full object-cover" unoptimized />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-[#2D6A4F] text-white text-lg font-bold">
                 {getInitials(profile.name || "Guest")}

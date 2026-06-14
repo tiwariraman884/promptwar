@@ -114,6 +114,7 @@ export default function ScannerPage() {
   const streamRef = useRef<MediaStream | null>(null);
   const scanningRef = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const handleScanRef = useRef<(q: string, t: "name" | "barcode" | "qr") => void>();
 
   // Load history
   useEffect(() => {
@@ -179,6 +180,9 @@ export default function ScannerPage() {
     }
   };
 
+  // Keep ref in sync so the scanning loop always calls the latest handleScan
+  handleScanRef.current = handleScan;
+
   /* ─── Camera ─── */
 
   // Check if BarcodeDetector is supported (Chrome, Edge, Android)
@@ -226,7 +230,7 @@ export default function ScannerPage() {
                 setBarcodeInput(code);
                 // Auto-trigger the scan after a brief visual flash
                 setTimeout(() => {
-                  handleScan(code, "barcode");
+                  handleScanRef.current?.(code, "barcode");
                   stopCamera();
                 }, 600);
                 return; // Don't continue the loop
