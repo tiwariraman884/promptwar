@@ -24,6 +24,9 @@ import {
   IconProfile,
   IconSignIn,
   IconSignOut,
+  IconQuiz,
+  IconCalendar,
+  IconLegacy,
 } from "@/components/icons/EcoIcons";
 
 /* ─── Types ─── */
@@ -50,6 +53,9 @@ const navItems: Array<{ href: string; label: string; tKey: string; icon: NavIcon
   { href: "/eco-store",  label: "Eco Store",  tKey: "nav.ecoStore",  icon: (p) => <IconEcoStore   {...p} /> },
   { href: "/offsets",    label: "Offsets",    tKey: "nav.offsets",   icon: (p) => <IconOffsets    {...p} /> },
   { href: "/groups",     label: "Groups",     tKey: "nav.groups",    icon: (p) => <IconGroups     {...p} /> },
+  { href: "/quiz",       label: "Quiz",       tKey: "nav.quiz",      icon: (p) => <IconQuiz       {...p} /> },
+  { href: "/calendar",   label: "Calendar",   tKey: "nav.calendar",  icon: (p) => <IconCalendar   {...p} /> },
+  { href: "/legacy",     label: "Legacy",     tKey: "nav.legacy",    icon: (p) => <IconLegacy     {...p} /> },
   { href: "/report",     label: "Reports",    tKey: "nav.reports",   icon: (p) => <IconReport     {...p} /> },
   { href: "/profile",    label: "Profile",    tKey: "nav.profile",   icon: (p) => <IconProfile    {...p} /> },
 ];
@@ -70,8 +76,11 @@ const mobileDrawerItems = [
   navItems[5],  // Green Map
   navItems[8],  // Offsets
   navItems[9],  // Groups
-  navItems[10], // Reports
-  navItems[11], // Profile
+  navItems[10], // Quiz
+  navItems[11], // Calendar
+  navItems[12], // Legacy
+  navItems[13], // Reports
+  navItems[14], // Profile
 ];
 
 /* ─── SVG Icons for hamburger, close, chevron, more ─── */

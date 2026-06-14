@@ -9,7 +9,11 @@ export const ECO_COIN_REWARDS = {
   hundredDayStreak: 500,
   weeklyChallengeCompleted: 50,
   referralFirstEntry: 100,
-  monthlyChallengeCompleted: 200
+  monthlyChallengeCompleted: 200,
+  quizCorrect: 5,
+  quizPerfectScore: 25,
+  energyAuditComplete: 50,
+  impactStoryShared: 10,
 } as const;
 
 export const BADGES = [
@@ -112,6 +116,21 @@ export const BADGES = [
     slug: "india_hero",
     title: "India Hero",
     description: "Annual footprint below 1500 kgCO2e"
+  },
+  {
+    slug: "quiz_master",
+    title: "Quiz Master",
+    description: "Completed 30 carbon literacy quizzes"
+  },
+  {
+    slug: "energy_auditor",
+    title: "Energy Auditor",
+    description: "Completed a home energy audit"
+  },
+  {
+    slug: "legacy_planner",
+    title: "Legacy Planner",
+    description: "Calculated your carbon inheritance"
   }
 ] as const;
 
