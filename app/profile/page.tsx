@@ -45,6 +45,20 @@ export default function ProfilePage() {
   const [diet, setDiet] = useState(demoDashboard.profile.diet_type);
   const [language, setLanguage] = useState("EN");
   const [notifications, setNotifications] = useState(true);
+  const [displayName, setDisplayName] = useState(demoDashboard.profile.display_name);
+
+  /* Read logged-in user's name from onboarding data */
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("greenstep-onboarding");
+      if (stored) {
+        const data = JSON.parse(stored);
+        if (data.display_name) setDisplayName(data.display_name);
+        if (data.city) setCity(data.city);
+        if (data.diet_type) setDiet(data.diet_type);
+      }
+    } catch {}
+  }, []);
 
   useEffect(() => {
     fetch("/api/dashboard")
@@ -52,8 +66,12 @@ export default function ProfilePage() {
       .then((payload) => {
         if (payload.data) {
           setDashboard(payload.data);
-          setCity(payload.data.profile.city);
-          setDiet(payload.data.profile.diet_type);
+          // Only override city/diet from API if no local onboarding data
+          const stored = localStorage.getItem("greenstep-onboarding");
+          if (!stored) {
+            setCity(payload.data.profile.city);
+            setDiet(payload.data.profile.diet_type);
+          }
         }
       })
       .catch(() => setDashboard(demoDashboard));
@@ -74,7 +92,7 @@ export default function ProfilePage() {
             </div>
             <div className="min-w-0 flex-1">
               <h1 className="font-heading text-3xl font-extrabold">
-                {dashboard.profile.display_name}
+                {displayName}
               </h1>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <Badge className="bg-white/15 text-white" tone="dark">

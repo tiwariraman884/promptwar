@@ -41,6 +41,7 @@ const steps = ["Where are you?", "Your lifestyle", "Set your goal"];
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
+  const [userName, setUserName] = useState("");
   const [city, setCity] = useState("Haridwar");
   const [manualCity, setManualCity] = useState("");
   const [diet, setDiet] = useState("vegetarian");
@@ -54,6 +55,7 @@ export default function OnboardingPage() {
     localStorage.setItem(
       "greenstep-onboarding",
       JSON.stringify({
+        display_name: userName.trim() || "Eco User",
         city: selectedCity,
         state: selectedCity === "Haridwar" ? "Uttarakhand" : "",
         diet_type: diet,
@@ -108,6 +110,15 @@ export default function OnboardingPage() {
 
               {step === 0 && (
                 <div className="mt-5 space-y-4">
+                  <label className="block text-sm font-bold text-ink/70 dark:text-white/70">
+                    Your name
+                    <Input
+                      className="mt-2"
+                      onChange={(event) => setUserName(event.target.value)}
+                      placeholder="Enter your name"
+                      value={userName}
+                    />
+                  </label>
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                     {cities.map((item) => (
                       <button
