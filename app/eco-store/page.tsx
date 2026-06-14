@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ECO_PRODUCTS } from "@/lib/carbonData";
-import { ShoppingCart, Star, Plus, Leaf, ChevronDown, ChevronUp, X, Minus, User, MapPin, Phone, Mail, CreditCard, CheckCircle } from "lucide-react";
+import { ShoppingCart, Star, Plus, Leaf, ChevronDown, ChevronUp, X, Minus, User, MapPin, Phone, Mail, CreditCard, CheckCircle, Package, Truck } from "lucide-react";
 
 /* ─── Types ─── */
 type CartItem = { id: string; qty: number };

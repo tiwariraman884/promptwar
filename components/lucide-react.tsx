@@ -102,5 +102,10 @@ export const TrendingDown = createGlyphIcon("📉");
 export const AlertCircle = createGlyphIcon("⚠");
 export const Sparkles = createGlyphIcon("✨");
 export const ArrowRight = createGlyphIcon("➔");
+export const User = createGlyphIcon("👤");
+export const Phone = createGlyphIcon("📞");
+export const CreditCard = createGlyphIcon("💳");
+export const Truck = createGlyphIcon("🚚");
+export const Package = createGlyphIcon("📦");
 
 export type LucideIcon = (props: IconProps) => ReactElement;
