@@ -27,6 +27,10 @@ import {
   IconQuiz,
   IconCalendar,
   IconLegacy,
+  IconEnergy,
+  IconAQI,
+  IconBillPredict,
+  IconCommute,
 } from "@/components/icons/EcoIcons";
 
 /* ─── Types ─── */
@@ -43,21 +47,25 @@ function getInitials(name: string) {
 
 /* ─── All nav items (used by desktop sidebar) ─── */
 const navItems: Array<{ href: string; label: string; tKey: string; icon: NavIcon }> = [
-  { href: "/dashboard",  label: "Dashboard",  tKey: "nav.dashboard",  icon: (p) => <IconDashboard  {...p} /> },
-  { href: "/calculator", label: "Calculator", tKey: "nav.calculator", icon: (p) => <IconCalculator {...p} /> },
-  { href: "/ai-coach",   label: "AI Coach",   tKey: "nav.aiCoach",   icon: (p) => <IconAiCoach   {...p} /> },
-  { href: "/scanner",    label: "Scanner",    tKey: "nav.scanner",   icon: (p) => <IconScanner    {...p} /> },
-  { href: "/tips",       label: "Tips",       tKey: "nav.tips",      icon: (p) => <IconTips       {...p} /> },
-  { href: "/green-map",  label: "Green Map",  tKey: "nav.greenMap",  icon: (p) => <IconGreenMap   {...p} /> },
-  { href: "/community",  label: "Community",  tKey: "nav.community", icon: (p) => <IconCommunity  {...p} /> },
-  { href: "/eco-store",  label: "Eco Store",  tKey: "nav.ecoStore",  icon: (p) => <IconEcoStore   {...p} /> },
-  { href: "/offsets",    label: "Offsets",    tKey: "nav.offsets",   icon: (p) => <IconOffsets    {...p} /> },
-  { href: "/groups",     label: "Groups",     tKey: "nav.groups",    icon: (p) => <IconGroups     {...p} /> },
-  { href: "/quiz",       label: "Quiz",       tKey: "nav.quiz",      icon: (p) => <IconQuiz       {...p} /> },
-  { href: "/calendar",   label: "Calendar",   tKey: "nav.calendar",  icon: (p) => <IconCalendar   {...p} /> },
-  { href: "/legacy",     label: "Legacy",     tKey: "nav.legacy",    icon: (p) => <IconLegacy     {...p} /> },
-  { href: "/report",     label: "Reports",    tKey: "nav.reports",   icon: (p) => <IconReport     {...p} /> },
-  { href: "/profile",    label: "Profile",    tKey: "nav.profile",   icon: (p) => <IconProfile    {...p} /> },
+  { href: "/dashboard",     label: "Dashboard",     tKey: "nav.dashboard",     icon: (p) => <IconDashboard  {...p} /> },
+  { href: "/calculator",    label: "Calculator",    tKey: "nav.calculator",    icon: (p) => <IconCalculator {...p} /> },
+  { href: "/ai-coach",      label: "AI Coach",      tKey: "nav.aiCoach",      icon: (p) => <IconAiCoach   {...p} /> },
+  { href: "/scanner",       label: "Scanner",       tKey: "nav.scanner",      icon: (p) => <IconScanner    {...p} /> },
+  { href: "/tips",          label: "Tips",          tKey: "nav.tips",         icon: (p) => <IconTips       {...p} /> },
+  { href: "/green-map",     label: "Green Map",     tKey: "nav.greenMap",     icon: (p) => <IconGreenMap   {...p} /> },
+  { href: "/community",     label: "Community",     tKey: "nav.community",    icon: (p) => <IconCommunity  {...p} /> },
+  { href: "/eco-store",     label: "Eco Store",     tKey: "nav.ecoStore",     icon: (p) => <IconEcoStore   {...p} /> },
+  { href: "/offsets",       label: "Offsets",       tKey: "nav.offsets",      icon: (p) => <IconOffsets    {...p} /> },
+  { href: "/groups",        label: "Groups",        tKey: "nav.groups",       icon: (p) => <IconGroups     {...p} /> },
+  { href: "/quiz",          label: "Quiz",          tKey: "nav.quiz",         icon: (p) => <IconQuiz       {...p} /> },
+  { href: "/calendar",      label: "Calendar",      tKey: "nav.calendar",     icon: (p) => <IconCalendar   {...p} /> },
+  { href: "/legacy",        label: "Legacy",        tKey: "nav.legacy",       icon: (p) => <IconLegacy     {...p} /> },
+  { href: "/energy-audit",  label: "Energy Audit",  tKey: "nav.energyAudit",  icon: (p) => <IconEnergy     {...p} /> },
+  { href: "/aqi",           label: "Air Quality",   tKey: "nav.aqi",          icon: (p) => <IconAQI        {...p} /> },
+  { href: "/bill-predict",  label: "Bill Predict",  tKey: "nav.billPredict",  icon: (p) => <IconBillPredict {...p} /> },
+  { href: "/commute",       label: "Commute",       tKey: "nav.commute",      icon: (p) => <IconCommute    {...p} /> },
+  { href: "/report",        label: "Reports",       tKey: "nav.reports",      icon: (p) => <IconReport     {...p} /> },
+  { href: "/profile",       label: "Profile",       tKey: "nav.profile",      icon: (p) => <IconProfile    {...p} /> },
 ];
 
 /* ─── MOBILE: Bottom nav shows 4 items + "More" button ─── */
@@ -79,8 +87,12 @@ const mobileDrawerItems = [
   navItems[10], // Quiz
   navItems[11], // Calendar
   navItems[12], // Legacy
-  navItems[13], // Reports
-  navItems[14], // Profile
+  navItems[13], // Energy Audit
+  navItems[14], // Air Quality
+  navItems[15], // Bill Predict
+  navItems[16], // Commute
+  navItems[17], // Reports
+  navItems[18], // Profile
 ];
 
 /* ─── SVG Icons for hamburger, close, chevron, more ─── */

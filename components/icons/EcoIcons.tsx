@@ -359,3 +359,41 @@ export function IconLegacy({ size = 20, className = "", strokeWidth = 1.8 }: Ico
   );
 }
 
+export function IconEnergy({ size = 20, className = "", strokeWidth = 1.8 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+      <path d="M13 2L3 14h9l-1 8"/>
+    </svg>
+  );
+}
+
+export function IconAQI({ size = 20, className = "", strokeWidth = 1.8 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M9.59 4.59A2 2 0 1 1 11 8H2"/>
+      <path d="M12.59 19.41A2 2 0 1 0 14 16H2"/>
+      <path d="M17.73 7.73A2.5 2.5 0 1 1 19.5 12H2"/>
+    </svg>
+  );
+}
+
+export function IconBillPredict({ size = 20, className = "", strokeWidth = 1.8 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+    </svg>
+  );
+}
+
+export function IconCommute({ size = 20, className = "", strokeWidth = 1.8 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M5 18H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3.19M15 6h2.81A2 2 0 0 1 20 7.5"/>
+      <path d="M21 14h-5"/>
+      <path d="M16 17h5"/>
+      <circle cx="7" cy="15" r="3"/>
+      <path d="M9 18l4-9h5"/>
+    </svg>
+  );
+}
