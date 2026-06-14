@@ -30,6 +30,14 @@ const en: TranslationDict = {
   "nav.profile": "Profile",
   "nav.settings": "Settings",
   "nav.more": "More",
+  "nav.quiz": "Quiz",
+  "nav.calendar": "Calendar",
+  "nav.legacy": "My Legacy",
+  "nav.energyAudit": "Energy Audit",
+  "nav.aqi": "Air Quality",
+  "nav.billPredict": "Bill Predict",
+  "nav.commute": "Commute",
+  "nav.explore": "Explore",
 
   // ─── Auth ───
   "auth.signIn": "Sign in",
@@ -175,6 +183,14 @@ const hi: TranslationDict = {
   "nav.profile": "प्रोफ़ाइल",
   "nav.settings": "सेटिंग्स",
   "nav.more": "और",
+  "nav.quiz": "क्विज़",
+  "nav.calendar": "कैलेंडर",
+  "nav.legacy": "मेरी विरासत",
+  "nav.energyAudit": "ऊर्जा ऑडिट",
+  "nav.aqi": "वायु गुणवत्ता",
+  "nav.billPredict": "बिल अनुमान",
+  "nav.commute": "यात्रा",
+  "nav.explore": "और देखें",
 
   // ─── Auth ───
   "auth.signIn": "साइन इन",
@@ -320,6 +336,14 @@ const es: TranslationDict = {
   "nav.profile": "Perfil",
   "nav.settings": "Ajustes",
   "nav.more": "Más",
+  "nav.quiz": "Quiz",
+  "nav.calendar": "Calendario",
+  "nav.legacy": "Mi Legado",
+  "nav.energyAudit": "Auditoría",
+  "nav.aqi": "Calidad Aire",
+  "nav.billPredict": "Predecir Factura",
+  "nav.commute": "Transporte",
+  "nav.explore": "Explorar",
 
   // ─── Auth ───
   "auth.signIn": "Iniciar sesión",
