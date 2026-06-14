@@ -197,24 +197,60 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <Card>
-          <CardHeader>
+        <Card className="overflow-hidden relative">
+          {/* Subtle top gradient accent */}
+          <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#2D6A4F] via-[#52B788] to-[#00E676]" />
+
+          <CardHeader className="pb-1">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <CardTitle>Last 30 days</CardTitle>
-                <p className="mt-1 text-sm text-ink/65 dark:text-white/65">
+                <CardTitle className="flex items-center gap-2">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[#2D6A4F]/10 dark:bg-[#52B788]/10 text-[#2D6A4F] dark:text-[#52B788]">
+                    📊
+                  </span>
+                  Last 30 days
+                </CardTitle>
+                <p className="mt-1.5 text-sm text-ink/55 dark:text-white/55">
                   Green area stays under India&apos;s 5.67 kg/day benchmark.
                 </p>
               </div>
-              <Badge tone={weeklyUnderAverage ? "green" : "amber"}>
+              <Badge tone={weeklyUnderAverage ? "green" : "amber"} className="shadow-sm">
                 Highest: {CATEGORY_LABELS[data.topCategory]}
               </Badge>
             </div>
           </CardHeader>
+
           {loading ? (
-            <Skeleton className="h-72" />
+            <Skeleton className="h-80" />
           ) : (
             <DashboardTrendChart data={data.dailySeries as DailyPoint[]} />
+          )}
+
+          {/* Stats summary row below chart */}
+          {!loading && (
+            <div className="grid grid-cols-3 gap-px bg-line/30 dark:bg-white/[0.04] border-t border-line dark:border-white/[0.06] -mx-4 -mb-4">
+              <div className="bg-white dark:bg-white/[0.02] px-4 py-3 text-center">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/50 dark:text-white/50">30d Average</p>
+                <p className="mt-1 text-lg font-extrabold text-ink dark:text-white tabular-nums">
+                  {(data.dailySeries.reduce((sum: number, d: any) => sum + d.kgCo2e, 0) / data.dailySeries.length).toFixed(1)}
+                  <span className="ml-1 text-xs font-bold text-ink/40 dark:text-white/40">kg</span>
+                </p>
+              </div>
+              <div className="bg-white dark:bg-white/[0.02] px-4 py-3 text-center">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/50 dark:text-white/50">Best Day</p>
+                <p className="mt-1 text-lg font-extrabold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                  {Math.min(...data.dailySeries.map((d: any) => d.kgCo2e)).toFixed(1)}
+                  <span className="ml-1 text-xs font-bold text-emerald-600/50 dark:text-emerald-400/50">kg</span>
+                </p>
+              </div>
+              <div className="bg-white dark:bg-white/[0.02] px-4 py-3 text-center">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/50 dark:text-white/50">Peak Day</p>
+                <p className="mt-1 text-lg font-extrabold text-amber-600 dark:text-amber-400 tabular-nums">
+                  {Math.max(...data.dailySeries.map((d: any) => d.kgCo2e)).toFixed(1)}
+                  <span className="ml-1 text-xs font-bold text-amber-600/50 dark:text-amber-400/50">kg</span>
+                </p>
+              </div>
+            </div>
           )}
         </Card>
       </section>
