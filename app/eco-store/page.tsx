@@ -548,158 +548,152 @@ export default function EcoStorePage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 flex flex-col md:flex-row gap-8">
-
-        {/* Main Content */}
-        <div className="flex-1 space-y-6">
-
-          {/* Filters & Sort */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-[#1A2F2A] p-4 rounded-2xl shadow-sm border border-[#52B788]/20">
-            <div className="flex overflow-x-auto gap-2 pb-2 md:pb-0 hide-scrollbar">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition ${
-                    selectedCategory === cat
-                      ? "bg-[#2D6A4F] text-white"
-                      : "bg-[#F8FAF5] dark:bg-black/20 hover:bg-[#52B788]/20"
-                  }`}
-                >
-                  {cat}
-                  <span className="ml-1 text-xs opacity-60">
-                    ({cat === "All" ? ECO_PRODUCTS.length : ECO_PRODUCTS.filter(p => p.category === cat).length})
-                  </span>
-                </button>
-              ))}
-            </div>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="rounded-xl border border-[#52B788]/30 bg-[#F8FAF5] dark:bg-black/20 px-4 py-2 text-sm font-medium focus:outline-none"
-            >
-              <option>Highest CO2 saving</option>
-              <option>Lowest price</option>
-              <option>Top rated</option>
-            </select>
-          </div>
-
-          {/* Product Grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sortedProducts.map((p) => (
-              <div key={p.id} className="rounded-3xl bg-white dark:bg-[#1A2F2A] p-5 shadow-sm border border-[#52B788]/20 flex flex-col hover:shadow-md transition group">
-                <div className="mb-4 flex items-start justify-between gap-2">
-                  <span className="inline-block rounded-full bg-[#52B788]/10 px-3 py-1 text-xs font-bold text-[#2D6A4F] dark:text-[#52B788]">
-                    {p.category}
-                  </span>
-                  <span className="flex items-center gap-1 text-sm font-bold text-yellow-500">
-                    <Star size={14} fill="currentColor" /> {p.rating}
-                  </span>
-                </div>
-
-                <h3 className="text-xl font-bold mb-2 leading-tight">{p.name}</h3>
-
-                <div className="mb-4 inline-flex self-start items-center gap-1.5 rounded-full bg-[#52B788] px-3 py-1 text-xs font-bold text-[#1B4332]">
-                  <Leaf size={12} /> Saves {p.co2Saved} kg CO2/yr
-                </div>
-
-                <div className="mb-4 relative">
-                  <p className={`text-sm text-neutral-600 dark:text-neutral-400 ${expandedDesc[p.id] ? "" : "line-clamp-2"}`}>
-                    <span className="font-semibold text-[#2D6A4F] dark:text-[#52B788] mr-1">{p.badge} •</span>
-                    {p.description}
-                  </p>
-                  <button onClick={() => toggleDesc(p.id)} className="text-xs font-bold text-[#52B788] mt-1 flex items-center hover:underline">
-                    {expandedDesc[p.id] ? <><ChevronUp size={12} /> Show less</> : <><ChevronDown size={12} /> Learn more</>}
-                  </button>
-                </div>
-
-                <div className="mt-auto pt-4 border-t border-[#52B788]/10 flex items-center justify-between">
-                  <span className="text-2xl font-black">{p.currency}{p.price}</span>
-                  <button
-                    onClick={() => setAddModalProduct(p)}
-                    aria-label={`Add ${p.name} to cart`}
-                    className="flex items-center gap-2 rounded-xl bg-[#2D6A4F] px-4 py-2.5 font-bold text-white hover:bg-[#1B4332] transition active:scale-95"
-                  >
-                    <Plus size={16} /> Add
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Sidebar Cart */}
-        <div className="w-full md:w-80 md:shrink-0">
-          <div className="sticky top-24 rounded-3xl bg-white dark:bg-[#1A2F2A] p-6 shadow-sm border border-[#52B788]/20">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold flex items-center gap-2 text-[#2D6A4F] dark:text-[#52B788]">
-                <ShoppingCart /> Your Cart
-              </h2>
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#52B788] text-xs font-bold text-[#1B4332]">
-                {cartItemsCount}
-              </span>
-            </div>
-
+      {/* ── Horizontal Cart Bar ── */}
+      <div className="sticky top-0 z-30">
+        <div className="bg-white/90 dark:bg-[#1A2F2A]/90 backdrop-blur-xl border-b border-[#52B788]/15 shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 md:px-8">
             {cart.length === 0 ? (
-              <div className="py-8 text-center text-neutral-500">
-                <Leaf className="mx-auto h-12 w-12 opacity-20 mb-3" />
-                <p>Your eco cart is empty.</p>
-                <p className="text-sm mt-1">Tap <span className="font-bold text-[#2D6A4F] dark:text-[#52B788]">+ Add</span> on any product!</p>
+              /* Empty cart — compact single line */
+              <div className="flex items-center justify-center gap-3 py-3 text-neutral-500 dark:text-neutral-400">
+                <ShoppingCart size={18} className="text-[#52B788]/50" />
+                <span className="text-sm font-medium">Your eco cart is empty — tap <span className="font-bold text-[#2D6A4F] dark:text-[#52B788]">+ Add</span> on any product to start!</span>
               </div>
             ) : (
-              <div className="space-y-3">
-                {cart.map((item) => {
-                  const p = ECO_PRODUCTS.find((prod) => prod.id === item.id);
-                  if (!p) return null;
-                  return (
-                    <div key={item.id} className="rounded-xl bg-[#F8FAF5] dark:bg-black/15 p-3">
-                      <div className="flex justify-between text-sm items-start gap-2">
-                        <div className="min-w-0 flex-1">
-                          <p className="font-bold line-clamp-1">{p.name}</p>
-                          <p className="text-xs text-[#52B788] mt-0.5">
-                            <Leaf size={10} className="inline mr-1" />{(p.co2Saved * item.qty).toFixed(1)} kg CO₂ saved
-                          </p>
-                        </div>
-                        <span className="font-bold shrink-0">₹{p.price * item.qty}</span>
-                      </div>
-                      <div className="flex items-center justify-between mt-2">
-                        <div className="flex items-center gap-1 rounded-lg border border-[#52B788]/20 bg-white dark:bg-[#1A2F2A]">
-                          <button onClick={() => updateCartQty(item.id, -1)} aria-label="Decrease" className="h-7 w-7 flex items-center justify-center hover:bg-[#52B788]/10 rounded-l-lg transition">
-                            <Minus size={12} />
-                          </button>
-                          <span className="w-6 text-center text-xs font-bold tabular-nums">{item.qty}</span>
-                          <button onClick={() => updateCartQty(item.id, 1)} aria-label="Increase" className="h-7 w-7 flex items-center justify-center hover:bg-[#52B788]/10 rounded-r-lg transition">
-                            <Plus size={12} />
-                          </button>
-                        </div>
-                        <button onClick={() => removeFromCart(item.id)} aria-label={`Remove ${p.name}`} className="text-xs font-bold text-red-500 hover:underline">
-                          Remove
-                        </button>
-                      </div>
+              /* Cart with items — horizontal strip */
+              <div className="py-3 space-y-2">
+                {/* Top row: summary + checkout */}
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="relative shrink-0">
+                      <ShoppingCart size={20} className="text-[#2D6A4F] dark:text-[#52B788]" />
+                      <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#52B788] text-[10px] font-black text-[#1B4332]">
+                        {cartItemsCount}
+                      </span>
                     </div>
-                  );
-                })}
-
-                <div className="pt-4 space-y-2 border-t border-[#52B788]/15">
-                  <div className="flex justify-between font-bold text-lg">
-                    <span>Total:</span>
-                    <span>₹{cart.reduce((tot, item) => tot + ((ECO_PRODUCTS.find((p) => p.id === item.id)?.price || 0) * item.qty), 0)}</span>
+                    <div className="flex items-center gap-4 min-w-0">
+                      <span className="text-lg font-black text-[#1B4332] dark:text-white tabular-nums">
+                        ₹{cart.reduce((tot, item) => tot + ((ECO_PRODUCTS.find((p) => p.id === item.id)?.price || 0) * item.qty), 0)}
+                      </span>
+                      <span className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-[#2D6A4F] dark:text-[#52B788] bg-[#52B788]/15 rounded-full px-2.5 py-1">
+                        <Leaf size={12} /> Saves {cartTotalCo2.toFixed(1)} kg CO₂/yr
+                        {treesEquivalent > 0 && <> ≈ {treesEquivalent} 🌳</>}
+                      </span>
+                    </div>
                   </div>
-                  <div className="rounded-xl bg-[#52B788]/20 p-3 text-sm font-semibold text-[#2D6A4F] dark:text-[#52B788] flex items-center gap-2">
-                    <Leaf size={16} />
-                    Saves {cartTotalCo2.toFixed(1)} kg CO₂/yr ≈ {treesEquivalent} {treesEquivalent === 1 ? "tree" : "trees"} 🌳
-                  </div>
+                  <button
+                    onClick={() => setShowPurchaseForm(true)}
+                    className="shrink-0 flex items-center gap-2 rounded-xl bg-[#2D6A4F] px-5 py-2.5 font-bold text-white text-sm hover:bg-[#1B4332] transition active:scale-95"
+                  >
+                    <CreditCard size={14} /> Checkout
+                  </button>
                 </div>
 
-                <button
-                  onClick={() => setShowPurchaseForm(true)}
-                  className="w-full mt-2 rounded-xl bg-[#2D6A4F] py-3.5 font-bold text-white hover:bg-[#1B4332] transition flex items-center justify-center gap-2"
-                >
-                  <CreditCard size={16} /> Checkout securely
-                </button>
+                {/* Bottom row: horizontally scrollable cart items */}
+                <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1 -mx-1 px-1">
+                  {cart.map((item) => {
+                    const p = ECO_PRODUCTS.find((prod) => prod.id === item.id);
+                    if (!p) return null;
+                    return (
+                      <div key={item.id} className="shrink-0 flex items-center gap-2 rounded-xl bg-[#F8FAF5] dark:bg-black/20 border border-[#52B788]/10 pl-3 pr-1.5 py-1.5">
+                        <span className="text-xs font-bold text-[#1B4332] dark:text-white max-w-[120px] truncate">{p.name}</span>
+                        <div className="flex items-center gap-0.5 rounded-lg border border-[#52B788]/20 bg-white dark:bg-[#1A2F2A]">
+                          <button onClick={() => updateCartQty(item.id, -1)} aria-label="Decrease" className="h-6 w-6 flex items-center justify-center hover:bg-[#52B788]/10 rounded-l-lg transition">
+                            <Minus size={10} />
+                          </button>
+                          <span className="w-5 text-center text-[11px] font-black tabular-nums">{item.qty}</span>
+                          <button onClick={() => updateCartQty(item.id, 1)} aria-label="Increase" className="h-6 w-6 flex items-center justify-center hover:bg-[#52B788]/10 rounded-r-lg transition">
+                            <Plus size={10} />
+                          </button>
+                        </div>
+                        <span className="text-xs font-bold tabular-nums text-[#2D6A4F] dark:text-[#52B788]">₹{p.price * item.qty}</span>
+                        <button onClick={() => removeFromCart(item.id)} aria-label={`Remove ${p.name}`} className="h-6 w-6 flex items-center justify-center rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                          <X size={12} />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* ── Main Content (full width) ── */}
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-6">
+
+        {/* Filters & Sort */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-[#1A2F2A] p-4 rounded-2xl shadow-sm border border-[#52B788]/20">
+          <div className="flex overflow-x-auto gap-2 pb-2 md:pb-0 hide-scrollbar">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition ${
+                  selectedCategory === cat
+                    ? "bg-[#2D6A4F] text-white"
+                    : "bg-[#F8FAF5] dark:bg-black/20 hover:bg-[#52B788]/20"
+                }`}
+              >
+                {cat}
+                <span className="ml-1 text-xs opacity-60">
+                  ({cat === "All" ? ECO_PRODUCTS.length : ECO_PRODUCTS.filter(p => p.category === cat).length})
+                </span>
+              </button>
+            ))}
+          </div>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="rounded-xl border border-[#52B788]/30 bg-[#F8FAF5] dark:bg-black/20 px-4 py-2 text-sm font-medium focus:outline-none"
+          >
+            <option>Highest CO2 saving</option>
+            <option>Lowest price</option>
+            <option>Top rated</option>
+          </select>
+        </div>
+
+        {/* Product Grid — now full width, up to 4 columns */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {sortedProducts.map((p) => (
+            <div key={p.id} className="rounded-3xl bg-white dark:bg-[#1A2F2A] p-5 shadow-sm border border-[#52B788]/20 flex flex-col hover:shadow-md transition group">
+              <div className="mb-4 flex items-start justify-between gap-2">
+                <span className="inline-block rounded-full bg-[#52B788]/10 px-3 py-1 text-xs font-bold text-[#2D6A4F] dark:text-[#52B788]">
+                  {p.category}
+                </span>
+                <span className="flex items-center gap-1 text-sm font-bold text-yellow-500">
+                  <Star size={14} fill="currentColor" /> {p.rating}
+                </span>
+              </div>
+
+              <h3 className="text-xl font-bold mb-2 leading-tight">{p.name}</h3>
+
+              <div className="mb-4 inline-flex self-start items-center gap-1.5 rounded-full bg-[#52B788] px-3 py-1 text-xs font-bold text-[#1B4332]">
+                <Leaf size={12} /> Saves {p.co2Saved} kg CO2/yr
+              </div>
+
+              <div className="mb-4 relative">
+                <p className={`text-sm text-neutral-600 dark:text-neutral-400 ${expandedDesc[p.id] ? "" : "line-clamp-2"}`}>
+                  <span className="font-semibold text-[#2D6A4F] dark:text-[#52B788] mr-1">{p.badge} •</span>
+                  {p.description}
+                </p>
+                <button onClick={() => toggleDesc(p.id)} className="text-xs font-bold text-[#52B788] mt-1 flex items-center hover:underline">
+                  {expandedDesc[p.id] ? <><ChevronUp size={12} /> Show less</> : <><ChevronDown size={12} /> Learn more</>}
+                </button>
+              </div>
+
+              <div className="mt-auto pt-4 border-t border-[#52B788]/10 flex items-center justify-between">
+                <span className="text-2xl font-black">{p.currency}{p.price}</span>
+                <button
+                  onClick={() => setAddModalProduct(p)}
+                  aria-label={`Add ${p.name} to cart`}
+                  className="flex items-center gap-2 rounded-xl bg-[#2D6A4F] px-4 py-2.5 font-bold text-white hover:bg-[#1B4332] transition active:scale-95"
+                >
+                  <Plus size={16} /> Add
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
