@@ -3,6 +3,7 @@
 import type { ReactNode, ReactElement } from "react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -263,9 +264,9 @@ function MobileDrawer({
           </button>
         </div>
 
-        {/* Drawer nav items — all remaining features */}
+        {/* Drawer nav items — core features */}
         <nav aria-label="More navigation" className="flex-1 overflow-y-auto py-2 px-2">
-          {mobileDrawerItems.map((item) => {
+          {mobileDrawerCoreItems.map((item) => {
             const active = pathname?.startsWith(item.href);
             const Icon = item.icon;
             return (
@@ -288,13 +289,42 @@ function MobileDrawer({
             );
           })}
 
+          {/* ── Explore / More Tools — horizontal card slider ── */}
+          <div className="mt-3 pt-3 border-t border-line dark:border-white/10">
+            <p className="px-3 text-[11px] font-extrabold uppercase tracking-wider text-ink/40 dark:text-white/40 mb-2">
+              ✨ {t("nav.explore")}
+            </p>
+            <div className="flex gap-2 overflow-x-auto pb-2 px-1 hide-scrollbar">
+              {exploreItems.map((item) => {
+                const active = pathname?.startsWith(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href as any}
+                    aria-current={active ? "page" : undefined}
+                    onClick={onClose}
+                    className={cn(
+                      "shrink-0 flex flex-col items-center justify-center w-[76px] h-[76px] rounded-2xl border text-center transition",
+                      active
+                        ? "border-primary bg-primary/10 text-primary-dark dark:text-primary"
+                        : "border-line dark:border-white/10 bg-white dark:bg-white/5 hover:border-primary/50"
+                    )}
+                  >
+                    <span className="text-xl mb-0.5">{item.emoji}</span>
+                    <span className="text-[10px] font-bold leading-tight">{t(item.tKey)}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Settings */}
           <Link
             href="/settings"
             aria-current={pathname?.startsWith("/settings") ? "page" : undefined}
             onClick={onClose}
             className={cn(
-              "flex min-h-[48px] items-center gap-3 rounded-xl px-3 text-sm font-bold transition",
+              "flex min-h-[48px] items-center gap-3 rounded-xl px-3 text-sm font-bold transition mt-1",
               pathname?.startsWith("/settings")
                 ? "bg-primary-light text-primary-dark"
                 : "text-ink/70 hover:bg-[#F0FDF4] dark:text-white/70 dark:hover:bg-white/5"
@@ -342,6 +372,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { t } = useT();
   const [mounted, setMounted] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [exploreOpen, setExploreOpen] = useState(() => exploreItems.some(item => pathname?.startsWith(item.href)));
   const isLanding = pathname === "/";
   const isOnboarding = pathname?.startsWith("/onboarding");
   const isAuth = pathname?.startsWith("/auth") || pathname?.startsWith("/sign-in") || pathname?.startsWith("/sign-up");
@@ -385,7 +416,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   // Check if the "More" drawer should show as active (when current route
   // is one of the items inside the drawer)
-  const isDrawerItemActive = mobileDrawerItems.some((item) => pathname?.startsWith(item.href))
+  const isDrawerItemActive = mobileDrawerCoreItems.some((item) => pathname?.startsWith(item.href))
+    || exploreItems.some((item) => pathname?.startsWith(item.href))
     || pathname?.startsWith("/settings");
 
   return (
@@ -526,7 +558,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="flex items-center gap-2.5">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full overflow-hidden bg-[#2D6A4F] text-white text-xs font-bold shadow">
                 {mounted && safeProfile.avatar ? (
-                  <img src={safeProfile.avatar} alt="" className="h-full w-full object-cover" />
+                  <Image src={safeProfile.avatar} alt="" width={36} height={36} className="h-full w-full object-cover" />
                 ) : (
                   getInitials(safeProfile.name || t("common.guest"))
                 )}
@@ -542,9 +574,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             </div>
           </div>
 
-          {/* Main nav */}
-          <nav aria-label="Primary desktop" className="flex-1 space-y-0.5">
-            {navItems.map((item) => {
+          {/* Main nav — core items only */}
+          <nav aria-label="Primary desktop" className="flex-1 space-y-0.5 overflow-y-auto">
+            {coreNavItems.map((item) => {
               const active = pathname?.startsWith(item.href);
               const Icon = item.icon;
               return (
@@ -564,6 +596,52 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </Link>
               );
             })}
+
+            {/* ── Explore / More Tools — collapsible section ── */}
+            <div className="mt-1">
+              <button
+                onClick={() => setExploreOpen((v) => !v)}
+                className={cn(
+                  "flex w-full min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold transition",
+                  exploreItems.some((item) => pathname?.startsWith(item.href))
+                    ? "bg-primary-light text-primary-dark"
+                    : "text-ink/65 hover:bg-primary-light/70 dark:text-white/70"
+                )}
+              >
+                <span className="text-sm">✨</span>
+                <span className="flex-1 text-left">{t("nav.explore")}</span>
+                <span className={cn("text-[10px] transition-transform duration-200", exploreOpen ? "rotate-90" : "")}>▸</span>
+              </button>
+
+              {/* Collapsible panel */}
+              <div className={cn(
+                "overflow-hidden transition-all duration-300 ease-out",
+                exploreOpen ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"
+              )}>
+                <div className="pl-2 pr-1 py-1 space-y-0.5">
+                  {exploreItems.map((item) => {
+                    const active = pathname?.startsWith(item.href);
+                    const Icon = item.icon;
+                    return (
+                      <Link
+                        aria-current={active ? "page" : undefined}
+                        className={cn(
+                          "flex min-h-9 items-center gap-3 rounded-card px-3 text-[12px] font-bold transition",
+                          active
+                            ? "bg-primary-light text-primary-dark"
+                            : "text-ink/55 hover:bg-primary-light/50 dark:text-white/60"
+                        )}
+                        href={item.href as any}
+                        key={item.href}
+                      >
+                        <span className="text-sm">{item.emoji}</span>
+                        {t(item.tKey)}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
           </nav>
 
           {/* Divider */}
