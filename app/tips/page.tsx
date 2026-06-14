@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { demoDashboard, demoTips } from "@/lib/demo-data";
 import { CATEGORY_LABELS, type EmissionCategory } from "@/lib/emission-factors";
+import { QuickWinsCarousel } from "@/components/quick-wins-carousel";
 
 type Tip = {
   id: string;
@@ -138,7 +139,8 @@ export default function TipsPage() {
 
   return (
     <MotionPage>
-      <section className="space-y-5">
+      <section className="space-y-8">
+        {/* Hero header */}
         <div className="rounded-card bg-primary-dark p-5 text-white shadow-soft">
           <Badge className="bg-white/15 text-white" tone="dark">
             Highest category: {CATEGORY_LABELS[topCategory]}
@@ -157,6 +159,10 @@ export default function TipsPage() {
           </p>
         )}
 
+        {/* ── Quick Wins Carousel Section ── */}
+        <QuickWinsCarousel />
+
+        {/* ── Actionable Tips Grid ── */}
         {sections.map((section) => (
           <section className="space-y-3" key={section.title}>
             <CardHeader className="mb-0 px-0">
