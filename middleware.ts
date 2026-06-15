@@ -1,6 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
+// Force Node.js runtime — Supabase SSR uses process.version which isn't
+// available in Edge Runtime. This silences the Vercel build warning.
+export const runtime = "nodejs";
+
 /**
  * AUTH GATE — Global route protection middleware.
  *
