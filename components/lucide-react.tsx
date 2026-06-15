@@ -99,6 +99,7 @@ export const HelpCircle = createGlyphIcon("❓");
 export const CheckCircle = createGlyphIcon("✅");
 export const Download = createGlyphIcon("📥");
 export const TrendingDown = createGlyphIcon("📉");
+export const AlertTriangle = createGlyphIcon("⚠");
 export const AlertCircle = createGlyphIcon("⚠");
 export const Sparkles = createGlyphIcon("✨");
 export const ArrowRight = createGlyphIcon("➔");
