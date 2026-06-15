@@ -558,7 +558,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="flex items-center gap-2.5">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full overflow-hidden bg-[#2D6A4F] text-white text-xs font-bold shadow">
                 {mounted && safeProfile.avatar ? (
-                  <Image src={safeProfile.avatar} alt="" width={36} height={36} className="h-full w-full object-cover" />
+                  <Image src={safeProfile.avatar} alt="" width={36} height={36} unoptimized className="h-full w-full object-cover" />
                 ) : (
                   getInitials(safeProfile.name || t("common.guest"))
                 )}
