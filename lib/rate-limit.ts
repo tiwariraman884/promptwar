@@ -32,9 +32,9 @@ export function createRateLimiter(maxRequests: number, windowMs: number) {
   /** Prune expired entries to prevent unbounded growth. */
   function prune() {
     const now = Date.now();
-    for (const [key, entry] of store) {
+    store.forEach((entry, key) => {
       if (now >= entry.resetTime) store.delete(key);
-    }
+    });
   }
 
   /** Check whether `key` is within the allowed limit. */
