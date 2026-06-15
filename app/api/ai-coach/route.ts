@@ -1,4 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { apiError, apiSuccess } from "@/lib/api";
+import { checkRateLimit, aiRateLimit } from "@/lib/rate-limit";
+import { aiCoachSchema, formatZodError } from "@/lib/validations";
+import {
+  AuthRequiredError,
+  requireCurrentUser,
+} from "@/lib/supabase/server";
 
 /**
  * POST /api/ai-coach
@@ -46,42 +53,32 @@ The user is on GreenStep India, where they can:
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages, userContext } = await req.json();
+    // Auth check — blocks anonymous requests
+    await requireCurrentUser();
 
-    // PERMANENT FIX: Try process.env first, then fall back to reading .env.local
-    // directly. This prevents the "key not configured" error that happens when
-    // the dev server wasn't restarted after editing .env.local.
-    let apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      try {
-        const fs = await import("fs");
-        const path = await import("path");
-        const envPath = path.join(process.cwd(), ".env.local");
-        if (fs.existsSync(envPath)) {
-          const envContent = fs.readFileSync(envPath, "utf-8");
-          const match = envContent.match(/^GEMINI_API_KEY=(.+)$/m);
-          if (match) apiKey = match[1].trim();
-        }
-        // Also try .env as backup
-        if (!apiKey) {
-          const envPath2 = path.join(process.cwd(), ".env");
-          if (fs.existsSync(envPath2)) {
-            const envContent2 = fs.readFileSync(envPath2, "utf-8");
-            const match2 = envContent2.match(/^GEMINI_API_KEY=(.+)$/m);
-            if (match2) apiKey = match2[1].trim();
-          }
-        }
-      } catch {}
+    // Rate limit — 10 requests per minute
+    const rateLimited = checkRateLimit(req, aiRateLimit);
+    if (rateLimited) return rateLimited;
+
+    // Validate request body
+    const body = await req.json();
+    const parsed = aiCoachSchema.safeParse(body);
+    if (!parsed.success) {
+      return apiError(`Invalid request: ${formatZodError(parsed.error)}`, 422);
     }
+
+    const { messages, userContext } = parsed.data;
+
+    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return NextResponse.json(
-        { error: "Gemini API key not configured. Add GEMINI_API_KEY to .env.local and restart the dev server." },
-        { status: 500 }
+      return apiError(
+        "Gemini API key not configured. Add GEMINI_API_KEY to environment variables.",
+        500
       );
     }
 
     // Build conversation history for Gemini
-    const geminiMessages = messages.map((msg: { role: string; content: string }) => ({
+    const geminiMessages = messages.map((msg) => ({
       role: msg.role === "user" ? "user" : "model",
       parts: [{ text: msg.content }],
     }));
@@ -119,12 +116,8 @@ export async function POST(req: NextRequest) {
     );
 
     if (!response.ok) {
-      const errorBody = await response.text();
-      console.error("Gemini API error:", response.status, errorBody);
-      return NextResponse.json(
-        { error: `Gemini API error: ${response.status}` },
-        { status: response.status }
-      );
+      console.error("Gemini API error:", response.status);
+      return apiError("AI service temporarily unavailable", 502);
     }
 
     const data = await response.json();
@@ -132,12 +125,12 @@ export async function POST(req: NextRequest) {
       data?.candidates?.[0]?.content?.parts?.[0]?.text ||
       "I'm having trouble generating a response right now. Please try again!";
 
-    return NextResponse.json({ text });
+    return apiSuccess({ text });
   } catch (error) {
+    if (error instanceof AuthRequiredError) {
+      return apiError("Authentication required", 401);
+    }
     console.error("AI Coach API error:", error);
-    return NextResponse.json(
-      { error: "Failed to connect to AI service" },
-      { status: 500 }
-    );
+    return apiError("Failed to connect to AI service", 500);
   }
 }

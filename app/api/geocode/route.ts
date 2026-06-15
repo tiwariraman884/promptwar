@@ -1,25 +1,38 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { apiError, apiSuccess } from "@/lib/api";
+import { checkRateLimit, generalRateLimit } from "@/lib/rate-limit";
+import { geocodeSchema, formatZodError } from "@/lib/validations";
+import {
+  AuthRequiredError,
+  requireCurrentUser,
+} from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const address = searchParams.get("address");
-
-  if (!address || address.trim().length === 0) {
-    return NextResponse.json(
-      { error: "Missing 'address' query parameter" },
-      { status: 400 }
-    );
-  }
-
-  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: "Google Maps API key not configured" },
-      { status: 500 }
-    );
-  }
-
   try {
+    // Auth check — blocks anonymous requests
+    await requireCurrentUser();
+
+    // Rate limit — 60 requests per minute
+    const rateLimited = checkRateLimit(request, generalRateLimit);
+    if (rateLimited) return rateLimited;
+
+    // Validate query params
+    const { searchParams } = new URL(request.url);
+    const parsed = geocodeSchema.safeParse({
+      address: searchParams.get("address") ?? "",
+    });
+
+    if (!parsed.success) {
+      return apiError(`Invalid request: ${formatZodError(parsed.error)}`, 422);
+    }
+
+    const { address } = parsed.data;
+
+    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+    if (!apiKey) {
+      return apiError("Google Maps API key not configured", 500);
+    }
+
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
       address
     )}&key=${apiKey}`;
@@ -32,36 +45,25 @@ export async function GET(request: NextRequest) {
 
     if (data.status === "OK" && data.results.length > 0) {
       const result = data.results[0];
-      return NextResponse.json(
+      return apiSuccess(
         {
           lat: result.geometry.location.lat,
           lng: result.geometry.location.lng,
           formatted_address: result.formatted_address,
-        },
-        {
-          headers: {
-            "Cache-Control": "public, max-age=60, s-maxage=60",
-          },
         }
       );
     }
 
     if (data.status === "ZERO_RESULTS") {
-      return NextResponse.json(
-        { error: "No results found for that address" },
-        { status: 404 }
-      );
+      return apiError("No results found for that address", 404);
     }
 
-    return NextResponse.json(
-      { error: `Geocoding failed: ${data.status}` },
-      { status: 502 }
-    );
-  } catch (err) {
-    console.error("Geocoding error:", err);
-    return NextResponse.json(
-      { error: "Internal geocoding error" },
-      { status: 500 }
-    );
+    return apiError(`Geocoding failed: ${data.status}`, 502);
+  } catch (error) {
+    if (error instanceof AuthRequiredError) {
+      return apiError("Authentication required", 401);
+    }
+    console.error("Geocoding error:", error);
+    return apiError("Internal geocoding error", 500);
   }
 }

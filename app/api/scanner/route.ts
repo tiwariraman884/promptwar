@@ -1,30 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
-import { existsSync, readFileSync } from "fs";
-import { join } from "path";
+import type { NextRequest } from "next/server";
+import { apiError, apiSuccess } from "@/lib/api";
+import { checkRateLimit, aiRateLimit } from "@/lib/rate-limit";
+import { scannerSchema, formatZodError } from "@/lib/validations";
+import {
+  AuthRequiredError,
+  requireCurrentUser,
+} from "@/lib/supabase/server";
 
 /**
  * POST /api/scanner
  * Analyzes products for carbon footprint using Gemini AI.
  * Supports: product name search, barcode lookup, image analysis.
  */
-
-// PERMANENT FIX: Helper that reads GEMINI_API_KEY from process.env first,
-// then falls back to reading .env.local / .env files directly.
-// This prevents the "key not configured" error when the dev server
-// wasn't restarted after editing .env.local.
-function getGeminiKey(): string | undefined {
-  if (process.env.GEMINI_API_KEY) return process.env.GEMINI_API_KEY;
-  try {
-    for (const file of [".env.local", ".env"]) {
-      const p = join(process.cwd(), file);
-      if (existsSync(p)) {
-        const match = readFileSync(p, "utf-8").match(/^GEMINI_API_KEY=(.+)$/m);
-        if (match) return match[1].trim();
-      }
-    }
-  } catch {}
-  return undefined;
-}
 
 const SYSTEM_INSTRUCTION = `You are a product sustainability and carbon footprint analyst for the GreenStep India platform.
 
@@ -68,7 +55,7 @@ RULES:
 - sustainability_score: 80-100 = A+/A, 60-79 = B, 40-59 = C, 20-39 = D, 0-19 = F`;
 
 // Built-in product database for instant results (no API call needed)
-const PRODUCT_DB: Record<string, any> = {
+const PRODUCT_DB: Record<string, Record<string, unknown>> = {
   // Common Indian grocery barcodes
   "8901030899999": {
     product: "Amul Butter 500g", brand: "Amul", category: "Dairy",
@@ -103,7 +90,7 @@ const PRODUCT_DB: Record<string, any> = {
 };
 
 // Common product name mappings
-const PRODUCT_NAME_DB: Record<string, any> = {
+const PRODUCT_NAME_DB: Record<string, Record<string, unknown>> = {
   "iphone": {
     product: "iPhone 15", brand: "Apple", category: "Electronics",
     footprint_kg: 70, rating: "D", rating_label: "High", sustainability_score: 28,
@@ -265,21 +252,29 @@ async function lookupOpenFoodFacts(barcode: string) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { query, type } = await req.json();
-    // type: "barcode" | "name" | "qr" | "image"
+    // Auth check — blocks anonymous requests
+    await requireCurrentUser();
 
-    if (!query || typeof query !== "string") {
-      return NextResponse.json({ error: "Query is required" }, { status: 400 });
+    // Rate limit — 10 requests per minute
+    const rateLimited = checkRateLimit(req, aiRateLimit);
+    if (rateLimited) return rateLimited;
+
+    // Validate request body
+    const body = await req.json();
+    const parsed = scannerSchema.safeParse(body);
+    if (!parsed.success) {
+      return apiError(`Invalid request: ${formatZodError(parsed.error)}`, 422);
     }
 
+    const { query, type } = parsed.data;
     const isBarcode = type === "barcode" || /^\d{8,14}$/.test(query.trim());
     const cleanQuery = query.trim();
 
     // Step 1: Check local database
-    let result = isBarcode ? lookupByBarcode(cleanQuery) : lookupByName(cleanQuery);
+    const result = isBarcode ? lookupByBarcode(cleanQuery) : lookupByName(cleanQuery);
 
     if (result) {
-      return NextResponse.json({ source: "local_db", data: result });
+      return apiSuccess({ source: "local_db", ...result });
     }
 
     // Step 2: For barcodes, try OpenFoodFacts
@@ -287,50 +282,53 @@ export async function POST(req: NextRequest) {
       const offData = await lookupOpenFoodFacts(cleanQuery);
       if (offData) {
         // Use Gemini to analyze the product found in OpenFoodFacts
-        const apiKey = getGeminiKey();
+        const apiKey = process.env.GEMINI_API_KEY;
         if (apiKey) {
           try {
             const aiResult = await analyzeWithGemini(
               `${offData.product} by ${offData.brand}, category: ${offData.category}`,
               apiKey
             );
-            return NextResponse.json({
+            return apiSuccess({
               source: "openfoodfacts+ai",
-              data: { ...aiResult, image: offData.image },
+              ...aiResult,
+              image: offData.image,
             });
           } catch {
             // Fall through to basic result
           }
         }
-        return NextResponse.json({
+        return apiSuccess({
           source: "openfoodfacts",
-          data: {
-            product: offData.product, brand: offData.brand, category: offData.category,
-            image: offData.image, footprint_kg: 0, rating: "?", rating_label: "Unknown",
-            sustainability_score: 0,
-            breakdown: { production: 0, transport: 0, use_phase: 0, disposal: 0 },
-            packaging: { type: offData.packaging || "Unknown", recyclable: false, biodegradable: false },
-            comparison: "Carbon data unavailable — add Gemini API key for full analysis",
-            greener_alternative: "N/A", alternative_footprint_kg: 0,
-            tip: "Add GEMINI_API_KEY to get full carbon analysis",
-            eco_facts: ["Product found in OpenFoodFacts database"],
-          },
+          product: offData.product, brand: offData.brand, category: offData.category,
+          image: offData.image, footprint_kg: 0, rating: "?", rating_label: "Unknown",
+          sustainability_score: 0,
+          breakdown: { production: 0, transport: 0, use_phase: 0, disposal: 0 },
+          packaging: { type: offData.packaging || "Unknown", recyclable: false, biodegradable: false },
+          comparison: "Carbon data unavailable — add Gemini API key for full analysis",
+          greener_alternative: "N/A", alternative_footprint_kg: 0,
+          tip: "Add GEMINI_API_KEY to get full carbon analysis",
+          eco_facts: ["Product found in OpenFoodFacts database"],
         });
       }
     }
 
     // Step 3: Use Gemini AI for analysis
-    const apiKey = getGeminiKey();
+    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({
-        error: "Product not found in local database. Add GEMINI_API_KEY for AI-powered analysis.",
-      }, { status: 404 });
+      return apiError(
+        "Product not found in local database. Add GEMINI_API_KEY for AI-powered analysis.",
+        404
+      );
     }
 
     const aiResult = await analyzeWithGemini(cleanQuery, apiKey);
-    return NextResponse.json({ source: "ai", data: aiResult });
+    return apiSuccess({ source: "ai", ...aiResult });
   } catch (error) {
+    if (error instanceof AuthRequiredError) {
+      return apiError("Authentication required", 401);
+    }
     console.error("Scanner API error:", error);
-    return NextResponse.json({ error: "Failed to analyze product" }, { status: 500 });
+    return apiError("Failed to analyze product", 500);
   }
 }
