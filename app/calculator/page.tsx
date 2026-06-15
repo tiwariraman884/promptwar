@@ -139,8 +139,9 @@ function OptionCard({
 }) {
   return (
     <button
+      aria-pressed={active}
       className={cn(
-        "relative min-h-16 rounded-2xl border-2 p-3 text-left text-sm font-bold transition-all duration-200",
+        "relative min-h-16 rounded-2xl border-2 p-3 text-left text-sm font-bold transition-[border-color,background-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52B788]",
         active
           ? "border-[#2D6A4F] bg-gradient-to-br from-[#F0FDF4] to-[#D1FAE5] text-[#1B4332] shadow-md shadow-[#52B788]/10 dark:from-[#2D6A4F]/20 dark:to-[#2D6A4F]/10 dark:text-[#52B788] dark:border-[#52B788]"
           : "border-[#E5E7EB] dark:border-white/10 bg-white dark:bg-white/[0.03] text-ink/80 dark:text-white/70 hover:border-[#52B788]/40 hover:bg-[#F8FAF5] dark:hover:bg-white/[0.05] hover:shadow-sm",
@@ -149,10 +150,10 @@ function OptionCard({
       onClick={onClick}
       type="button"
     >
-      {emoji && <span className="mb-1.5 block text-lg">{emoji}</span>}
+      {emoji && <span className="mb-1.5 block text-lg" aria-hidden="true">{emoji}</span>}
       {children}
       {active && (
-        <span className="absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#2D6A4F] text-white text-[10px]">✓</span>
+        <span className="absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#2D6A4F] text-white text-[10px]" aria-hidden="true">✓</span>
       )}
     </button>
   );
@@ -760,7 +761,8 @@ export default function CalculatorPage() {
               </span>
               <button
                 onClick={() => setShowBreakdown((v) => !v)}
-                className="text-xs font-bold text-[#2D6A4F] dark:text-[#52B788] hover:underline"
+                aria-expanded={showBreakdown}
+                className="text-xs font-bold text-[#2D6A4F] dark:text-[#52B788] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52B788] rounded"
               >
                 {showBreakdown ? "Hide breakdown ▲" : "Show breakdown ▼"}
               </button>
@@ -819,6 +821,7 @@ export default function CalculatorPage() {
             {/* Notes */}
             <div className="mt-3">
               <input
+                aria-label="Add a note for this entry"
                 className="w-full rounded-xl border border-[#D1FAE5]/60 dark:border-white/10 bg-[#F8FAF5] dark:bg-white/[0.03] px-3 py-2 text-sm placeholder:text-[#6B7C6E]/60 focus:border-[#2D6A4F] focus:outline-none transition"
                 placeholder="Add a note (optional)…"
                 value={notes}
@@ -827,7 +830,7 @@ export default function CalculatorPage() {
             </div>
 
             {savedMessage && (
-              <p className="mt-2 rounded-xl bg-[#D1FAE5] dark:bg-[#2D6A4F]/30 p-3 text-sm font-bold text-[#2D6A4F] dark:text-[#52B788]">
+              <p role="status" aria-live="polite" className="mt-2 rounded-xl bg-[#D1FAE5] dark:bg-[#2D6A4F]/30 p-3 text-sm font-bold text-[#2D6A4F] dark:text-[#52B788]">
                 {savedMessage}
               </p>
             )}

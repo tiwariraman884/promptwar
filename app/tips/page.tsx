@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { CheckCircle2, Coins, Lightbulb, Recycle, TrainFront, Utensils, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { MotionPage } from "@/components/motion-page";
@@ -40,10 +40,12 @@ function TipCard({
   onComplete: (tip: Tip) => void;
   preferred?: boolean;
 }) {
+  const prefersReduced = useReducedMotion();
+
   return (
     <motion.div
-      animate={completed ? { scale: [1, 1.02, 1] } : { scale: 1 }}
-      transition={{ duration: 0.28 }}
+      animate={completed && !prefersReduced ? { scale: [1, 1.02, 1] } : { scale: 1 }}
+      transition={{ duration: prefersReduced ? 0 : 0.28 }}
     >
       <Card className={preferred ? "border-primary/50 bg-primary-light/55" : undefined}>
         <div className="flex items-start gap-3">
@@ -60,7 +62,7 @@ function TipCard({
             <h3 className="mt-3 font-heading text-lg font-extrabold text-ink dark:text-white">
               {tip.action}
             </h3>
-            <p className="mt-1 text-sm leading-6 text-ink/65 dark:text-white/65">
+            <p className="mt-1 text-sm leading-6 text-ink/75 dark:text-white/70">
               {tip.context}
             </p>
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">

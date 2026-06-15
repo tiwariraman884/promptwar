@@ -16,7 +16,7 @@
  * All text was hardcoded in English. This context bridges the gap.
  */
 
-import { createContext, useContext, useCallback, useMemo, type ReactNode } from "react";
+import { createContext, useContext, useCallback, useEffect, useMemo, type ReactNode } from "react";
 import { useSettings } from "@/lib/settings-context";
 import { translations, type TranslationDict } from "@/lib/translations";
 
@@ -32,6 +32,12 @@ const I18nContext = createContext<I18nContextValue | null>(null);
 export function I18nProvider({ children }: { children: ReactNode }) {
   const { language } = useSettings();
   const locale = language.code || "en";
+
+  // WCAG 3.1.2: Update the document's lang attribute so screen readers
+  // use the correct pronunciation rules for the active language.
+  useEffect(() => {
+    document.documentElement.lang = locale === "en" ? "en-IN" : locale;
+  }, [locale]);
 
   // Get the active dictionary, falling back to English
   const dict: TranslationDict = useMemo(
