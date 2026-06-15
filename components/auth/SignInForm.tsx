@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { isSupabaseConfigured, createClient } from "@/lib/supabase/client";
 import SocialButtons from "./SocialButtons";
 
 export default function SignInForm() {
@@ -18,7 +19,7 @@ export default function SignInForm() {
   const searchParams = useSearchParams();
   const nextUrl = searchParams.get("next") || "/dashboard";
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     if (!email.trim()) return setError("Email is required.");
@@ -27,19 +28,45 @@ export default function SignInForm() {
     if (password.length < 8) return setError("Password must be at least 8 characters.");
 
     setLoading(true);
-    setTimeout(() => {
-      const name = email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-      localStorage.setItem("eco_user", JSON.stringify({ name, email }));
-      if (remember) localStorage.setItem("eco_remember", "true");
-      // AUTH GATE (RULE 2): Redirect to the originally requested page after sign-in
-      router.push(nextUrl as any);
-    }, 800);
+
+    try {
+      if (isSupabaseConfigured()) {
+        // Real Supabase auth
+        const supabase = createClient();
+        const { error: authError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (authError) {
+          setError(authError.message === "Invalid login credentials"
+            ? "Invalid email or password. Please try again."
+            : authError.message
+          );
+          setLoading(false);
+          return;
+        }
+
+        if (remember) localStorage.setItem("eco_remember", "true");
+        router.push(nextUrl as string);
+        router.refresh();
+      } else {
+        // Demo mode — localStorage mock (no Supabase configured)
+        const name = email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+        localStorage.setItem("eco_user", JSON.stringify({ name, email }));
+        if (remember) localStorage.setItem("eco_remember", "true");
+        router.push(nextUrl as string);
+      }
+    } catch {
+      setError("An unexpected error occurred. Please try again.");
+      setLoading(false);
+    }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400 flex items-center gap-2">
+        <div role="alert" aria-live="assertive" className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400 flex items-center gap-2">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
           {error}
         </div>
@@ -47,23 +74,24 @@ export default function SignInForm() {
 
       {/* Email */}
       <div>
-        <label className="block text-xs font-semibold text-white/60 mb-1.5 uppercase tracking-wider">
+        <label htmlFor="signin-email" className="block text-xs font-semibold text-white/70 mb-1.5 uppercase tracking-wider">
           Email Address
         </label>
         <input
+          id="signin-email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
           autoComplete="email"
-          className="w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm text-white placeholder-white/25 transition-all focus:border-[#00E676]/50 focus:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-[#00E676]/20"
+          className="w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm text-white placeholder-white/30 transition-all focus:border-[#00E676]/50 focus:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-[#00E676]/20"
         />
       </div>
 
       {/* Password */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <label className="block text-xs font-semibold text-white/60 uppercase tracking-wider">
+          <label htmlFor="signin-password" className="block text-xs font-semibold text-white/70 uppercase tracking-wider">
             Password
           </label>
           <Link href="/auth/forgot" className="text-[11px] font-medium text-[#00E676]/70 hover:text-[#00E676] transition">
@@ -72,17 +100,18 @@ export default function SignInForm() {
         </div>
         <div className="relative">
           <input
+            id="signin-password"
             type={showPw ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
             autoComplete="current-password"
-            className="w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 py-3 pr-11 text-sm text-white placeholder-white/25 transition-all focus:border-[#00E676]/50 focus:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-[#00E676]/20"
+            className="w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 py-3 pr-11 text-sm text-white placeholder-white/30 transition-all focus:border-[#00E676]/50 focus:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-[#00E676]/20"
           />
           <button
             type="button"
             onClick={() => setShowPw(!showPw)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition"
             aria-label={showPw ? "Hide password" : "Show password"}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -120,7 +149,7 @@ export default function SignInForm() {
             )}
           </div>
         </div>
-        <span className="text-xs text-white/50 group-hover:text-white/70 transition">Remember me</span>
+        <span className="text-xs text-white/60 group-hover:text-white/70 transition">Remember me</span>
       </label>
 
       {/* Submit */}

@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Bike,
   CarFront,
@@ -423,7 +423,12 @@ export default function CalculatorPage() {
   const safeTreesNeededYear = result?.comparison.treesNeededYear ?? 0;
   const safeSmartphones = result?.comparison.smartphonesCharged ?? 0;
 
+  // Fix #10 — Guard ref to prevent duplicate submissions
+  const savingRef = useRef(false);
+
   const saveEntry = async () => {
+    if (savingRef.current) return;
+    savingRef.current = true;
     setSaving(true);
     setSavedMessage("");
 
@@ -444,6 +449,7 @@ export default function CalculatorPage() {
       showSettingsToast("Failed to save entry", "error");
     } finally {
       setSaving(false);
+      savingRef.current = false;
     }
   };
 
@@ -745,7 +751,7 @@ export default function CalculatorPage() {
         </Card>
 
         {/* ─── Fixed bottom results bar ─── */}
-        <div className="fixed inset-x-0 bottom-20 z-40 mx-auto max-w-2xl px-4 md:bottom-6">
+        <div className="fixed inset-x-0 bottom-20 z-40 mx-auto max-w-2xl px-4 md:bottom-6" aria-live="polite" role="status">
           <div className="rounded-3xl border-2 border-[#D1FAE5]/60 dark:border-white/10 bg-white/95 dark:bg-[#0B1815]/95 p-5 shadow-2xl backdrop-blur-xl">
             {/* Impact level badge */}
             <div className="mb-3 flex items-center justify-between">

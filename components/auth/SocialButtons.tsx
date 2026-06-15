@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { isSupabaseConfigured, createClient } from "@/lib/supabase/client";
 
 function GoogleIcon() {
   return (
@@ -21,17 +22,6 @@ function GithubIcon() {
   );
 }
 
-function MicrosoftIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
-      <rect x="1" y="1" width="10" height="10" fill="#F25022"/>
-      <rect x="13" y="1" width="10" height="10" fill="#7FBA00"/>
-      <rect x="1" y="13" width="10" height="10" fill="#00A4EF"/>
-      <rect x="13" y="13" width="10" height="10" fill="#FFB900"/>
-    </svg>
-  );
-}
-
 interface SocialButtonsProps {
   mode: "signin" | "signup";
 }
@@ -44,18 +34,28 @@ export default function SocialButtons({ mode }: SocialButtonsProps) {
   const nextUrl = searchParams.get("next") || "/dashboard";
   const label = mode === "signin" ? "Sign in with" : "Continue with";
 
-  function mockSocial(provider: string) {
-    const name = `${provider} User`;
-    const email = `user@${provider.toLowerCase()}.com`;
-    localStorage.setItem("eco_user", JSON.stringify({ name, email, provider }));
-    // AUTH GATE (RULE 2): Redirect to intended destination after social auth
-    router.push(nextUrl as any);
+  async function handleSocialLogin(provider: "google" | "github") {
+    if (isSupabaseConfigured()) {
+      // Real Supabase OAuth
+      const supabase = createClient();
+      await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextUrl)}`,
+        },
+      });
+    } else {
+      // Demo mode — localStorage mock
+      const name = `${provider.charAt(0).toUpperCase() + provider.slice(1)} User`;
+      const email = `user@${provider}.com`;
+      localStorage.setItem("eco_user", JSON.stringify({ name, email, provider }));
+      router.push(nextUrl as string);
+    }
   }
 
   const buttons = [
-    { name: "Google", icon: <GoogleIcon />, onClick: () => mockSocial("Google") },
-    { name: "GitHub", icon: <GithubIcon />, onClick: () => mockSocial("GitHub") },
-    { name: "Microsoft", icon: <MicrosoftIcon />, onClick: () => mockSocial("Microsoft") },
+    { name: "Google", icon: <GoogleIcon />, provider: "google" as const },
+    { name: "GitHub", icon: <GithubIcon />, provider: "github" as const },
   ];
 
   return (
@@ -63,21 +63,21 @@ export default function SocialButtons({ mode }: SocialButtonsProps) {
       {/* Divider */}
       <div className="flex items-center gap-3 my-1">
         <div className="flex-1 h-px bg-white/10" />
-        <span className="text-[11px] font-medium text-white/30 uppercase tracking-wider">or</span>
+        <span className="text-[11px] font-medium text-white/40 uppercase tracking-wider">or</span>
         <div className="flex-1 h-px bg-white/10" />
       </div>
 
       {/* Buttons */}
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         {buttons.map((b) => (
           <button
             key={b.name}
             type="button"
-            onClick={b.onClick}
-            className="flex flex-col items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3 text-[11px] font-medium text-white/70 transition-all duration-200 hover:bg-white/[0.08] hover:border-[#00E676]/30 hover:text-white focus:outline-none focus:ring-2 focus:ring-[#00E676]/30"
+            onClick={() => handleSocialLogin(b.provider)}
+            className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3 text-[12px] font-medium text-white/70 transition-all duration-200 hover:bg-white/[0.08] hover:border-[#00E676]/30 hover:text-white focus:outline-none focus:ring-2 focus:ring-[#00E676]/30"
           >
             {b.icon}
-            {b.name}
+            {label} {b.name}
           </button>
         ))}
       </div>

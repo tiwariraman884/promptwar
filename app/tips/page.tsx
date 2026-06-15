@@ -80,6 +80,9 @@ function TipCard({
                 )}
                 {completed ? "Done" : "Mark as done"}
               </Button>
+              {preferred && (
+                <span className="sr-only">Recommended based on your highest emission category</span>
+              )}
             </div>
           </div>
         </div>
@@ -93,6 +96,7 @@ export default function TipsPage() {
     demoDashboard.topCategory
   );
   const [completed, setCompleted] = useState<Record<string, boolean>>({});
+  const [loading, setLoading] = useState<Record<string, boolean>>({});
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -105,18 +109,29 @@ export default function TipsPage() {
   }, []);
 
   const completeTip = async (tip: Tip) => {
-    setCompleted((current) => ({ ...current, [tip.id]: true }));
-    const response = await fetch("/api/tips/complete", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tipId: tip.id })
-    });
-    const payload = await response.json();
-    setMessage(
-      payload.error
-        ? payload.error
-        : `Nice step. +${payload.data.coinsEarned} eco-coins added.`
-    );
+    if (loading[tip.id]) return;
+    setLoading((current) => ({ ...current, [tip.id]: true }));
+
+    try {
+      const response = await fetch("/api/tips/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tipId: tip.id })
+      });
+      const payload = await response.json();
+
+      if (payload.error) {
+        setMessage(`❌ ${payload.error}`);
+      } else {
+        // Only mark completed AFTER successful API response
+        setCompleted((current) => ({ ...current, [tip.id]: true }));
+        setMessage(`Nice step. +${payload.data.coinsEarned} eco-coins added. 🌿`);
+      }
+    } catch {
+      setMessage("❌ Failed to complete tip. Please try again.");
+    } finally {
+      setLoading((current) => ({ ...current, [tip.id]: false }));
+    }
   };
 
   const sections: Array<{ title: string; description: string; tips: Tip[] }> = [
@@ -154,7 +169,7 @@ export default function TipsPage() {
         </div>
 
         {message && (
-          <p className="rounded-card bg-primary-light p-3 text-sm font-bold text-primary-dark">
+          <p role="status" aria-live="polite" className="rounded-card bg-primary-light p-3 text-sm font-bold text-primary-dark">
             {message}
           </p>
         )}

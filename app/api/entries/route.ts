@@ -1,5 +1,7 @@
 import type { NextRequest } from "next/server";
-import { apiError, apiSuccess } from "@/lib/api";
+import { apiError, apiPaginated, apiSuccess } from "@/lib/api";
+import { checkRateLimit, generalRateLimit } from "@/lib/rate-limit";
+import { entryBodySchema, paginationSchema, formatZodError } from "@/lib/validations";
 import {
   calculateEntry,
   type EntryInput
@@ -73,7 +75,19 @@ function inferUnit(body: EntryBody) {
 export async function POST(request: NextRequest) {
   try {
     const user = await requireCurrentUser();
-    const body = (await request.json()) as EntryBody;
+
+    // Rate limit
+    const rateLimited = checkRateLimit(request, generalRateLimit);
+    if (rateLimited) return rateLimited;
+
+    // Validate request body
+    const rawBody = await request.json();
+    const parsed = entryBodySchema.safeParse(rawBody);
+    if (!parsed.success) {
+      return apiError(`Invalid entry: ${formatZodError(parsed.error)}`, 422);
+    }
+
+    const body = parsed.data as EntryBody;
 
     if (!CATEGORY_ORDER.includes(body.category)) {
       return apiError("Invalid emission category", 422);
@@ -166,25 +180,41 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const user = await requireCurrentUser();
+
+    // Rate limit
+    const rateLimited = checkRateLimit(request, generalRateLimit);
+    if (rateLimited) return rateLimited;
+
     const { searchParams } = new URL(request.url);
     const date = searchParams.get("date");
     const from = searchParams.get("from");
     const to = searchParams.get("to");
 
+    // Pagination
+    const pageParsed = paginationSchema.safeParse({
+      page: searchParams.get("page") ?? 1,
+      limit: searchParams.get("limit") ?? 20,
+    });
+    const { page, limit } = pageParsed.success
+      ? pageParsed.data
+      : { page: 1, limit: 20 };
+
     if (user.isDemo) {
-      const entries = demoEntries.filter((entry) => {
+      const filtered = demoEntries.filter((entry) => {
         if (date) return entry.entry_date === date;
         if (from && entry.entry_date < from) return false;
         if (to && entry.entry_date > to) return false;
         return true;
       });
-      return apiSuccess(entries);
+      const total = filtered.length;
+      const paged = filtered.slice((page - 1) * limit, page * limit);
+      return apiPaginated(paged, { page, limit, total });
     }
 
     const supabase = createServerSupabaseClient();
     let query = supabase!
       .from("emission_entries")
-      .select("*")
+      .select("*", { count: "exact" })
       .eq("user_id", user.id)
       .order("entry_date", { ascending: false });
 
@@ -192,13 +222,22 @@ export async function GET(request: NextRequest) {
     if (from) query = query.gte("entry_date", from);
     if (to) query = query.lte("entry_date", to);
 
-    const { data, error } = await query;
+    // Pagination range
+    const rangeStart = (page - 1) * limit;
+    const rangeEnd = rangeStart + limit - 1;
+    query = query.range(rangeStart, rangeEnd);
+
+    const { data, error, count } = await query;
 
     if (error) {
       return apiError(error.message, 500);
     }
 
-    return apiSuccess(data ?? []);
+    return apiPaginated(data ?? [], {
+      page,
+      limit,
+      total: count ?? 0,
+    });
   } catch (error) {
     if (error instanceof AuthRequiredError) {
       return apiError("Authentication required", 401);

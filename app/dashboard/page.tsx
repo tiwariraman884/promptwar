@@ -2,7 +2,8 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSettings } from "@/lib/settings-context";
 import {
   ArrowDownRight,
@@ -13,13 +14,15 @@ import {
   Flame,
   Leaf,
   Plus,
+  RefreshCw,
   Utensils,
   Zap,
   ShoppingBag,
   Recycle,
-  Wifi
+  Wifi,
+  AlertTriangle
 } from "lucide-react";
-import { DashboardTrendChart, type DailyPoint } from "@/components/charts/dashboard-trend-chart";
+import type { DailyPoint } from "@/components/charts/dashboard-trend-chart";
 import { MotionPage } from "@/components/motion-page";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,6 +32,12 @@ import { demoDashboard } from "@/lib/demo-data";
 import { CATEGORY_LABELS, type EmissionCategory } from "@/lib/emission-factors";
 import { formatKg, getGreeting } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
+
+// Fix #14 — Dynamic import for chart (heavy recharts dependency)
+const DashboardTrendChart = dynamic(
+  () => import("@/components/charts/dashboard-trend-chart").then((mod) => mod.DashboardTrendChart),
+  { ssr: false, loading: () => <Skeleton className="h-80" /> }
+);
 
 type DashboardData = typeof demoDashboard;
 
@@ -61,7 +70,7 @@ function StatCard({
     <Card className="min-h-32">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-bold uppercase tracking-normal text-ink/55 dark:text-white/55">
+          <p className="text-xs font-bold uppercase tracking-normal text-ink/70 dark:text-white/70">
             {title}
           </p>
           <p className="mt-2 font-heading text-2xl font-extrabold text-ink dark:text-white">
@@ -78,7 +87,7 @@ function StatCard({
           {icon}
         </div>
       </div>
-      <div className="mt-3 text-sm leading-5 text-ink/65 dark:text-white/65">
+      <div className="mt-3 text-sm leading-5 text-ink/70 dark:text-white/70">
         {helper}
       </div>
     </Card>
@@ -88,35 +97,66 @@ function StatCard({
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData>(demoDashboard);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const { profile } = useSettings();
   const displayName = profile.name?.split(" ")[0] || data.profile.display_name;
   const [greeting, setGreeting] = useState("Welcome");
+
+  // Fix #9 — Refs for focus management
+  const fabRef = useRef<HTMLButtonElement>(null);
+  const sheetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Compute greeting client-side only to avoid SSR/CSR mismatch
     setGreeting(getGreeting());
   }, []);
 
-  useEffect(() => {
-    let mounted = true;
+  const fetchDashboard = useCallback(() => {
+    setLoading(true);
+    setFetchError(false);
 
     fetch("/api/dashboard")
       .then((response) => response.json())
       .then((payload) => {
-        if (mounted && payload.data) setData(payload.data);
+        if (payload.data) {
+          setData(payload.data);
+          setFetchError(false);
+        } else {
+          setData(demoDashboard);
+          setFetchError(true);
+        }
       })
       .catch(() => {
-        if (mounted) setData(demoDashboard);
+        setData(demoDashboard);
+        setFetchError(true);
       })
       .finally(() => {
-        if (mounted) setLoading(false);
+        setLoading(false);
       });
-
-    return () => {
-      mounted = false;
-    };
   }, []);
+
+  useEffect(() => {
+    fetchDashboard();
+  }, [fetchDashboard]);
+
+  // Fix #9 — Escape key handler for quick-add sheet
+  useEffect(() => {
+    if (!sheetOpen) return;
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setSheetOpen(false);
+        fabRef.current?.focus();
+      }
+    }
+
+    // Focus the sheet when opened
+    sheetRef.current?.focus();
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [sheetOpen]);
 
   const todayDelta = data.todayKg - data.yesterdayKg;
   const weeklyAverage = data.weeklyTotalKg / 7;
@@ -147,6 +187,25 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Fix #19 — Error state banner */}
+        {fetchError && !loading && (
+          <div role="alert" className="flex items-center justify-between gap-3 rounded-card border border-amber/30 bg-amber-light/50 p-3 dark:border-amber/20 dark:bg-amber/10">
+            <div className="flex items-center gap-2 text-sm font-bold text-amber dark:text-amber-300">
+              <AlertTriangle aria-hidden size={16} />
+              Using offline data — couldn&apos;t reach the server.
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={fetchDashboard}
+              className="text-amber hover:text-amber-600 dark:text-amber-300"
+            >
+              <RefreshCw aria-hidden size={14} />
+              Retry
+            </Button>
+          </div>
+        )}
+
         {loading ? (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <Skeleton className="h-32" />
@@ -155,7 +214,7 @@ export default function DashboardPage() {
             <Skeleton className="h-32" />
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-live="polite">
             <StatCard
               helper={
                 <span className="inline-flex items-center gap-1">
@@ -210,7 +269,7 @@ export default function DashboardPage() {
                   </span>
                   Last 30 days
                 </CardTitle>
-                <p className="mt-1.5 text-sm text-ink/55 dark:text-white/55">
+                <p className="mt-1.5 text-sm text-ink/65 dark:text-white/65">
                   Green area stays under India&apos;s 5.67 kg/day benchmark.
                 </p>
               </div>
@@ -230,23 +289,23 @@ export default function DashboardPage() {
           {!loading && (
             <div className="grid grid-cols-3 gap-px bg-line/30 dark:bg-white/[0.04] border-t border-line dark:border-white/[0.06] -mx-4 -mb-4">
               <div className="bg-white dark:bg-white/[0.02] px-4 py-3 text-center">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/50 dark:text-white/50">30d Average</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/60 dark:text-white/60">30d Average</p>
                 <p className="mt-1 text-lg font-extrabold text-ink dark:text-white tabular-nums">
-                  {(data.dailySeries.reduce((sum: number, d: any) => sum + d.kgCo2e, 0) / data.dailySeries.length).toFixed(1)}
-                  <span className="ml-1 text-xs font-bold text-ink/40 dark:text-white/40">kg</span>
+                  {(data.dailySeries.reduce((sum: number, d: DailyPoint) => sum + d.kgCo2e, 0) / data.dailySeries.length).toFixed(1)}
+                  <span className="ml-1 text-xs font-bold text-ink/50 dark:text-white/50">kg</span>
                 </p>
               </div>
               <div className="bg-white dark:bg-white/[0.02] px-4 py-3 text-center">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/50 dark:text-white/50">Best Day</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/60 dark:text-white/60">Best Day</p>
                 <p className="mt-1 text-lg font-extrabold text-emerald-600 dark:text-emerald-400 tabular-nums">
-                  {Math.min(...data.dailySeries.map((d: any) => d.kgCo2e)).toFixed(1)}
+                  {Math.min(...data.dailySeries.map((d: DailyPoint) => d.kgCo2e)).toFixed(1)}
                   <span className="ml-1 text-xs font-bold text-emerald-600/50 dark:text-emerald-400/50">kg</span>
                 </p>
               </div>
               <div className="bg-white dark:bg-white/[0.02] px-4 py-3 text-center">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/50 dark:text-white/50">Peak Day</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/60 dark:text-white/60">Peak Day</p>
                 <p className="mt-1 text-lg font-extrabold text-amber-600 dark:text-amber-400 tabular-nums">
-                  {Math.max(...data.dailySeries.map((d: any) => d.kgCo2e)).toFixed(1)}
+                  {Math.max(...data.dailySeries.map((d: DailyPoint) => d.kgCo2e)).toFixed(1)}
                   <span className="ml-1 text-xs font-bold text-amber-600/50 dark:text-amber-400/50">kg</span>
                 </p>
               </div>
@@ -255,7 +314,9 @@ export default function DashboardPage() {
         </Card>
       </section>
 
+      {/* Quick-add FAB */}
       <Button
+        ref={fabRef}
         aria-label="Quick add emission entry"
         className="fixed bottom-24 right-4 z-50 h-14 w-14 rounded-full shadow-soft md:bottom-8"
         onClick={() => setSheetOpen(true)}
@@ -265,13 +326,26 @@ export default function DashboardPage() {
         <Plus aria-hidden size={24} />
       </Button>
 
+      {/* Fix #9 — Accessible quick-add bottom sheet */}
       {sheetOpen && (
         <div
-          aria-modal="true"
           className="fixed inset-0 z-50 flex items-end bg-ink/35 p-3 backdrop-blur-sm"
-          role="dialog"
+          onClick={(e) => {
+            // Close on backdrop click (not on the sheet itself)
+            if (e.target === e.currentTarget) {
+              setSheetOpen(false);
+              fabRef.current?.focus();
+            }
+          }}
         >
-          <div className="mx-auto w-full max-w-md rounded-t-[24px] bg-white p-4 shadow-soft dark:bg-[#10231F]">
+          <div
+            ref={sheetRef}
+            aria-label="Quick add emission entry"
+            aria-modal="true"
+            className="mx-auto w-full max-w-md rounded-t-[24px] bg-white p-4 shadow-soft dark:bg-[#10231F]"
+            role="dialog"
+            tabIndex={-1}
+          >
             <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-line dark:bg-white/20" />
             <div className="flex items-center justify-between gap-3">
               <h2 className="font-heading text-lg font-extrabold">
@@ -279,7 +353,10 @@ export default function DashboardPage() {
               </h2>
               <Button
                 aria-label="Close quick add"
-                onClick={() => setSheetOpen(false)}
+                onClick={() => {
+                  setSheetOpen(false);
+                  fabRef.current?.focus();
+                }}
                 type="button"
                 variant="ghost"
               >
@@ -294,6 +371,7 @@ export default function DashboardPage() {
                     className="flex min-h-20 items-center gap-3 rounded-card border border-line p-3 font-bold text-ink transition hover:border-primary hover:bg-primary-light dark:border-white/10 dark:text-white dark:hover:bg-white/10"
                     href={`/calculator?category=${item.category}`}
                     key={item.category}
+                    onClick={() => setSheetOpen(false)}
                   >
                     <span className="grid h-11 w-11 place-items-center rounded-full bg-primary-light text-primary-dark">
                       <Icon aria-hidden size={20} />

@@ -405,7 +405,17 @@ export function AppShell({ children }: { children: ReactNode }) {
   // AUTH GATE (RULE 3): Sign out clears ALL auth state and redirects to /auth.
   // Uses router.replace so the browser back button cannot return to a
   // protected page after sign-out.
-  function handleSignOut() {
+  async function handleSignOut() {
+    try {
+      // Attempt Supabase sign-out if configured
+      const { isSupabaseConfigured, createClient } = await import("@/lib/supabase/client");
+      if (isSupabaseConfigured()) {
+        const supabase = createClient();
+        await supabase.auth.signOut();
+      }
+    } catch {
+      // Supabase not configured or sign-out failed — continue with localStorage clear
+    }
     localStorage.removeItem("eco_user");
     localStorage.removeItem("eco_settings_profile");
     router.replace("/auth");
