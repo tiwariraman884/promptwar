@@ -28,7 +28,7 @@ function Stat({
       <div className="grid h-10 w-10 place-items-center rounded-full bg-primary-light text-primary-dark">
         {icon}
       </div>
-      <p className="mt-3 text-xs font-bold uppercase text-ink/55 dark:text-white/55">
+      <p className="mt-3 text-xs font-bold uppercase text-ink/70 dark:text-white/55">
         {label}
       </p>
       <p className="mt-1 font-heading text-2xl font-extrabold text-ink dark:text-white">

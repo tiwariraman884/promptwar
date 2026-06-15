@@ -211,7 +211,7 @@ function DetailModal({
 
           {/* Source + Learn More */}
           <div className="rounded-2xl border border-line/60 dark:border-white/[0.06] bg-mist dark:bg-white/[0.03] p-4">
-            <p className="text-xs font-bold uppercase tracking-wider text-ink/50 dark:text-white/40 mb-2">
+            <p className="text-xs font-bold uppercase tracking-wider text-ink/50 dark:text-white/60 mb-2">
               Source / Scheme
             </p>
             <p className="text-sm font-bold text-ink dark:text-white mb-3">{tip.sourceName}</p>
@@ -288,7 +288,7 @@ function TipCard({
         <span className="text-sm font-extrabold text-emerald-700 dark:text-emerald-400 tabular-nums">
           {tip.monthlySavings.toFixed(1)} kgCO₂e
         </span>
-        <span className="text-xs text-ink/40 dark:text-white/40 font-medium">/ month</span>
+        <span className="text-xs text-ink/40 dark:text-white/60 font-medium">/ month</span>
 
         {/* Subtle "expand" hint */}
         <svg
@@ -562,7 +562,7 @@ export function QuickWinsCarousel() {
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <span className="text-5xl mb-4">🍃</span>
           <p className="text-lg font-bold text-ink/70 dark:text-white/60 mb-1">No tips in this category</p>
-          <p className="text-sm text-ink/50 dark:text-white/40">
+          <p className="text-sm text-ink/50 dark:text-white/60">
             Try selecting a different filter above.
           </p>
         </div>
@@ -630,8 +630,8 @@ export function QuickWinsCarousel() {
       )}
 
       {/* ── Disclaimer ── */}
-      <p className="mt-8 text-xs leading-relaxed text-ink/45 dark:text-white/35 max-w-3xl">
-        <strong className="font-bold text-ink/55 dark:text-white/45">Disclaimer:</strong>{" "}
+      <p className="mt-8 text-xs leading-relaxed text-ink/65 dark:text-white/35 max-w-3xl">
+        <strong className="font-bold text-ink/70 dark:text-white/60">Disclaimer:</strong>{" "}
         CO₂e savings values are estimates intended for awareness and education. Actual reductions
         vary based on location, lifestyle, energy source, travel patterns, and household usage.
         Users should verify current government schemes and eligibility requirements through official sources.

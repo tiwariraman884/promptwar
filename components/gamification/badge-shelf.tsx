@@ -13,7 +13,7 @@ export function BadgeShelf({ badges }: { badges: BadgeShelfItem[] }) {
           className={`min-h-32 rounded-card border p-4 transition ${
             badge.earned
               ? "border-primary bg-primary-light text-primary-dark"
-              : "border-line bg-slate-100 text-ink/45 grayscale dark:border-white/10 dark:bg-white/5 dark:text-white/35"
+              : "border-line bg-slate-100 text-ink/65 grayscale dark:border-white/10 dark:bg-white/5 dark:text-white/35"
           }`}
           key={badge.slug}
         >

@@ -170,7 +170,7 @@ function HeroBanner({ cartRef }: { cartRef: React.RefObject<HTMLDivElement | nul
                     style={{ width: started ? `${progressPercent}%` : "0%" }}
                   />
                 </div>
-                <p className="text-[10px] text-white/40 text-right font-medium">
+                <p className="text-[10px] text-white/60 text-right font-medium">
                   {(MONTHLY_GOAL - COMMUNITY_CO2_SAVED).toLocaleString("en-IN")} kg remaining to reach goal 🎯
                 </p>
               </div>

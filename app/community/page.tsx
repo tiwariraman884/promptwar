@@ -33,7 +33,7 @@ function LeaderRow({
         <p className="truncate text-sm font-extrabold text-ink dark:text-white">
           {primary}
         </p>
-        <p className="truncate text-xs font-bold text-ink/55 dark:text-white/55">
+        <p className="truncate text-xs font-bold text-ink/70 dark:text-white/55">
           {secondary}
         </p>
       </div>

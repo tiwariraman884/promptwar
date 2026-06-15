@@ -61,7 +61,7 @@ export default function AQIPage() {
                   style={{ left: `${Math.min((cityData.aqi / 500) * 100, 100)}%` }}
                 />
               </div>
-              <div className="flex justify-between text-[8px] font-bold text-ink/40 dark:text-white/40 mt-1">
+              <div className="flex justify-between text-[8px] font-bold text-ink/40 dark:text-white/60 mt-1">
                 <span>0</span><span>100</span><span>200</span><span>300</span><span>400</span><span>500</span>
               </div>
             </div>
@@ -93,12 +93,12 @@ export default function AQIPage() {
             <div className="rounded-xl border border-line dark:border-white/10 p-4 text-center">
               <p className="text-xs font-bold text-ink/50 dark:text-white/50">PM2.5</p>
               <p className="text-2xl font-black tabular-nums mt-1">{cityData.pm25}</p>
-              <p className="text-[10px] text-ink/40 dark:text-white/40">µg/m³ {cityData.pm25 > 60 ? "⚠️ High" : "✅ OK"}</p>
+              <p className="text-[10px] text-ink/40 dark:text-white/60">µg/m³ {cityData.pm25 > 60 ? "⚠️ High" : "✅ OK"}</p>
             </div>
             <div className="rounded-xl border border-line dark:border-white/10 p-4 text-center">
               <p className="text-xs font-bold text-ink/50 dark:text-white/50">PM10</p>
               <p className="text-2xl font-black tabular-nums mt-1">{cityData.pm10}</p>
-              <p className="text-[10px] text-ink/40 dark:text-white/40">µg/m³ {cityData.pm10 > 100 ? "⚠️ High" : "✅ OK"}</p>
+              <p className="text-[10px] text-ink/40 dark:text-white/60">µg/m³ {cityData.pm10 > 100 ? "⚠️ High" : "✅ OK"}</p>
             </div>
           </div>
         </Card>
@@ -120,7 +120,7 @@ export default function AQIPage() {
                     className="w-full rounded-t-lg transition-all"
                     style={{ height: `${height}%`, backgroundColor: barLevel.color, opacity: 0.75 }}
                   />
-                  <span className="text-[9px] font-bold text-ink/40 dark:text-white/40">{trendDays[i]}</span>
+                  <span className="text-[9px] font-bold text-ink/40 dark:text-white/60">{trendDays[i]}</span>
                 </div>
               );
             })}
@@ -164,7 +164,7 @@ export default function AQIPage() {
                     <span className="text-lg shrink-0">{cl.emoji}</span>
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-sm">{city.city} {isUser && "📍"}</p>
-                      <p className="text-[10px] text-ink/40 dark:text-white/40">{city.state}</p>
+                      <p className="text-[10px] text-ink/40 dark:text-white/60">{city.state}</p>
                     </div>
                     <div className="text-right">
                       <p className="font-bold tabular-nums" style={{ color: cl.color }}>{city.aqi}</p>

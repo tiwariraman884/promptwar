@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -28,10 +29,14 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen overflow-hidden bg-mist text-ink dark:bg-[#0B1815] dark:text-white">
       <section className="relative grid min-h-[92vh] place-items-center px-4 py-10">
-        <img
+        {/* Fix #12 — Replace raw <img> with next/image */}
+        <Image
           alt=""
-          className="absolute left-1/2 top-1/2 h-[460px] w-[460px] -translate-x-1/2 -translate-y-1/2 opacity-[0.07]"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.07]"
           src="/icons/icon-512.png"
+          width={460}
+          height={460}
+          aria-hidden="true"
         />
         <div className="relative mx-auto flex max-w-3xl flex-col items-center text-center">
           <motion.div
@@ -39,10 +44,13 @@ export default function LandingPage() {
             className="grid h-28 w-28 place-items-center rounded-full bg-primary text-white shadow-soft"
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           >
-            <img
-              alt=""
+            <Image
+              alt="GreenStep India leaf logo"
               className="h-16 w-16"
               src="/icons/leaf-logo.svg"
+              width={64}
+              height={64}
+              priority
             />
           </motion.div>
 
@@ -56,13 +64,13 @@ export default function LandingPage() {
           <p className="mt-4 text-xl font-bold text-ink/75 dark:text-white/75">
             Track. Reduce. Thrive.
           </p>
-          <p className="mt-5 max-w-xl text-sm leading-6 text-ink/65 dark:text-white/65">
+          <p className="mt-5 max-w-xl text-sm leading-6 text-ink/70 dark:text-white/70">
             India emits 2.07t CO2 per person/year. GreenStep helps Indian households
             understand daily choices, earn eco-coins, and act without guilt.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild>
-              <Link href={startHref as any}>
+              <Link href={startHref as string}>
                 Get started
                 <ArrowUpRight aria-hidden size={18} />
               </Link>
@@ -75,7 +83,7 @@ export default function LandingPage() {
             </Button>
           </div>
         </div>
-        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2 text-xs font-bold uppercase text-ink/45 dark:text-white/45">
+        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2 text-xs font-bold uppercase text-ink/70 dark:text-white/55">
           <Leaf aria-hidden size={14} />
           Full carbon PWA for Haridwar, Uttarakhand, and India
         </div>
@@ -85,7 +93,7 @@ export default function LandingPage() {
         {featurePages.slice(1, 5).map((feature) => (
           <Link
             className="rounded-card border border-line bg-white p-4 shadow-soft transition hover:border-primary dark:border-white/10 dark:bg-white/[0.04]"
-            href={feature.href as any}
+            href={feature.href as string}
             key={feature.href}
           >
             <p className="text-xs font-bold uppercase text-primary-dark dark:text-primary-light">
@@ -94,7 +102,7 @@ export default function LandingPage() {
             <h2 className="mt-2 font-heading text-lg font-extrabold">
               {feature.title}
             </h2>
-            <p className="mt-2 text-sm leading-6 text-ink/65 dark:text-white/65">
+            <p className="mt-2 text-sm leading-6 text-ink/70 dark:text-white/70">
               {feature.summary}
             </p>
           </Link>

@@ -34,7 +34,7 @@ export default function AuthPage() {
                 className={`flex-1 rounded-lg py-2.5 text-sm font-bold transition-all duration-300 ${
                   tab === "signin"
                     ? "bg-gradient-to-r from-[#00E676] to-[#00C853] text-[#06120C] shadow-lg shadow-[#00E676]/20"
-                    : "text-white/40 hover:text-white/60"
+                    : "text-white/60 hover:text-white/60"
                 }`}
               >
                 Sign In
@@ -45,7 +45,7 @@ export default function AuthPage() {
                 className={`flex-1 rounded-lg py-2.5 text-sm font-bold transition-all duration-300 ${
                   tab === "signup"
                     ? "bg-gradient-to-r from-[#00E676] to-[#00C853] text-[#06120C] shadow-lg shadow-[#00E676]/20"
-                    : "text-white/40 hover:text-white/60"
+                    : "text-white/60 hover:text-white/60"
                 }`}
               >
                 Create Account

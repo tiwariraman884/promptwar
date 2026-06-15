@@ -470,7 +470,7 @@ export default function ScannerPage() {
                 <div className="flex flex-col items-center justify-center h-full text-white/60 p-8">
                   <span className="text-4xl mb-3">📷</span>
                   <p className="text-sm font-semibold text-center">Camera preview will appear here</p>
-                  <p className="text-xs mt-1 text-center text-white/40">Scan the barcode on the package</p>
+                  <p className="text-xs mt-1 text-center text-white/60">Scan the barcode on the package</p>
                 </div>
               )}
               {/* Hidden canvas for barcode frame capture */}

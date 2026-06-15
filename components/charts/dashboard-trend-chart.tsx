@@ -71,11 +71,11 @@ function ChartTooltip({ active, payload, label }: any) {
         </span>
       </div>
       <p className="text-2xl font-black text-white tabular-nums">
-        {value.toFixed(1)} <span className="text-sm font-bold text-white/40">kg CO₂e</span>
+        {value.toFixed(1)} <span className="text-sm font-bold text-white/60">kg CO₂e</span>
       </p>
       {/* Mini bar comparing to average */}
       <div className="mt-2.5 space-y-1">
-        <div className="flex items-center justify-between text-[10px] text-white/40">
+        <div className="flex items-center justify-between text-[10px] text-white/60">
           <span>vs India avg</span>
           <span className="font-bold text-white/60">{avg} kg/day</span>
         </div>
@@ -150,7 +150,7 @@ export function DashboardTrendChart({ data }: { data: DailyPoint[] }) {
             tickFormatter={formatDateLabel}
             tickLine={false}
             axisLine={false}
-            className="text-[#6B7C6E] dark:text-white/40"
+            className="text-[#6B7C6E] dark:text-white/60"
             dy={8}
           />
           <YAxis
@@ -159,7 +159,7 @@ export function DashboardTrendChart({ data }: { data: DailyPoint[] }) {
             axisLine={false}
             unit=" kg"
             width={50}
-            className="text-[#6B7C6E] dark:text-white/40"
+            className="text-[#6B7C6E] dark:text-white/60"
             domain={[0, Math.ceil(maxVal + 1)]}
           />
 

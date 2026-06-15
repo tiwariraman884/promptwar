@@ -111,7 +111,7 @@ export default function SignInForm() {
           <button
             type="button"
             onClick={() => setShowPw(!showPw)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white/70 transition"
             aria-label={showPw ? "Hide password" : "Show password"}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

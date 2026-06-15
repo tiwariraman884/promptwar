@@ -31,8 +31,8 @@ const config: Config = {
         soft: "0 16px 40px rgba(8, 80, 65, 0.08)"
       },
       fontFamily: {
-        heading: ["Plus Jakarta Sans", "Inter", "system-ui", "sans-serif"],
-        body: ["DM Sans", "Inter", "system-ui", "sans-serif"]
+        heading: ["var(--font-heading)", "Plus Jakarta Sans", "Inter", "system-ui", "sans-serif"],
+        body: ["var(--font-body)", "DM Sans", "Inter", "system-ui", "sans-serif"]
       }
     }
   },

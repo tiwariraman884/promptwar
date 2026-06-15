@@ -145,7 +145,7 @@ export default function EnergyAuditPage() {
                       <div className="flex items-center gap-2 mb-3">
                         <span className="text-xl">{appliance.emoji}</span>
                         <p className="font-bold text-sm flex-1">{appliance.name}</p>
-                        <span className="text-xs text-ink/40 dark:text-white/40">{appliance.wattage}W</span>
+                        <span className="text-xs text-ink/40 dark:text-white/60">{appliance.wattage}W</span>
                       </div>
 
                       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -239,12 +239,12 @@ export default function EnergyAuditPage() {
                         <span className="text-lg">{item.emoji}</span>
                         <div>
                           <p className="font-bold text-sm">{item.name} ×{item.count}</p>
-                          <p className="text-[10px] text-ink/40 dark:text-white/40">{item.kwhMonth.toFixed(1)} kWh/month</p>
+                          <p className="text-[10px] text-ink/40 dark:text-white/60">{item.kwhMonth.toFixed(1)} kWh/month</p>
                         </div>
                       </div>
                       <div className="text-right">
                         <p className="font-bold text-sm tabular-nums">₹{item.costMonth.toFixed(0)}</p>
-                        <p className="text-[10px] text-ink/40 dark:text-white/40">{item.co2Month.toFixed(1)} kg CO₂</p>
+                        <p className="text-[10px] text-ink/40 dark:text-white/60">{item.co2Month.toFixed(1)} kg CO₂</p>
                       </div>
                     </div>
                     {/* Progress bar showing share of total */}

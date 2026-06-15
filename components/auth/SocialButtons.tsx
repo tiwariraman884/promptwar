@@ -63,7 +63,7 @@ export default function SocialButtons({ mode }: SocialButtonsProps) {
       {/* Divider */}
       <div className="flex items-center gap-3 my-1">
         <div className="flex-1 h-px bg-white/10" />
-        <span className="text-[11px] font-medium text-white/40 uppercase tracking-wider">or</span>
+        <span className="text-[11px] font-medium text-white/60 uppercase tracking-wider">or</span>
         <div className="flex-1 h-px bg-white/10" />
       </div>
 

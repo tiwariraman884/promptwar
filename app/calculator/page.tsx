@@ -769,7 +769,7 @@ export default function CalculatorPage() {
             {/* Main result */}
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
-                <p className="text-xs font-bold uppercase text-ink/55 dark:text-white/55">
+                <p className="text-xs font-bold uppercase text-ink/70 dark:text-white/55">
                   This entry
                 </p>
                 <p className="font-heading text-4xl font-extrabold text-[#1B4332] dark:text-white tabular-nums">

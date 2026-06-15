@@ -21,7 +21,7 @@ html {
 
 body {
   margin: 0;
-  font-family: "DM Sans", Inter, system-ui, sans-serif;
+  font-family: var(--font-body), "DM Sans", Inter, system-ui, sans-serif;
   letter-spacing: 0;
   text-rendering: optimizeLegibility;
 }

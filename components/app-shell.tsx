@@ -291,7 +291,7 @@ function MobileDrawer({
 
           {/* ── Explore / More Tools — horizontal card slider ── */}
           <div className="mt-3 pt-3 border-t border-line dark:border-white/10">
-            <p className="px-3 text-[11px] font-extrabold uppercase tracking-wider text-ink/40 dark:text-white/40 mb-2">
+            <p className="px-3 text-[11px] font-extrabold uppercase tracking-wider text-ink/40 dark:text-white/60 mb-2">
               ✨ {t("nav.explore")}
             </p>
             <div className="flex gap-2 overflow-x-auto pb-2 px-1 hide-scrollbar">
@@ -639,7 +639,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                           "flex min-h-9 items-center gap-3 rounded-card px-3 text-[12px] font-bold transition",
                           active
                             ? "bg-primary-light text-primary-dark"
-                            : "text-ink/55 hover:bg-primary-light/50 dark:text-white/60"
+                            : "text-ink/70 hover:bg-primary-light/50 dark:text-white/60"
                         )}
                         href={item.href as any}
                         key={item.href}

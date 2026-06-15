@@ -105,7 +105,7 @@ export default function CommutePage() {
                     </div>
                     <div className="text-right shrink-0">
                       <p className="font-bold text-sm tabular-nums" style={{ color: mode.color }}>{dailyCO2.toFixed(2)} kg</p>
-                      <p className="text-[10px] text-ink/40 dark:text-white/40">{time > 0 ? `${time} min` : "—"} • ₹{dailyCost.toFixed(0)}</p>
+                      <p className="text-[10px] text-ink/40 dark:text-white/60">{time > 0 ? `${time} min` : "—"} • ₹{dailyCost.toFixed(0)}</p>
                     </div>
                   </div>
                 </button>
@@ -177,7 +177,7 @@ export default function CommutePage() {
                   <p className="text-[10px] font-bold text-ink/50 dark:text-white/50">CO₂ avoided per year</p>
                 </div>
               </div>
-              <p className="text-xs text-ink/40 dark:text-white/40 mt-3">
+              <p className="text-xs text-ink/40 dark:text-white/60 mt-3">
                 🌳 That&apos;s like planting {Math.round(yearSavingCO2 / 21.77)} trees!
               </p>
             </Card>

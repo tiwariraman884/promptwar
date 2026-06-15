@@ -138,7 +138,7 @@ export default function CalendarPage() {
             {/* Day headers */}
             <div className="grid grid-cols-7 gap-1 mb-1">
               {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d => (
-                <div key={d} className="text-center text-[10px] font-bold text-ink/40 dark:text-white/40 py-1">{d}</div>
+                <div key={d} className="text-center text-[10px] font-bold text-ink/40 dark:text-white/60 py-1">{d}</div>
               ))}
             </div>
 
@@ -192,7 +192,7 @@ export default function CalendarPage() {
               </div>
             )}
             {monthEvents.length === 0 && (
-              <p className="mt-4 text-center text-sm text-ink/40 dark:text-white/40 py-4">No events this month{filterCat !== "all" ? " in this category" : ""}.</p>
+              <p className="mt-4 text-center text-sm text-ink/40 dark:text-white/60 py-4">No events this month{filterCat !== "all" ? " in this category" : ""}.</p>
             )}
           </Card>
         )}

@@ -184,7 +184,7 @@ export default function LegacyPage() {
                         </div>
                         <div className="text-right">
                           <p className="font-bold tabular-nums">{(m.cumulativeKg / 1000).toFixed(1)} tonnes</p>
-                          <p className="text-[10px] text-ink/40 dark:text-white/40">cumulative CO₂</p>
+                          <p className="text-[10px] text-ink/40 dark:text-white/60">cumulative CO₂</p>
                         </div>
                       </div>
                     </div>
