@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode, ReactElement } from "react";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo, startTransition } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -424,11 +424,23 @@ export function AppShell({ children }: { children: ReactNode }) {
   const toggleDrawer = useCallback(() => setDrawerOpen((v) => !v), []);
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
 
-  // Check if the "More" drawer should show as active (when current route
-  // is one of the items inside the drawer)
-  const isDrawerItemActive = mobileDrawerCoreItems.some((item) => pathname?.startsWith(item.href))
-    || exploreItems.some((item) => pathname?.startsWith(item.href))
-    || pathname?.startsWith("/settings");
+  // Memoize active-state checks — avoids 19×startsWith per render
+  const isDrawerItemActive = useMemo(
+    () => mobileDrawerCoreItems.some((item) => pathname?.startsWith(item.href))
+      || exploreItems.some((item) => pathname?.startsWith(item.href))
+      || pathname?.startsWith("/settings"),
+    [pathname]
+  );
+
+  // Memoize nav items with active states pre-computed
+  const activeCoreNav = useMemo(
+    () => coreNavItems.map((item) => ({ ...item, active: pathname?.startsWith(item.href) ?? false })),
+    [pathname]
+  );
+  const activeExploreNav = useMemo(
+    () => exploreItems.map((item) => ({ ...item, active: pathname?.startsWith(item.href) ?? false })),
+    [pathname]
+  );
 
   return (
     <div className="min-h-screen bg-mist text-ink dark:bg-[#0B1815] dark:text-white" suppressHydrationWarning>
@@ -502,7 +514,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   aria-current={active ? "page" : undefined}
                   aria-label={t(item.tKey)}
                   className={cn(
-                    "relative flex min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-2xl text-[10px] font-bold transition-all duration-300",
+                    "relative flex min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-2xl text-[10px] font-bold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52B788] focus-visible:ring-offset-2",
                     active
                       ? "text-[#2D6A4F] dark:text-[#52B788]"
                       : "text-[#6B7C6E]/70 dark:text-white/50 hover:text-[#2D6A4F] dark:hover:text-[#52B788]/80"
@@ -535,7 +547,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               aria-label={t("drawer.moreOptions")}
               aria-expanded={drawerOpen}
               className={cn(
-                "relative flex min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-2xl text-[10px] font-bold transition-all duration-300",
+                "relative flex min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-2xl text-[10px] font-bold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52B788] focus-visible:ring-offset-2",
                 drawerOpen || isDrawerItemActive
                   ? "text-[#2D6A4F] dark:text-[#52B788]"
                   : "text-[#6B7C6E]/70 dark:text-white/50 hover:text-[#2D6A4F] dark:hover:text-[#52B788]/80"
@@ -562,7 +574,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       {/* ─── Desktop sidebar (unchanged — hidden on mobile via md:flex) ─── */}
       {!isBare && (
-        <aside className="fixed bottom-6 left-6 top-24 hidden w-56 overflow-y-auto rounded-card border border-line bg-white p-2 shadow-soft dark:border-white/10 dark:bg-white/[0.04] md:flex md:flex-col">
+        <aside aria-label="Main navigation" className="fixed bottom-6 left-6 top-24 hidden w-56 overflow-y-auto rounded-card border border-line bg-white p-2 shadow-soft dark:border-white/10 dark:bg-white/[0.04] md:flex md:flex-col">
           {/* User card */}
           <div className="mb-2 rounded-card bg-primary-light/50 dark:bg-white/[0.06] p-3">
             <div className="flex items-center gap-2.5">
@@ -586,17 +598,16 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           {/* Main nav — core items only */}
           <nav aria-label="Primary desktop" className="flex-1 space-y-0.5 overflow-y-auto">
-            {coreNavItems.map((item) => {
-              const active = pathname?.startsWith(item.href);
+            {activeCoreNav.map((item) => {
               const Icon = item.icon;
               return (
                 <Link
-                  aria-current={active ? "page" : undefined}
+                  aria-current={item.active ? "page" : undefined}
                   className={cn(
-                    "flex min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold transition",
-                    active
+                    "flex min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52B788]",
+                    item.active
                       ? "bg-primary-light text-primary-dark"
-                      : "text-ink/65 hover:bg-primary-light/70 dark:text-white/70"
+                      : "text-ink/80 hover:bg-primary-light/70 dark:text-white/70"
                   )}
                   href={item.href as any}
                   key={item.href}
@@ -610,12 +621,13 @@ export function AppShell({ children }: { children: ReactNode }) {
             {/* ── Explore / More Tools — collapsible section ── */}
             <div className="mt-1">
               <button
-                onClick={() => setExploreOpen((v) => !v)}
+                onClick={() => startTransition(() => setExploreOpen((v) => !v))}
+                aria-expanded={exploreOpen}
                 className={cn(
-                  "flex w-full min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold transition",
-                  exploreItems.some((item) => pathname?.startsWith(item.href))
+                  "flex w-full min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52B788]",
+                  activeExploreNav.some((item) => item.active)
                     ? "bg-primary-light text-primary-dark"
-                    : "text-ink/65 hover:bg-primary-light/70 dark:text-white/70"
+                    : "text-ink/80 hover:bg-primary-light/70 dark:text-white/70"
                 )}
               >
                 <span className="text-sm">✨</span>
@@ -625,21 +637,20 @@ export function AppShell({ children }: { children: ReactNode }) {
 
               {/* Collapsible panel */}
               <div className={cn(
-                "overflow-hidden transition-all duration-300 ease-out",
+                "overflow-hidden transition-[max-height,opacity] duration-300 ease-out will-change-[max-height,opacity]",
                 exploreOpen ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"
               )}>
                 <div className="pl-2 pr-1 py-1 space-y-0.5">
-                  {exploreItems.map((item) => {
-                    const active = pathname?.startsWith(item.href);
+                  {activeExploreNav.map((item) => {
                     const Icon = item.icon;
                     return (
                       <Link
-                        aria-current={active ? "page" : undefined}
+                        aria-current={item.active ? "page" : undefined}
                         className={cn(
-                          "flex min-h-9 items-center gap-3 rounded-card px-3 text-[12px] font-bold transition",
-                          active
+                          "flex min-h-9 items-center gap-3 rounded-card px-3 text-[12px] font-bold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52B788]",
+                          item.active
                             ? "bg-primary-light text-primary-dark"
-                            : "text-ink/70 hover:bg-primary-light/50 dark:text-white/60"
+                            : "text-ink/80 hover:bg-primary-light/50 dark:text-white/70"
                         )}
                         href={item.href as any}
                         key={item.href}
@@ -662,10 +673,10 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Link
               href="/settings"
               className={cn(
-                "flex min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold transition",
+                "flex min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52B788]",
                 pathname?.startsWith("/settings")
                   ? "bg-primary-light text-primary-dark"
-                  : "text-ink/65 hover:bg-primary-light/70 dark:text-white/70"
+                  : "text-ink/80 hover:bg-primary-light/70 dark:text-white/70"
               )}
             >
               <SettingsIcon size={17} />
@@ -676,7 +687,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             {hasUser ? (
               <button
                 onClick={handleSignOut}
-                className="flex w-full min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
+                className="flex w-full min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
               >
               <IconSignOut size={17} />
               {t("auth.signOut")}
@@ -684,7 +695,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             ) : (
               <Link
                 href="/auth"
-                className="flex min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold text-primary-dark hover:bg-primary-light dark:text-[#52B788] dark:hover:bg-white/10 transition"
+                className="flex min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold text-primary-dark hover:bg-primary-light dark:text-[#52B788] dark:hover:bg-white/10 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52B788]"
               >
                 <IconSignIn size={17} />
                 {t("auth.signIn")}
