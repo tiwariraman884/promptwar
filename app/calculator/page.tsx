@@ -357,6 +357,7 @@ export default function CalculatorPage() {
     if (initialCategory && allCategories.includes(initialCategory as any)) {
       setCategory(initialCategory);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialCategory]);
 
   const activeInput = useMemo(() => {

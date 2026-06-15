@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Image from "next/image";
 
 interface AvatarUploadProps {
   currentAvatar: string; // base64 data URL or ""
@@ -37,7 +38,7 @@ export function AvatarUpload({ currentAvatar, name, onUpload, onRemove }: Avatar
     const reader = new FileReader();
     reader.onload = () => {
       // Compress via canvas
-      const img = new Image();
+      const img = new globalThis.Image();
       img.onload = () => {
         const canvas = document.createElement("canvas");
         const maxSize = 256;
@@ -95,7 +96,7 @@ export function AvatarUpload({ currentAvatar, name, onUpload, onRemove }: Avatar
         aria-label="Upload profile photo"
       >
         {currentAvatar ? (
-          <img src={currentAvatar} alt="Profile" className="h-full w-full object-cover" />
+          <Image src={currentAvatar} alt="Profile" width={80} height={80} unoptimized className="h-full w-full object-cover" />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-[#2D6A4F] text-white text-2xl font-bold">
             {getInitials(name)}

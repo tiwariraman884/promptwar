@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import debounce from "lodash.debounce";
 import { Search, X, RefreshCw } from "lucide-react";
 import { useGreenMapStore } from "@/lib/green-map-store";
@@ -17,8 +17,14 @@ export function MapSearchBar({ onSearchResult, onClear }: MapSearchBarProps) {
   const setSearchResult = useGreenMapStore((s) => s.setSearchResult);
   const clearSearchResult = useGreenMapStore((s) => s.clearSearchResult);
 
-  const doSearch = useCallback(
-    debounce(async (searchQuery: string) => {
+  // Store latest callbacks in refs so the debounced function always uses fresh values
+  const onSearchResultRef = useRef(onSearchResult);
+  const setSearchResultRef = useRef(setSearchResult);
+  useEffect(() => { onSearchResultRef.current = onSearchResult; }, [onSearchResult]);
+  useEffect(() => { setSearchResultRef.current = setSearchResult; }, [setSearchResult]);
+
+  const doSearch = useMemo(
+    () => debounce(async (searchQuery: string) => {
       if (!searchQuery.trim()) return;
 
       setLoading(true);
@@ -37,7 +43,7 @@ export function MapSearchBar({ onSearchResult, onClear }: MapSearchBarProps) {
         }
 
         // Add search result to store
-        setSearchResult({
+        setSearchResultRef.current({
           id: `search-${Date.now()}`,
           name: searchQuery,
           type: "search_result",
@@ -48,14 +54,14 @@ export function MapSearchBar({ onSearchResult, onClear }: MapSearchBarProps) {
           badge: "search_result",
         });
 
-        onSearchResult(data.lat, data.lng, data.formatted_address);
+        onSearchResultRef.current(data.lat, data.lng, data.formatted_address);
       } catch {
         setError("Network error — please try again");
       } finally {
         setLoading(false);
       }
     }, 300),
-    [onSearchResult, setSearchResult]
+    [] // stable — uses refs for dynamic values
   );
 
   const handleSubmit = (e: React.FormEvent) => {
