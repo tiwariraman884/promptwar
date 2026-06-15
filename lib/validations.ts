@@ -16,14 +16,14 @@ export const paginationSchema = z.object({
 
 export const entryBodySchema = z.object({
   category: z.enum(CATEGORY_ORDER as unknown as [string, ...string[]]),
-  input: z.record(z.unknown()),
+  input: z.record(z.string(), z.unknown()),
   entry_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   sub_type: z.string().optional(),
   quantity: z.number().optional(),
   unit: z.string().optional(),
   notes: z.string().max(500).optional(),
   externalActivityId: z.string().optional(),
-  externalParameters: z.record(z.unknown()).optional(),
+  externalParameters: z.record(z.string(), z.unknown()).optional(),
   externalRegion: z.string().optional(),
 });
 
@@ -79,7 +79,7 @@ export const leaderboardSchema = z.object({
 /* ─── Helper: format Zod errors into a readable string ─── */
 
 export function formatZodError(error: z.ZodError): string {
-  return error.errors
+  return error.issues
     .map((e) => `${e.path.join(".")}: ${e.message}`)
     .join("; ");
 }
