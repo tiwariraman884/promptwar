@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { Route } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/client";
 import PasswordStrength from "./PasswordStrength";
@@ -73,7 +74,7 @@ export default function SignUpForm() {
         // Demo mode — localStorage mock (no Supabase configured)
         localStorage.setItem("eco_user", JSON.stringify({ name, email, country, role }));
         // AUTH GATE (RULE 2): Redirect to the intended destination after successful sign-up
-        router.push(nextUrl as string);
+        router.push(nextUrl as Route);
       }
     } catch {
       setError("An unexpected error occurred. Please try again.");

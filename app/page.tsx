@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import type { Route } from "next";
 import { ArrowUpRight, Leaf, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { featurePages } from "@/lib/v2-data";
@@ -70,7 +71,7 @@ export default function LandingPage() {
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild>
-              <Link href={startHref as string}>
+              <Link href={startHref as Route}>
                 Get started
                 <ArrowUpRight aria-hidden size={18} />
               </Link>
@@ -93,7 +94,7 @@ export default function LandingPage() {
         {featurePages.slice(1, 5).map((feature) => (
           <Link
             className="rounded-card border border-line bg-white p-4 shadow-soft transition hover:border-primary dark:border-white/10 dark:bg-white/[0.04]"
-            href={feature.href as string}
+            href={feature.href as Route}
             key={feature.href}
           >
             <p className="text-xs font-bold uppercase text-primary-dark dark:text-primary-light">

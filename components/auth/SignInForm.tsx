@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import type { Route } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/client";
 import SocialButtons from "./SocialButtons";
@@ -48,14 +49,14 @@ export default function SignInForm() {
         }
 
         if (remember) localStorage.setItem("eco_remember", "true");
-        router.push(nextUrl as string);
+        router.push(nextUrl as Route);
         router.refresh();
       } else {
         // Demo mode — localStorage mock (no Supabase configured)
         const name = email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
         localStorage.setItem("eco_user", JSON.stringify({ name, email }));
         if (remember) localStorage.setItem("eco_remember", "true");
-        router.push(nextUrl as string);
+        router.push(nextUrl as Route);
       }
     } catch {
       setError("An unexpected error occurred. Please try again.");

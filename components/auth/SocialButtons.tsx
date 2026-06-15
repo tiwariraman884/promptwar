@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import type { Route } from "next";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/client";
 
 function GoogleIcon() {
@@ -49,7 +50,7 @@ export default function SocialButtons({ mode }: SocialButtonsProps) {
       const name = `${provider.charAt(0).toUpperCase() + provider.slice(1)} User`;
       const email = `user@${provider}.com`;
       localStorage.setItem("eco_user", JSON.stringify({ name, email, provider }));
-      router.push(nextUrl as string);
+      router.push(nextUrl as Route);
     }
   }
 

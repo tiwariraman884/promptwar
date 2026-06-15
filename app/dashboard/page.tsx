@@ -20,7 +20,7 @@ import {
   ShoppingBag,
   Recycle,
   Wifi,
-  AlertTriangle
+  AlertCircle
 } from "lucide-react";
 import type { DailyPoint } from "@/components/charts/dashboard-trend-chart";
 import { MotionPage } from "@/components/motion-page";
@@ -191,7 +191,7 @@ export default function DashboardPage() {
         {fetchError && !loading && (
           <div role="alert" className="flex items-center justify-between gap-3 rounded-card border border-amber/30 bg-amber-light/50 p-3 dark:border-amber/20 dark:bg-amber/10">
             <div className="flex items-center gap-2 text-sm font-bold text-amber dark:text-amber-300">
-              <AlertTriangle aria-hidden size={16} />
+              <AlertCircle aria-hidden size={16} />
               Using offline data — couldn&apos;t reach the server.
             </div>
             <Button
