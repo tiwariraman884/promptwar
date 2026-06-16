@@ -161,10 +161,10 @@ export default function TipsPage() {
         <div className="relative rounded-card bg-primary-dark p-5 text-white shadow-soft overflow-hidden">
           {/* Background image */}
           <div
-            className="absolute inset-0 bg-cover bg-center opacity-25"
+            className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: "url('/images/tips-hero-bg.png')" }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary-dark via-primary-dark/85 to-primary-dark/50" />
+          <div className="absolute inset-0 bg-black/40" />
 
           <div className="relative z-10">
             <Badge className="bg-white/15 text-white" tone="dark">

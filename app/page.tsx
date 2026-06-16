@@ -35,7 +35,7 @@ export default function LandingPage() {
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: "url('/images/eco-hero-bg.png')" }}
         >
-          <div className="absolute inset-0 bg-mist/85 dark:bg-[#0B1815]/85" />
+          <div className="absolute inset-0 bg-black/40 dark:bg-black/35" />
         </div>
         <div className="relative mx-auto flex max-w-3xl flex-col items-center text-center">
           <motion.div

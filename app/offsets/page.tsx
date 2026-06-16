@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { OFFSET_PROJECTS } from "@/lib/carbonData";
 import { MapPin, CheckCircle, Star, X } from "lucide-react";
@@ -32,12 +33,14 @@ export default function OffsetsPage() {
       <div className="bg-white dark:bg-[#1A2F2A] border-b border-[#52B788]/20 p-6 md:p-12 relative overflow-hidden">
         {/* Nature image on the right (visible on md+) */}
         <div className="hidden md:block absolute right-0 top-0 bottom-0 w-1/3">
-          <img
+          <Image
             src="/images/offsets-nature.png"
             alt="Reforestation project in the Indian Himalayan foothills"
-            className="h-full w-full object-cover opacity-40"
+            className="h-full w-full object-cover"
+            fill
+            sizes="33vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-white dark:from-[#1A2F2A] via-white/80 dark:via-[#1A2F2A]/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white dark:from-[#1A2F2A] via-transparent to-transparent" />
         </div>
 
         <div className="max-w-3xl mx-auto text-center space-y-6 relative z-10">
@@ -144,13 +147,15 @@ export default function OffsetsPage() {
         {/* Education Section */}
         <div className="bg-[#2D6A4F] text-[#F8FAF5] rounded-3xl p-8 md:p-12 relative overflow-hidden">
           {/* Background nature image */}
-          <img
+          <Image
             src="/images/offsets-nature.png"
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover opacity-15"
+            className="absolute inset-0 w-full h-full object-cover opacity-60"
+            fill
+            sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#2D6A4F] via-[#2D6A4F]/90 to-[#2D6A4F]/70" />
+          <div className="absolute inset-0 bg-black/35" />
 
           <div className="relative z-10 max-w-3xl">
             <h2 className="text-3xl font-black mb-6">What is a carbon offset?</h2>

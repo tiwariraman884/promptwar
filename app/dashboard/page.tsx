@@ -168,10 +168,10 @@ export default function DashboardPage() {
         <div className="relative rounded-card bg-primary-dark p-5 text-white shadow-soft overflow-hidden">
           {/* Background image */}
           <div
-            className="absolute inset-0 bg-cover bg-center opacity-30"
+            className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: "url('/images/dashboard-hero-bg.png')" }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary-dark via-primary-dark/90 to-primary-dark/60" />
+          <div className="absolute inset-0 bg-black/40" />
 
           <div className="relative z-10 flex flex-wrap items-center justify-between gap-3">
             <div>
