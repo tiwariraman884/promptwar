@@ -35,9 +35,9 @@ const config: Config = {
           DEFAULT: "#F59E0B",
           light: "rgba(245, 158, 11, 0.12)",
         },
-        ink: "#FFFFFF",
-        mist: "#0A1414",
-        line: "#55615A",
+        ink: "#111827",
+        mist: "#FAFDF5",
+        line: "#E5E7EB",
         /* ── Text palette ── */
         "text-primary": "#FFFFFF",
         "text-secondary": "#D1D5DB",

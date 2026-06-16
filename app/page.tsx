@@ -24,7 +24,7 @@ export default function LandingPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen overflow-hidden bg-forest-deep text-white">
+    <div className="min-h-screen overflow-hidden bg-white text-gray-900 dark:bg-forest-deep dark:text-white">
       {/* ═══ HERO SECTION ═══ */}
       <section className="relative grid min-h-screen place-items-center px-4 py-10">
         {/* Background image */}
@@ -39,7 +39,7 @@ export default function LandingPage() {
           {/* Floating logo */}
           <motion.div
             animate={{ y: [0, -10, 0], rotate: [-2, 2, -2] }}
-            className="grid h-28 w-28 place-items-center rounded-full bg-accent/20 backdrop-blur-sm border border-accent/30 shadow-glow"
+            className="grid h-28 w-28 place-items-center rounded-full bg-emerald-100 dark:bg-accent/20 backdrop-blur-sm border border-emerald-300 dark:border-accent/30 shadow-lg dark:shadow-glow"
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           >
             <Image
@@ -55,19 +55,19 @@ export default function LandingPage() {
           {/* Headline */}
           <motion.h1
             animate={{ opacity: 1, y: 0 }}
-            className="mt-8 font-heading text-4xl font-extrabold leading-tight text-white sm:text-6xl"
+            className="mt-8 font-heading text-4xl font-extrabold leading-tight text-gray-900 sm:text-6xl dark:text-white"
             initial={{ opacity: 0, y: 14 }}
           >
-            <span className="text-accent">Green</span>Step India
+            <span className="text-emerald-600 dark:text-accent">Green</span>Step India
           </motion.h1>
 
           {/* Tagline */}
-          <p className="mt-4 text-xl font-bold text-white/80">
-            Track. Reduce. <span className="text-accent">Thrive.</span>
+          <p className="mt-4 text-xl font-bold text-gray-600 dark:text-white/80">
+            Track. Reduce. <span className="text-emerald-600 dark:text-accent">Thrive.</span>
           </p>
 
           {/* Description */}
-          <p className="mt-5 max-w-xl text-sm leading-6 text-text-muted">
+          <p className="mt-5 max-w-xl text-sm leading-6 text-gray-500 dark:text-text-muted">
             India emits 2.07t CO2 per person/year. GreenStep helps Indian households
             understand daily choices, earn eco-coins, and act without guilt.
           </p>
@@ -92,7 +92,7 @@ export default function LandingPage() {
         </div>
 
         {/* Bottom badge */}
-        <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-2 text-xs font-bold uppercase text-white/40">
+        <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-2 text-xs font-bold uppercase text-gray-400 dark:text-white/40">
           <Leaf aria-hidden size={14} className="text-accent/60" />
           Full carbon PWA for Haridwar, Uttarakhand, and India
         </div>
@@ -109,10 +109,10 @@ export default function LandingPage() {
             <p className="text-xs font-bold uppercase text-accent">
               {feature.page}
             </p>
-            <h2 className="mt-2 font-heading text-lg font-extrabold text-white group-hover:text-accent transition-colors duration-300">
+            <h2 className="mt-2 font-heading text-lg font-extrabold text-gray-900 group-hover:text-emerald-600 dark:text-white dark:group-hover:text-accent transition-colors duration-300">
               {feature.title}
             </h2>
-            <p className="mt-2 text-sm leading-6 text-text-muted">
+            <p className="mt-2 text-sm leading-6 text-gray-500 dark:text-text-muted">
               {feature.summary}
             </p>
           </Link>

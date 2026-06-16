@@ -27,10 +27,10 @@ export default function OffsetsPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-forest-deep  text-white  pb-12">
+    <div className="min-h-[calc(100vh-4rem)] bg-gray-50 text-gray-900 dark:bg-forest-deep dark:text-white pb-12">
       
       {/* Gap Calculator Hero */}
-      <div className="bg-forest/80 backdrop-blur-xl border-b border-white/10 p-6 md:p-12 relative overflow-hidden">
+      <div className="bg-white/80 backdrop-blur-xl border-b border-gray-200 dark:bg-forest/80 dark:border-white/10 p-6 md:p-12 relative overflow-hidden">
         {/* Nature image on the right (visible on md+) */}
         <div className="hidden md:block absolute right-0 top-0 bottom-0 w-1/3">
           <Image
@@ -40,13 +40,13 @@ export default function OffsetsPage() {
             fill
             sizes="33vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-forest via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent dark:from-forest dark:via-transparent to-transparent" />
         </div>
 
         <div className="max-w-3xl mx-auto text-center space-y-6 relative z-10">
-          <h1 className="text-3xl md:text-5xl font-black text-accent">Your Offset Gap</h1>
+          <h1 className="text-3xl md:text-5xl font-black text-emerald-600 dark:text-accent">Your Offset Gap</h1>
           
-          <div className="grid md:grid-cols-2 gap-8 items-center bg-forest-deep dark:bg-black/20 rounded-3xl p-6 md:p-8 border border-white/10">
+          <div className="grid md:grid-cols-2 gap-8 items-center bg-white dark:bg-black/20 rounded-3xl p-6 md:p-8 border border-gray-200 dark:border-white/10">
             <div className="space-y-6 text-left">
               <div>
                 <label className="block text-sm font-bold mb-2">My annual footprint (kg CO2)</label>
@@ -70,7 +70,7 @@ export default function OffsetsPage() {
               </div>
             </div>
 
-            <div className="bg-forest-moss text-white rounded-3xl p-6 shadow-md flex flex-col justify-center min-h-[200px]">
+            <div className="bg-emerald-600 dark:bg-forest-moss text-white rounded-3xl p-6 shadow-md flex flex-col justify-center min-h-[200px]">
               <p className="text-[#B7E4C7] font-semibold mb-2">You need to offset</p>
               <p className="text-5xl font-black mb-4">{offsetAmountTonnes} <span className="text-xl font-bold">tonnes</span></p>
               <div className="pt-4 border-t border-white/20">
@@ -89,7 +89,7 @@ export default function OffsetsPage() {
           <h2 className="text-2xl font-bold text-accent mb-8">Verified Offset Projects</h2>
           <div className="grid lg:grid-cols-2 gap-6">
             {OFFSET_PROJECTS.map((p) => (
-              <div key={p.id} className="rounded-3xl bg-forest/80 backdrop-blur-xl p-6 shadow-sm border border-white/10 flex flex-col md:flex-row gap-6">
+              <div key={p.id} className="rounded-3xl bg-forest/80 backdrop-blur-xl p-6 shadow-sm border border-gray-200 dark:border-white/10 flex flex-col md:flex-row gap-6">
                 <div className="flex-1 space-y-4">
                   <div className="flex items-center gap-3">
                     <span className="text-4xl">{p.image}</span>
@@ -112,7 +112,7 @@ export default function OffsetsPage() {
                   <div className="grid grid-cols-2 gap-4 py-4 border-y border-accent/30/10">
                     <div>
                       <p className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1">Impact</p>
-                      <p className="font-semibold text-accent">{p.co2PerYear.toLocaleString()} tCO2/yr</p>
+                      <p className="font-semibold text-emerald-600 dark:text-accent">{p.co2PerYear.toLocaleString()} tCO2/yr</p>
                     </div>
                     <div>
                       <p className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1">Rating</p>
@@ -134,7 +134,7 @@ export default function OffsetsPage() {
                   </button>
                   <button
                     onClick={() => handlePurchase(p.name, offsetAmountTonnes)}
-                    className="w-full rounded-xl bg-forest-moss py-2.5 text-sm font-bold text-white hover:bg-[#1B4332] transition"
+                    className="w-full rounded-xl bg-emerald-600 dark:bg-forest-moss py-2.5 text-sm font-bold text-white hover:bg-[#1B4332] transition"
                   >
                     Offset my gap — ₹{(offsetAmountTonnes * p.pricePerTonne).toFixed(2)}
                   </button>
@@ -145,7 +145,7 @@ export default function OffsetsPage() {
         </div>
 
         {/* Education Section */}
-        <div className="bg-forest-moss text-white rounded-3xl p-8 md:p-12 relative overflow-hidden">
+        <div className="bg-emerald-600 dark:bg-forest-moss text-white rounded-3xl p-8 md:p-12 relative overflow-hidden">
           {/* Background nature image */}
           <Image
             src="/images/offsets-nature.png"
@@ -199,7 +199,7 @@ export default function OffsetsPage() {
       {/* Purchase Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-3xl bg-white/5  p-8 text-center shadow-2xl border border-white/10 animate-in zoom-in-95 relative">
+          <div className="w-full max-w-md rounded-3xl bg-white/5  p-8 text-center shadow-2xl border border-gray-200 dark:border-white/10 animate-in zoom-in-95 relative">
             <button onClick={() => setShowModal(null)} className="absolute right-4 top-4 text-neutral-400 hover:text-black dark:hover:text-white">
               <X size={20} />
             </button>
@@ -209,7 +209,7 @@ export default function OffsetsPage() {
             <h2 className="text-2xl font-black text-accent mb-4">Offset Confirmed!</h2>
             <p className="text-sm font-semibold text-neutral-500 uppercase tracking-wide mb-6">Simulated Purchase</p>
             <p className="text-lg font-medium leading-relaxed mb-6">
-              Your contribution of <span className="font-bold text-accent">{showModal.tonnes} tonnes</span> supports <br/>
+              Your contribution of <span className="font-bold text-emerald-600 dark:text-accent">{showModal.tonnes} tonnes</span> supports <br/>
               <span className="font-bold">{showModal.project}</span>.
             </p>
             <div className="bg-forest-deep  rounded-xl p-4 font-mono text-xs font-bold text-accent border border-dashed border-accent/30/40 mb-8">
@@ -217,7 +217,7 @@ export default function OffsetsPage() {
             </div>
             <button
               onClick={() => setShowModal(null)}
-              className="w-full rounded-xl bg-forest-moss py-3.5 font-bold text-white hover:bg-[#1B4332] transition"
+              className="w-full rounded-xl bg-emerald-600 dark:bg-forest-moss py-3.5 font-bold text-white hover:bg-[#1B4332] transition"
             >
               Close
             </button>

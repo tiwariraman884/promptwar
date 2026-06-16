@@ -47,9 +47,9 @@ function TipCard({
       animate={completed && !prefersReduced ? { scale: [1, 1.02, 1] } : { scale: 1 }}
       transition={{ duration: prefersReduced ? 0 : 0.28 }}
     >
-      <Card className={preferred ? "border-primary/50 bg-primary-light/55" : undefined}>
+      <Card className={preferred ? "border-emerald-300 bg-emerald-50/60 dark:border-accent/30 dark:bg-accent/5" : undefined}>
         <div className="flex items-start gap-3">
-          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary-light text-primary-dark">
+          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-accent/15 dark:text-accent">
             {iconMap[tip.category]}
           </div>
           <div className="min-w-0 flex-1">
@@ -59,14 +59,14 @@ function TipCard({
               </Badge>
               {preferred && <Badge tone="amber">Personalized</Badge>}
             </div>
-            <h3 className="mt-3 font-heading text-lg font-extrabold text-ink dark:text-white">
+            <h3 className="mt-3 font-heading text-lg font-extrabold text-gray-900 dark:text-white">
               {tip.action}
             </h3>
-            <p className="mt-1 text-sm leading-6 text-ink/75 dark:text-white/70">
+            <p className="mt-1 text-sm leading-6 text-gray-500 dark:text-white/70">
               {tip.context}
             </p>
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm font-extrabold text-primary-dark dark:text-primary-light">
+              <p className="text-sm font-extrabold text-emerald-600 dark:text-accent">
                 Saves {tip.monthlySavingKg.toFixed(1)} kgCO2e/month
               </p>
               <Button
@@ -158,7 +158,7 @@ export default function TipsPage() {
     <MotionPage>
       <section className="space-y-8">
         {/* Hero header */}
-        <div className="relative rounded-card p-5 text-white shadow-soft overflow-hidden glass-card border-0">
+        <div className="relative rounded-card p-5 text-gray-900 dark:text-white shadow-soft overflow-hidden glass-card border-0">
           {/* Background image */}
           <div
             className="absolute inset-0 bg-cover bg-center"
@@ -180,7 +180,7 @@ export default function TipsPage() {
         </div>
 
         {message && (
-          <p role="status" aria-live="polite" className="rounded-card bg-accent/10 p-3 text-sm font-bold text-accent">
+          <p role="status" aria-live="polite" className="rounded-card bg-emerald-50 p-3 text-sm font-bold text-emerald-700 dark:bg-accent/10 dark:text-accent">
             {message}
           </p>
         )}

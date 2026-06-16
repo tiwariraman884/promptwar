@@ -88,7 +88,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${dmSans.className} bg-forest-deep text-text-secondary`} suppressHydrationWarning>
+      <body className={`${dmSans.className}`} suppressHydrationWarning>
         <Providers>
           <AppShell>{children}</AppShell>
         </Providers>

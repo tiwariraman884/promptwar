@@ -6,7 +6,7 @@ type ButtonVariant = "default" | "secondary" | "ghost" | "amber" | "danger";
 type ButtonSize = "default" | "sm" | "icon";
 
 const buttonBase =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-pill px-4 py-2 text-sm font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-forest-deep disabled:pointer-events-none disabled:opacity-50";
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-pill px-4 py-2 text-sm font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-forest-deep disabled:pointer-events-none disabled:opacity-50";
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -25,7 +25,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       variant === "secondary" &&
         "btn-glass",
       variant === "ghost" &&
-        "text-white hover:bg-white/10",
+        "text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10",
       variant === "amber" &&
         "bg-amber text-white hover:bg-amber/90",
       variant === "danger" &&

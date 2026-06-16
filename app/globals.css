@@ -356,6 +356,9 @@ input[type="range"] {
   background: linear-gradient(90deg, transparent, rgba(85, 97, 90, 0.4), transparent);
   height: 1px;
 }
+:root:not(.dark) .section-divider {
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
+}
 
 /* ═══════════════════════════════════════════════════ */
 /*  AUTH PAGE ANIMATIONS (preserved)                  */

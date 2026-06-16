@@ -70,24 +70,24 @@ function StatCard({
     <Card className="min-h-32">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-bold uppercase tracking-normal text-text-muted">
+          <p className="text-xs font-bold uppercase tracking-normal text-gray-500 dark:text-text-muted">
             {title}
           </p>
-          <p className="mt-2 font-heading text-2xl font-extrabold text-white">
+          <p className="mt-2 font-heading text-2xl font-extrabold text-gray-900 dark:text-white">
             {value}
           </p>
         </div>
         <div
           className={`grid h-11 w-11 shrink-0 place-items-center rounded-full ${
             tone === "amber"
-              ? "bg-amber/15 text-amber"
-              : "bg-accent/15 text-accent"
+              ? "bg-amber-100 text-amber-600 dark:bg-amber/15 dark:text-amber"
+              : "bg-emerald-100 text-emerald-600 dark:bg-accent/15 dark:text-accent"
           }`}
         >
           {icon}
         </div>
       </div>
-      <div className="mt-3 text-sm leading-5 text-text-muted">
+      <div className="mt-3 text-sm leading-5 text-gray-500 dark:text-text-muted">
         {helper}
       </div>
     </Card>
@@ -165,7 +165,7 @@ export default function DashboardPage() {
   return (
     <MotionPage>
       <section className="space-y-5">
-        <div className="relative rounded-card p-5 text-white shadow-soft overflow-hidden glass-card border-0">
+        <div className="relative rounded-card p-5 text-gray-900 dark:text-white shadow-soft overflow-hidden glass-card border-0">
           {/* Background image */}
           <div
             className="absolute inset-0 bg-cover bg-center"
@@ -196,8 +196,8 @@ export default function DashboardPage() {
 
         {/* Fix #19 — Error state banner */}
         {fetchError && !loading && (
-          <div role="alert" className="flex items-center justify-between gap-3 rounded-card border border-amber/20 bg-amber/10 p-3">
-            <div className="flex items-center gap-2 text-sm font-bold text-amber">
+          <div role="alert" className="flex items-center justify-between gap-3 rounded-card border border-amber-200 bg-amber-50 dark:border-amber/20 dark:bg-amber/10 p-3">
+            <div className="flex items-center gap-2 text-sm font-bold text-amber-600 dark:text-amber">
               <AlertCircle aria-hidden size={16} />
               Using offline data — couldn&apos;t reach the server.
             </div>
@@ -205,7 +205,7 @@ export default function DashboardPage() {
               type="button"
               variant="ghost"
               onClick={fetchDashboard}
-              className="text-amber hover:text-amber/80"
+              className="text-amber-600 hover:text-amber-500 dark:text-amber dark:hover:text-amber/80"
             >
               <RefreshCw aria-hidden size={14} />
               Retry
@@ -271,12 +271,12 @@ export default function DashboardPage() {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <CardTitle className="flex items-center gap-2">
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-accent/10 text-accent">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600 dark:bg-accent/10 dark:text-accent">
                     📊
                   </span>
                   Last 30 days
                 </CardTitle>
-                <p className="mt-1.5 text-sm text-text-muted">
+                <p className="mt-1.5 text-sm text-gray-500 dark:text-text-muted">
                   Green area stays under India&apos;s 5.67 kg/day benchmark.
                 </p>
               </div>
@@ -294,26 +294,26 @@ export default function DashboardPage() {
 
           {/* Stats summary row below chart */}
           {!loading && (
-            <div className="grid grid-cols-3 gap-px bg-white/[0.04] border-t border-white/[0.06] -mx-4 -mb-4">
-              <div className="bg-white/[0.02] px-4 py-3 text-center">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">30d Average</p>
-                <p className="mt-1 text-lg font-extrabold text-white tabular-nums">
+            <div className="grid grid-cols-3 gap-px bg-gray-100 dark:bg-white/[0.04] border-t border-gray-200 dark:border-white/[0.06] -mx-4 -mb-4">
+              <div className="bg-white dark:bg-white/[0.02] px-4 py-3 text-center">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-text-muted">30d Average</p>
+                <p className="mt-1 text-lg font-extrabold text-gray-900 dark:text-white tabular-nums">
                   {(data.dailySeries.reduce((sum: number, d: DailyPoint) => sum + d.kgCo2e, 0) / data.dailySeries.length).toFixed(1)}
-                  <span className="ml-1 text-xs font-bold text-white/50">kg</span>
+                  <span className="ml-1 text-xs font-bold text-gray-400 dark:text-white/50">kg</span>
                 </p>
               </div>
-              <div className="bg-white/[0.02] px-4 py-3 text-center">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Best Day</p>
-                <p className="mt-1 text-lg font-extrabold text-accent tabular-nums">
+              <div className="bg-white dark:bg-white/[0.02] px-4 py-3 text-center">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-text-muted">Best Day</p>
+                <p className="mt-1 text-lg font-extrabold text-emerald-600 dark:text-accent tabular-nums">
                   {Math.min(...data.dailySeries.map((d: DailyPoint) => d.kgCo2e)).toFixed(1)}
-                  <span className="ml-1 text-xs font-bold text-accent/50">kg</span>
+                  <span className="ml-1 text-xs font-bold text-emerald-400 dark:text-accent/50">kg</span>
                 </p>
               </div>
-              <div className="bg-white/[0.02] px-4 py-3 text-center">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Peak Day</p>
-                <p className="mt-1 text-lg font-extrabold text-amber tabular-nums">
+              <div className="bg-white dark:bg-white/[0.02] px-4 py-3 text-center">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-text-muted">Peak Day</p>
+                <p className="mt-1 text-lg font-extrabold text-amber-600 dark:text-amber tabular-nums">
                   {Math.max(...data.dailySeries.map((d: DailyPoint) => d.kgCo2e)).toFixed(1)}
-                  <span className="ml-1 text-xs font-bold text-amber/50">kg</span>
+                  <span className="ml-1 text-xs font-bold text-amber-400 dark:text-amber/50">kg</span>
                 </p>
               </div>
             </div>
@@ -336,7 +336,7 @@ export default function DashboardPage() {
       {/* Fix #9 — Accessible quick-add bottom sheet */}
       {sheetOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-end bg-black/60 p-3 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-end bg-black/30 dark:bg-black/60 p-3 backdrop-blur-sm"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               setSheetOpen(false);
@@ -352,9 +352,9 @@ export default function DashboardPage() {
             role="dialog"
             tabIndex={-1}
           >
-            <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-white/20" />
+            <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-gray-300 dark:bg-white/20" />
             <div className="flex items-center justify-between gap-3">
-              <h2 className="font-heading text-lg font-extrabold text-white">
+              <h2 className="font-heading text-lg font-extrabold text-gray-900 dark:text-white">
                 Quick add
               </h2>
               <Button
@@ -374,12 +374,12 @@ export default function DashboardPage() {
                 const Icon = item.icon;
                 return (
                   <Link
-                    className="flex min-h-20 items-center gap-3 rounded-card border border-white/10 p-3 font-bold text-white transition-all duration-300 hover:border-accent/30 hover:bg-accent/5"
+                    className="flex min-h-20 items-center gap-3 rounded-card border border-gray-200 p-3 font-bold text-gray-900 dark:border-white/10 dark:text-white transition-all duration-300 hover:border-emerald-300 hover:bg-emerald-50 dark:hover:border-accent/30 dark:hover:bg-accent/5"
                     href={`/calculator?category=${item.category}`}
                     key={item.category}
                     onClick={() => setSheetOpen(false)}
                   >
-                    <span className="grid h-11 w-11 place-items-center rounded-full bg-accent/15 text-accent">
+                    <span className="grid h-11 w-11 place-items-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-accent/15 dark:text-accent">
                       <Icon aria-hidden size={20} />
                     </span>
                     {CATEGORY_LABELS[item.category]}

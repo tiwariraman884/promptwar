@@ -4,7 +4,7 @@ export function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivEl
   return (
     <div
       className={cn(
-        "animate-pulse rounded-card bg-white/[0.06]",
+        "animate-pulse rounded-card bg-gray-200 dark:bg-white/[0.06]",
         className
       )}
       {...props}

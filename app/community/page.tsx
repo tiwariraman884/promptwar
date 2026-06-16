@@ -25,15 +25,15 @@ function LeaderRow({
   value: string;
 }) {
   return (
-    <div className="flex min-h-14 items-center gap-3 rounded-card border border-white/10 bg-white/5 px-3">
-      <span className="grid h-9 w-9 place-items-center rounded-full bg-accent/15 font-heading font-extrabold text-accent">
+    <div className="flex min-h-14 items-center gap-3 rounded-card border border-gray-200 bg-white dark:border-white/10 dark:bg-white/5 px-3">
+      <span className="grid h-9 w-9 place-items-center rounded-full bg-emerald-100 font-heading font-extrabold text-emerald-600 dark:bg-accent/15 dark:text-accent">
         {rank}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-extrabold text-white">
+        <p className="truncate text-sm font-extrabold text-gray-900 dark:text-white">
           {primary}
         </p>
-        <p className="truncate text-xs font-bold text-text-muted">
+        <p className="truncate text-xs font-bold text-gray-500 dark:text-text-muted">
           {secondary}
         </p>
       </div>
@@ -102,7 +102,7 @@ export default function CommunityPage() {
   return (
     <MotionPage>
       <section className="space-y-5">
-        <div className="relative rounded-card p-5 text-white shadow-soft overflow-hidden glass-card border-0">
+        <div className="relative rounded-card p-5 text-gray-900 dark:text-white shadow-soft overflow-hidden glass-card border-0">
           {/* Background image */}
           <div
             className="absolute inset-0 bg-cover bg-center"

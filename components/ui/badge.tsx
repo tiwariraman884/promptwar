@@ -7,10 +7,10 @@ type BadgeProps = React.HTMLAttributes<HTMLSpanElement> & {
 
 export function Badge({ className, tone = "green", ...props }: BadgeProps) {
   const tones = {
-    green: "bg-accent/15 text-accent",
-    amber: "bg-amber/15 text-amber",
-    muted: "bg-white/10 text-text-muted",
-    dark: "bg-white/10 text-white"
+    green: "bg-emerald-100 text-emerald-700 dark:bg-accent/15 dark:text-accent",
+    amber: "bg-amber-100 text-amber-700 dark:bg-amber/15 dark:text-amber",
+    muted: "bg-gray-100 text-gray-500 dark:bg-white/10 dark:text-text-muted",
+    dark: "bg-gray-200 text-gray-700 dark:bg-white/10 dark:text-white"
   };
 
   return (
