@@ -30,15 +30,13 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen overflow-hidden bg-mist text-ink dark:bg-[#0B1815] dark:text-white">
       <section className="relative grid min-h-[92vh] place-items-center px-4 py-10">
-        {/* Fix #12 — Replace raw <img> with next/image */}
-        <Image
-          alt=""
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.07]"
-          src="/icons/icon-512.png"
-          width={460}
-          height={460}
-          aria-hidden="true"
-        />
+        {/* Eco background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('/images/eco-hero-bg.png')" }}
+        >
+          <div className="absolute inset-0 bg-mist/85 dark:bg-[#0B1815]/85" />
+        </div>
         <div className="relative mx-auto flex max-w-3xl flex-col items-center text-center">
           <motion.div
             animate={{ y: [0, -10, 0], rotate: [-2, 2, -2] }}

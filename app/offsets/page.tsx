@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { OFFSET_PROJECTS } from "@/lib/carbonData";
-import { Leaf, MapPin, CheckCircle, Star, X } from "lucide-react";
+import { MapPin, CheckCircle, Star, X } from "lucide-react";
 
 export default function OffsetsPage() {
   const [footprint, setFootprint] = useState(1900);
