@@ -85,9 +85,9 @@ export default function SignUpForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400 flex items-center gap-2">
+        <div role="alert" aria-live="assertive" className="auth-form-content-enter rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400 flex items-center gap-2">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
           {error}
         </div>
@@ -101,35 +101,39 @@ export default function SignUpForm() {
       )}
 
       {/* Name */}
-      <div>
+      <div className="auth-field-entrance" style={{ animationDelay: "0.05s" }}>
         <label htmlFor="signup-name" className="block text-xs font-semibold text-white/70 mb-1.5 uppercase tracking-wider">Full Name</label>
-        <input
-          id="signup-name"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Arjun Sharma"
-          autoComplete="name"
-          className="w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 py-2.5 text-sm text-white placeholder-white/30 transition-all focus:border-[#00E676]/50 focus:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-[#00E676]/20"
-        />
+        <div className="auth-input-wrapper">
+          <input
+            id="signup-name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Arjun Sharma"
+            autoComplete="name"
+            className="auth-input w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 py-2.5 text-sm text-white placeholder-white/30 transition-all focus:border-[#00E676]/50 focus:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-[#00E676]/20"
+          />
+        </div>
       </div>
 
       {/* Email */}
-      <div>
+      <div className="auth-field-entrance" style={{ animationDelay: "0.1s" }}>
         <label htmlFor="signup-email" className="block text-xs font-semibold text-white/70 mb-1.5 uppercase tracking-wider">Email Address</label>
-        <input
-          id="signup-email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
-          autoComplete="email"
-          className="w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 py-2.5 text-sm text-white placeholder-white/30 transition-all focus:border-[#00E676]/50 focus:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-[#00E676]/20"
-        />
+        <div className="auth-input-wrapper">
+          <input
+            id="signup-email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            autoComplete="email"
+            className="auth-input w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 py-2.5 text-sm text-white placeholder-white/30 transition-all focus:border-[#00E676]/50 focus:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-[#00E676]/20"
+          />
+        </div>
       </div>
 
       {/* Password */}
-      <div>
+      <div className="auth-field-entrance" style={{ animationDelay: "0.15s" }}>
         <label htmlFor="signup-password" className="block text-xs font-semibold text-white/70 mb-1.5 uppercase tracking-wider">Password</label>
         <div className="relative">
           <input
@@ -167,7 +171,7 @@ export default function SignUpForm() {
       </div>
 
       {/* Confirm Password */}
-      <div>
+      <div className="auth-field-entrance" style={{ animationDelay: "0.2s" }}>
         <label htmlFor="signup-confirm" className="block text-xs font-semibold text-white/70 mb-1.5 uppercase tracking-wider">Confirm Password</label>
         <input
           id="signup-confirm"
@@ -194,7 +198,7 @@ export default function SignUpForm() {
       </div>
 
       {/* Country + Role row */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 auth-field-entrance" style={{ animationDelay: "0.25s" }}>
         <div>
           <label htmlFor="signup-country" className="block text-xs font-semibold text-white/70 mb-1.5 uppercase tracking-wider">Country</label>
           <select
@@ -231,7 +235,7 @@ export default function SignUpForm() {
       </div>
 
       {/* Terms */}
-      <label className="flex items-start gap-2.5 cursor-pointer group">
+      <label className="flex items-start gap-2.5 cursor-pointer group auth-field-entrance" style={{ animationDelay: "0.3s" }}>
         <div className="relative mt-0.5">
           <input
             type="checkbox"
@@ -239,7 +243,7 @@ export default function SignUpForm() {
             onChange={() => setAgree(!agree)}
             className="sr-only peer"
           />
-          <div className="h-4 w-4 rounded border border-white/20 bg-white/[0.05] transition-all peer-checked:border-[#00E676] peer-checked:bg-[#00E676] flex items-center justify-center">
+          <div className="h-4 w-4 rounded border border-white/20 bg-white/[0.05] transition-all duration-200 peer-checked:border-[#00E676] peer-checked:bg-[#00E676] peer-checked:shadow-[0_0_8px_rgba(0,230,118,0.3)] flex items-center justify-center">
             {agree && (
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#06120C" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12"/>
@@ -268,22 +272,31 @@ export default function SignUpForm() {
       </label>
 
       {/* Submit */}
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full rounded-xl bg-gradient-to-r from-[#00E676] to-[#00C853] py-3.5 text-sm font-bold text-[#06120C] transition-all duration-200 hover:shadow-lg hover:shadow-[#00E676]/20 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-      >
-        {loading ? (
-          <>
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#06120C]/30 border-t-[#06120C]" />
-            Creating account…
-          </>
-        ) : (
-          "Create Account"
-        )}
-      </button>
+      <div className="auth-field-entrance" style={{ animationDelay: "0.35s" }}>
+        <button
+          type="submit"
+          disabled={loading}
+          className="auth-submit-btn w-full rounded-xl bg-gradient-to-r from-[#00E676] to-[#00C853] py-3.5 text-sm font-bold text-[#06120C] transition-all duration-300 hover:shadow-[0_8px_32px_rgba(0,230,118,0.25)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none flex items-center justify-center gap-2"
+        >
+          {loading ? (
+            <>
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#06120C]/30 border-t-[#06120C]" />
+              Creating account…
+            </>
+          ) : (
+            <>
+              Create Account
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </>
+          )}
+        </button>
+      </div>
 
-      <SocialButtons mode="signup" />
+      <div className="auth-field-entrance" style={{ animationDelay: "0.4s" }}>
+        <SocialButtons mode="signup" />
+      </div>
 
       {/* Terms of Service Modal */}
       {showTOS && (

@@ -63,9 +63,9 @@ export default function SocialButtons({ mode }: SocialButtonsProps) {
     <div className="space-y-3">
       {/* Divider */}
       <div className="flex items-center gap-3 my-1">
-        <div className="flex-1 h-px bg-white/10" />
-        <span className="text-[11px] font-medium text-white/60 uppercase tracking-wider">or</span>
-        <div className="flex-1 h-px bg-white/10" />
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <span className="text-[11px] font-medium text-white/40 uppercase tracking-wider">or</span>
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       </div>
 
       {/* Buttons */}
@@ -75,9 +75,9 @@ export default function SocialButtons({ mode }: SocialButtonsProps) {
             key={b.name}
             type="button"
             onClick={() => handleSocialLogin(b.provider)}
-            className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3 text-[12px] font-medium text-white/70 transition-all duration-200 hover:bg-white/[0.08] hover:border-[#00E676]/30 hover:text-white focus:outline-none focus:ring-2 focus:ring-[#00E676]/30"
+            className="group flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.02] px-3 py-3 text-[12px] font-medium text-white/60 transition-all duration-300 hover:bg-white/[0.06] hover:border-white/15 hover:text-white/90 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/20 focus:outline-none focus:ring-2 focus:ring-[#00E676]/30 active:translate-y-0"
           >
-            {b.icon}
+            <span className="transition-transform duration-200 group-hover:scale-110">{b.icon}</span>
             {label} {b.name}
           </button>
         ))}

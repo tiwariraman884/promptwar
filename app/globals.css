@@ -115,8 +115,18 @@ html {
 /* Respect reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
   .animate-pulse-ring,
-  .animate-float {
+  .animate-float,
+  .auth-tree-trunk,
+  .auth-tree-branch,
+  .auth-tree-canopy,
+  .auth-tree-shadow,
+  .auth-hero-entrance,
+  .auth-form-entrance,
+  .auth-form-content-enter,
+  .auth-field-entrance,
+  .auth-glow-pulse {
     animation: none !important;
+    opacity: 1 !important;
   }
   * {
     transition-duration: 0.01ms !important;
@@ -124,3 +134,258 @@ html {
   }
 }
 
+/* ═══════════════════════════════════════════════════ */
+/*  AUTH PAGE – ANIMATIONS & EFFECTS                  */
+/* ═══════════════════════════════════════════════════ */
+
+/* ── Growing tree ─────────────────────────────────── */
+@keyframes treeTrunkGrow {
+  0% { clip-path: inset(100% 0 0 0); opacity: 0; }
+  60% { opacity: 1; }
+  100% { clip-path: inset(0 0 0 0); opacity: 0.7; }
+}
+@keyframes treeBranchGrow {
+  0% { stroke-dashoffset: 100; opacity: 0; }
+  100% { stroke-dashoffset: 0; opacity: 0.6; }
+}
+@keyframes treeCanopyBloom {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.1); opacity: 0.6; }
+  100% { transform: scale(1); opacity: 0.5; }
+}
+@keyframes treeShadowFade {
+  0% { opacity: 0; transform: scaleX(0.3); }
+  100% { opacity: 0.25; transform: scaleX(1); }
+}
+
+.auth-tree-container {
+  opacity: 0.6;
+}
+.auth-tree-trunk {
+  animation: treeTrunkGrow 1.8s ease-out 0.5s both;
+}
+.auth-tree-branch {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+}
+.auth-tree-branch-1 { animation: treeBranchGrow 1s ease-out 1.6s both; }
+.auth-tree-branch-2 { animation: treeBranchGrow 1s ease-out 1.8s both; }
+.auth-tree-branch-3 { animation: treeBranchGrow 1s ease-out 2.0s both; }
+.auth-tree-branch-4 { animation: treeBranchGrow 1s ease-out 2.2s both; }
+
+.auth-tree-canopy-1 { animation: treeCanopyBloom 0.8s ease-out 2.2s both; transform-origin: center; }
+.auth-tree-canopy-2 { animation: treeCanopyBloom 0.8s ease-out 2.4s both; transform-origin: center; }
+.auth-tree-canopy-3 { animation: treeCanopyBloom 0.8s ease-out 2.6s both; transform-origin: center; }
+.auth-tree-canopy-4 { animation: treeCanopyBloom 0.8s ease-out 2.8s both; transform-origin: center; }
+.auth-tree-canopy-5 { animation: treeCanopyBloom 0.8s ease-out 3.0s both; transform-origin: center; }
+.auth-tree-canopy-6 { animation: treeCanopyBloom 0.8s ease-out 3.2s both; transform-origin: center; }
+
+.auth-tree-shadow { animation: treeShadowFade 1s ease-out 2.5s both; transform-origin: center; }
+
+/* ── Hero section entrances ──────────────────────── */
+@keyframes heroEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+.auth-hero-entrance {
+  opacity: 0;
+  animation: heroEntrance 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ── Form card entrance ──────────────────────────── */
+@keyframes formEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+    filter: blur(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+.auth-form-entrance {
+  opacity: 0;
+  animation: formEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ── Form content crossfade ──────────────────────── */
+@keyframes formContentEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.auth-form-content-enter {
+  animation: formContentEnter 0.45s ease-out forwards;
+}
+
+/* ── Background glow pulse ───────────────────────── */
+@keyframes glowPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.08); }
+}
+.auth-glow-pulse {
+  animation: glowPulse 8s ease-in-out infinite;
+}
+
+/* ── Stat card hover effects ─────────────────────── */
+.auth-stat-card {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.auth-stat-card:hover {
+  border-color: rgba(0, 230, 118, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(0, 230, 118, 0.08);
+}
+
+/* ── Testimonial transitions ─────────────────────── */
+.auth-testimonial-enter {
+  animation: testimonialFadeIn 0.4s ease-out forwards;
+}
+.auth-testimonial-exit {
+  animation: testimonialFadeOut 0.4s ease-in forwards;
+}
+@keyframes testimonialFadeIn {
+  0% { opacity: 0; transform: translateX(16px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+@keyframes testimonialFadeOut {
+  0% { opacity: 1; transform: translateX(0); }
+  100% { opacity: 0; transform: translateX(-16px); }
+}
+
+/* ── Testimonial card shine ──────────────────────── */
+.auth-testimonial-card {
+  position: relative;
+  overflow: hidden;
+}
+.auth-testimonial-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 230, 118, 0.03), transparent);
+  animation: cardShine 6s ease-in-out infinite;
+}
+@keyframes cardShine {
+  0%, 100% { left: -100%; }
+  50% { left: 100%; }
+}
+
+/* ── Gradient text shimmer ───────────────────────── */
+.auth-gradient-text {
+  background: linear-gradient(
+    90deg,
+    #00E676 0%,
+    #69F0AE 25%,
+    #00C853 50%,
+    #A5D6A7 75%,
+    #00E676 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShimmer 6s linear infinite;
+}
+@keyframes gradientShimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ── Card glow border effect ─────────────────────── */
+.auth-card-glow {
+  position: relative;
+}
+.auth-card-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 1.5rem;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 230, 118, 0.15) 0%,
+    transparent 40%,
+    transparent 60%,
+    rgba(0, 200, 83, 0.1) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ── Form field staggered entrance ───────────────── */
+@keyframes fieldEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.auth-field-entrance {
+  opacity: 0;
+  animation: fieldEntrance 0.5s ease-out forwards;
+}
+
+/* ── Input focus glow ────────────────────────────── */
+.auth-input-wrapper {
+  position: relative;
+}
+.auth-input-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 0.75rem;
+  opacity: 0;
+  box-shadow: 0 0 20px rgba(0, 230, 118, 0.08);
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.auth-input-wrapper:focus-within::after {
+  opacity: 1;
+}
+
+/* ── Submit button hover pulse ───────────────────── */
+.auth-submit-btn {
+  position: relative;
+  overflow: hidden;
+}
+.auth-submit-btn::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  transition: width 0.4s ease, height 0.4s ease, top 0.4s ease, left 0.4s ease;
+  transform: translate(-50%, -50%);
+}
+.auth-submit-btn:hover:not(:disabled)::after {
+  width: 300px;
+  height: 300px;
+}
