@@ -158,16 +158,16 @@ export default function TipsPage() {
     <MotionPage>
       <section className="space-y-8">
         {/* Hero header */}
-        <div className="relative rounded-card bg-primary-dark p-5 text-white shadow-soft overflow-hidden">
+        <div className="relative rounded-card p-5 text-white shadow-soft overflow-hidden glass-card border-0">
           {/* Background image */}
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: "url('/images/tips-hero-bg.png')" }}
           />
-          <div className="absolute inset-0 bg-black/40" />
+          <div className="absolute inset-0 cinematic-overlay" />
 
           <div className="relative z-10">
-            <Badge className="bg-white/15 text-white" tone="dark">
+            <Badge className="bg-white/10 text-white/80" tone="dark">
               Highest category: {CATEGORY_LABELS[topCategory]}
             </Badge>
             <h1 className="mt-4 font-heading text-3xl font-extrabold">
@@ -180,7 +180,7 @@ export default function TipsPage() {
         </div>
 
         {message && (
-          <p role="status" aria-live="polite" className="rounded-card bg-primary-light p-3 text-sm font-bold text-primary-dark">
+          <p role="status" aria-live="polite" className="rounded-card bg-accent/10 p-3 text-sm font-bold text-accent">
             {message}
           </p>
         )}
