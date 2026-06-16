@@ -279,8 +279,8 @@ function MobileDrawer({
           })}
 
           {/* Explore section */}
-          <div className="mt-3 pt-3 border-t border-white/10">
-            <p className="px-3 text-[11px] font-extrabold uppercase tracking-wider text-white/40 mb-2">
+          <div className="mt-3 pt-3 border-t border-gray-200 dark:border-white/10">
+            <p className="px-3 text-[11px] font-extrabold uppercase tracking-wider text-gray-400 dark:text-white/40 mb-2">
               ✨ {t("nav.explore")}
             </p>
             <div className="flex gap-2 overflow-x-auto pb-2 px-1 hide-scrollbar">
@@ -550,7 +550,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-bold text-white">
+                <p className="truncate text-sm font-bold text-gray-900 dark:text-white">
                   {safeProfile.name || t("common.guest")}
                 </p>
                 <p className="truncate text-[11px] text-gray-400 dark:text-white/50">
@@ -666,3 +666,6 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </aside>
       )}
+    </div>
+  );
+}
