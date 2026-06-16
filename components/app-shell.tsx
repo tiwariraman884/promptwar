@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/theme-toggle";
 import Logo from "@/components/Logo";
 import { useSettings } from "@/lib/settings-context";
 import { useT } from "@/lib/i18n-context";
@@ -428,6 +429,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </Link>
               )}
               {!isBare && <NotificationBell />}
+              <ThemeToggle />
               {/* Hamburger for mobile */}
               {!isBare && (
                 <button

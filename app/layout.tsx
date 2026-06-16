@@ -81,10 +81,10 @@ export default function RootLayout({
   return (
     <html lang="en-IN" suppressHydrationWarning className={`${dmSans.variable} ${plusJakarta.variable} dark`}>
       <head>
-        {/* Ensure dark class is set and load language preference */}
+        {/* Theme detection: localStorage > system preference > dark default */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){document.documentElement.classList.add('dark');try{var l=JSON.parse(localStorage.getItem('eco_language')||'{}');if(l.code){document.documentElement.lang=l.code}}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem('greenstep-theme');var d=t==='light'?false:t==='dark'?true:window.matchMedia('(prefers-color-scheme:dark)').matches!==false;document.documentElement.classList.toggle('dark',d);var l=JSON.parse(localStorage.getItem('eco_language')||'{}');if(l.code){document.documentElement.lang=l.code}}catch(e){document.documentElement.classList.add('dark')}})();`,
           }}
         />
       </head>
