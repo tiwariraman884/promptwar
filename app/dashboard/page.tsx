@@ -70,24 +70,24 @@ function StatCard({
     <Card className="min-h-32">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-bold uppercase tracking-normal text-ink/70 dark:text-white/70">
+          <p className="text-xs font-bold uppercase tracking-normal text-text-muted">
             {title}
           </p>
-          <p className="mt-2 font-heading text-2xl font-extrabold text-ink dark:text-white">
+          <p className="mt-2 font-heading text-2xl font-extrabold text-white">
             {value}
           </p>
         </div>
         <div
           className={`grid h-11 w-11 shrink-0 place-items-center rounded-full ${
             tone === "amber"
-              ? "bg-amber-light text-amber"
-              : "bg-primary-light text-primary-dark"
+              ? "bg-amber/15 text-amber"
+              : "bg-accent/15 text-accent"
           }`}
         >
           {icon}
         </div>
       </div>
-      <div className="mt-3 text-sm leading-5 text-ink/70 dark:text-white/70">
+      <div className="mt-3 text-sm leading-5 text-text-muted">
         {helper}
       </div>
     </Card>
@@ -165,27 +165,27 @@ export default function DashboardPage() {
   return (
     <MotionPage>
       <section className="space-y-5">
-        <div className="relative rounded-card bg-primary-dark p-5 text-white shadow-soft overflow-hidden">
+        <div className="relative rounded-card p-5 text-white shadow-soft overflow-hidden glass-card border-0">
           {/* Background image */}
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: "url('/images/dashboard-hero-bg.png')" }}
           />
-          <div className="absolute inset-0 bg-black/40" />
+          <div className="absolute inset-0 cinematic-overlay" />
 
           <div className="relative z-10 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <Badge className="bg-white/15 text-white" tone="dark">
+              <Badge className="bg-white/10 text-white/80" tone="dark">
                 {data.profile.city}, {data.profile.state}
               </Badge>
               <h1 className="mt-4 font-heading text-xl font-extrabold leading-tight sm:text-2xl md:text-3xl">
-                {greeting}, <span className="bg-gradient-to-r from-[#B7E4C7] to-white bg-clip-text text-transparent">{displayName}</span> — Your CO2 today:{" "}
+                {greeting}, <span className="text-accent">{displayName}</span> — Your CO2 today:{" "}
                 <span className="tabular-nums">{data.todayKg.toFixed(1)}</span> kg
               </h1>
             </div>
             <Link
               href="/calculator"
-              className="inline-flex items-center gap-2.5 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold text-white backdrop-blur-sm transition-all duration-200 hover:bg-white hover:text-[#1B4332] hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 sm:px-5 sm:py-2.5 sm:text-sm"
+              className="btn-primary-gradient inline-flex items-center gap-2.5 rounded-full px-4 py-2 text-xs font-semibold transition-all duration-300 hover:shadow-glow hover:-translate-y-0.5 active:translate-y-0 sm:px-5 sm:py-2.5 sm:text-sm"
             >
               <Calculator aria-hidden size={16} />
               <span className="h-4 w-px bg-current opacity-25" />
@@ -196,8 +196,8 @@ export default function DashboardPage() {
 
         {/* Fix #19 — Error state banner */}
         {fetchError && !loading && (
-          <div role="alert" className="flex items-center justify-between gap-3 rounded-card border border-amber/30 bg-amber-light/50 p-3 dark:border-amber/20 dark:bg-amber/10">
-            <div className="flex items-center gap-2 text-sm font-bold text-amber dark:text-amber-300">
+          <div role="alert" className="flex items-center justify-between gap-3 rounded-card border border-amber/20 bg-amber/10 p-3">
+            <div className="flex items-center gap-2 text-sm font-bold text-amber">
               <AlertCircle aria-hidden size={16} />
               Using offline data — couldn&apos;t reach the server.
             </div>
@@ -205,7 +205,7 @@ export default function DashboardPage() {
               type="button"
               variant="ghost"
               onClick={fetchDashboard}
-              className="text-amber hover:text-amber-600 dark:text-amber-300"
+              className="text-amber hover:text-amber/80"
             >
               <RefreshCw aria-hidden size={14} />
               Retry
@@ -265,18 +265,18 @@ export default function DashboardPage() {
 
         <Card className="overflow-hidden relative">
           {/* Subtle top gradient accent */}
-          <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#2D6A4F] via-[#52B788] to-[#00E676]" />
+          <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-accent/60 via-accent to-accent-hover" />
 
           <CardHeader className="pb-1">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <CardTitle className="flex items-center gap-2">
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[#2D6A4F]/10 dark:bg-[#52B788]/10 text-[#2D6A4F] dark:text-[#52B788]">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-accent/10 text-accent">
                     📊
                   </span>
                   Last 30 days
                 </CardTitle>
-                <p className="mt-1.5 text-sm text-ink/65 dark:text-white/65">
+                <p className="mt-1.5 text-sm text-text-muted">
                   Green area stays under India&apos;s 5.67 kg/day benchmark.
                 </p>
               </div>
@@ -294,26 +294,26 @@ export default function DashboardPage() {
 
           {/* Stats summary row below chart */}
           {!loading && (
-            <div className="grid grid-cols-3 gap-px bg-line/30 dark:bg-white/[0.04] border-t border-line dark:border-white/[0.06] -mx-4 -mb-4">
-              <div className="bg-white dark:bg-white/[0.02] px-4 py-3 text-center">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/60 dark:text-white/60">30d Average</p>
-                <p className="mt-1 text-lg font-extrabold text-ink dark:text-white tabular-nums">
+            <div className="grid grid-cols-3 gap-px bg-white/[0.04] border-t border-white/[0.06] -mx-4 -mb-4">
+              <div className="bg-white/[0.02] px-4 py-3 text-center">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">30d Average</p>
+                <p className="mt-1 text-lg font-extrabold text-white tabular-nums">
                   {(data.dailySeries.reduce((sum: number, d: DailyPoint) => sum + d.kgCo2e, 0) / data.dailySeries.length).toFixed(1)}
-                  <span className="ml-1 text-xs font-bold text-ink/50 dark:text-white/50">kg</span>
+                  <span className="ml-1 text-xs font-bold text-white/50">kg</span>
                 </p>
               </div>
-              <div className="bg-white dark:bg-white/[0.02] px-4 py-3 text-center">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/60 dark:text-white/60">Best Day</p>
-                <p className="mt-1 text-lg font-extrabold text-emerald-600 dark:text-emerald-400 tabular-nums">
+              <div className="bg-white/[0.02] px-4 py-3 text-center">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Best Day</p>
+                <p className="mt-1 text-lg font-extrabold text-accent tabular-nums">
                   {Math.min(...data.dailySeries.map((d: DailyPoint) => d.kgCo2e)).toFixed(1)}
-                  <span className="ml-1 text-xs font-bold text-emerald-600/50 dark:text-emerald-400/50">kg</span>
+                  <span className="ml-1 text-xs font-bold text-accent/50">kg</span>
                 </p>
               </div>
-              <div className="bg-white dark:bg-white/[0.02] px-4 py-3 text-center">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/60 dark:text-white/60">Peak Day</p>
-                <p className="mt-1 text-lg font-extrabold text-amber-600 dark:text-amber-400 tabular-nums">
+              <div className="bg-white/[0.02] px-4 py-3 text-center">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Peak Day</p>
+                <p className="mt-1 text-lg font-extrabold text-amber tabular-nums">
                   {Math.max(...data.dailySeries.map((d: DailyPoint) => d.kgCo2e)).toFixed(1)}
-                  <span className="ml-1 text-xs font-bold text-amber-600/50 dark:text-amber-400/50">kg</span>
+                  <span className="ml-1 text-xs font-bold text-amber/50">kg</span>
                 </p>
               </div>
             </div>
@@ -336,9 +336,8 @@ export default function DashboardPage() {
       {/* Fix #9 — Accessible quick-add bottom sheet */}
       {sheetOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-end bg-ink/35 p-3 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-end bg-black/60 p-3 backdrop-blur-sm"
           onClick={(e) => {
-            // Close on backdrop click (not on the sheet itself)
             if (e.target === e.currentTarget) {
               setSheetOpen(false);
               fabRef.current?.focus();
@@ -349,13 +348,13 @@ export default function DashboardPage() {
             ref={sheetRef}
             aria-label="Quick add emission entry"
             aria-modal="true"
-            className="mx-auto w-full max-w-md rounded-t-[24px] bg-white p-4 shadow-soft dark:bg-[#10231F]"
+            className="mx-auto w-full max-w-md rounded-t-[24px] glass-card border-0 p-4 shadow-soft"
             role="dialog"
             tabIndex={-1}
           >
-            <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-line dark:bg-white/20" />
+            <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-white/20" />
             <div className="flex items-center justify-between gap-3">
-              <h2 className="font-heading text-lg font-extrabold">
+              <h2 className="font-heading text-lg font-extrabold text-white">
                 Quick add
               </h2>
               <Button
@@ -375,12 +374,12 @@ export default function DashboardPage() {
                 const Icon = item.icon;
                 return (
                   <Link
-                    className="flex min-h-20 items-center gap-3 rounded-card border border-line p-3 font-bold text-ink transition hover:border-primary hover:bg-primary-light dark:border-white/10 dark:text-white dark:hover:bg-white/10"
+                    className="flex min-h-20 items-center gap-3 rounded-card border border-white/10 p-3 font-bold text-white transition-all duration-300 hover:border-accent/30 hover:bg-accent/5"
                     href={`/calculator?category=${item.category}`}
                     key={item.category}
                     onClick={() => setSheetOpen(false)}
                   >
-                    <span className="grid h-11 w-11 place-items-center rounded-full bg-primary-light text-primary-dark">
+                    <span className="grid h-11 w-11 place-items-center rounded-full bg-accent/15 text-accent">
                       <Icon aria-hidden size={20} />
                     </span>
                     {CATEGORY_LABELS[item.category]}

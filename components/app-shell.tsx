@@ -6,7 +6,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { ThemeToggle } from "@/components/theme-toggle";
 import Logo from "@/components/Logo";
 import { useSettings } from "@/lib/settings-context";
 import { useT } from "@/lib/i18n-context";
@@ -96,7 +95,7 @@ const mobileDrawerCoreItems = [
   coreNavItems[11], // Profile
 ];
 
-/* ─── SVG Icons for hamburger, close, chevron, more ─── */
+/* ─── SVG Icons ─── */
 function HamburgerIcon({ size = 22 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -141,10 +140,10 @@ function NotificationBell() {
   return (
     <Link
       href="/notifications"
-      className="relative flex h-9 w-9 items-center justify-center rounded-full border border-[#52B788]/30 hover:bg-[#F0FDF4] dark:hover:bg-white/10 transition"
+      className="relative flex h-9 w-9 items-center justify-center rounded-full border border-white/10 hover:bg-white/10 hover:border-accent/30 transition-all duration-300"
       aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
     >
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-[#2D6A4F] dark:text-[#52B788]">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-text-secondary">
         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
         <path d="M13.73 21a2 2 0 0 1-3.46 0" />
       </svg>
@@ -186,20 +185,12 @@ function MobileDrawer({
   const drawerRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Focus trap: keep Tab key inside the drawer while it's open
   useEffect(() => {
     if (!open || !drawerRef.current) return;
-
-    // Focus the close button when drawer opens
     closeButtonRef.current?.focus();
 
     function handleKeyDown(e: KeyboardEvent) {
-      // Close on Escape
-      if (e.key === "Escape") {
-        onClose();
-        return;
-      }
-      // Trap focus inside drawer
+      if (e.key === "Escape") { onClose(); return; }
       if (e.key === "Tab" && drawerRef.current) {
         const focusable = drawerRef.current.querySelectorAll<HTMLElement>(
           'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
@@ -208,17 +199,14 @@ function MobileDrawer({
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
         if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
+          e.preventDefault(); last.focus();
         } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
+          e.preventDefault(); first.focus();
         }
       }
     }
 
     document.addEventListener("keydown", handleKeyDown);
-    // Prevent body scroll while drawer is open
     document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
@@ -228,10 +216,10 @@ function MobileDrawer({
 
   return (
     <>
-      {/* Backdrop — closes drawer on tap, 200ms opacity transition */}
+      {/* Backdrop */}
       <div
         className={cn(
-          "fixed inset-0 z-50 bg-black/40 transition-opacity duration-200 md:hidden",
+          "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity duration-200 md:hidden",
           open ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
         onClick={onClose}
@@ -239,32 +227,32 @@ function MobileDrawer({
         tabIndex={-1}
       />
 
-      {/* Drawer panel — slides in from right, 250ms ease-out */}
+      {/* Drawer panel */}
       <div
         ref={drawerRef}
         role="dialog"
         aria-modal="true"
         aria-label="Menu"
         className={cn(
-          "fixed top-0 right-0 bottom-0 z-50 w-72 max-w-[85vw] bg-white dark:bg-[#0F1F1A] shadow-2xl transition-transform duration-[250ms] ease-out md:hidden",
-          "flex flex-col",
+          "fixed top-0 right-0 bottom-0 z-50 w-72 max-w-[85vw] glass-nav shadow-2xl transition-transform duration-[250ms] ease-out md:hidden",
+          "flex flex-col bg-forest-deep/95",
           open ? "translate-x-0" : "translate-x-full"
         )}
       >
         {/* Drawer header */}
-        <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-line dark:border-white/10">
-          <span className="text-sm font-extrabold text-[#1B4332] dark:text-white">{t("drawer.more")}</span>
+        <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-white/10">
+          <span className="text-sm font-extrabold text-white">{t("drawer.more")}</span>
           <button
             ref={closeButtonRef}
             onClick={onClose}
             aria-label={t("header.closeMenu")}
-            className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-[#F0FDF4] dark:hover:bg-white/10 transition text-[#6B7C6E] dark:text-white/60"
+            className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-white/10 transition text-white/60"
           >
             <CloseIcon size={20} />
           </button>
         </div>
 
-        {/* Drawer nav items — core features */}
+        {/* Drawer nav items */}
         <nav aria-label="More navigation" className="flex-1 overflow-y-auto py-2 px-2">
           {mobileDrawerCoreItems.map((item) => {
             const active = pathname?.startsWith(item.href);
@@ -276,10 +264,10 @@ function MobileDrawer({
                 aria-current={active ? "page" : undefined}
                 onClick={onClose}
                 className={cn(
-                  "flex min-h-[48px] items-center gap-3 rounded-xl px-3 text-sm font-bold transition",
+                  "flex min-h-[48px] items-center gap-3 rounded-xl px-3 text-sm font-bold transition-all duration-300",
                   active
-                    ? "bg-primary-light text-primary-dark"
-                    : "text-ink/70 hover:bg-[#F0FDF4] dark:text-white/70 dark:hover:bg-white/5"
+                    ? "bg-accent/10 text-accent"
+                    : "text-white/70 hover:bg-white/5 hover:text-white"
                 )}
               >
                 <Icon size={19} />
@@ -289,9 +277,9 @@ function MobileDrawer({
             );
           })}
 
-          {/* ── Explore / More Tools — horizontal card slider ── */}
-          <div className="mt-3 pt-3 border-t border-line dark:border-white/10">
-            <p className="px-3 text-[11px] font-extrabold uppercase tracking-wider text-ink/40 dark:text-white/60 mb-2">
+          {/* Explore section */}
+          <div className="mt-3 pt-3 border-t border-white/10">
+            <p className="px-3 text-[11px] font-extrabold uppercase tracking-wider text-white/40 mb-2">
               ✨ {t("nav.explore")}
             </p>
             <div className="flex gap-2 overflow-x-auto pb-2 px-1 hide-scrollbar">
@@ -304,10 +292,10 @@ function MobileDrawer({
                     aria-current={active ? "page" : undefined}
                     onClick={onClose}
                     className={cn(
-                      "shrink-0 flex flex-col items-center justify-center w-[76px] h-[76px] rounded-2xl border text-center transition",
+                      "shrink-0 flex flex-col items-center justify-center w-[76px] h-[76px] rounded-2xl border text-center transition-all duration-300",
                       active
-                        ? "border-primary bg-primary/10 text-primary-dark dark:text-primary"
-                        : "border-line dark:border-white/10 bg-white dark:bg-white/5 hover:border-primary/50"
+                        ? "border-accent/30 bg-accent/10 text-accent"
+                        : "border-white/10 bg-white/5 hover:border-accent/20 hover:bg-white/10"
                     )}
                   >
                     <span className="text-xl mb-0.5">{item.emoji}</span>
@@ -324,10 +312,10 @@ function MobileDrawer({
             aria-current={pathname?.startsWith("/settings") ? "page" : undefined}
             onClick={onClose}
             className={cn(
-              "flex min-h-[48px] items-center gap-3 rounded-xl px-3 text-sm font-bold transition mt-1",
+              "flex min-h-[48px] items-center gap-3 rounded-xl px-3 text-sm font-bold transition-all duration-300 mt-1",
               pathname?.startsWith("/settings")
-                ? "bg-primary-light text-primary-dark"
-                : "text-ink/70 hover:bg-[#F0FDF4] dark:text-white/70 dark:hover:bg-white/5"
+                ? "bg-accent/10 text-accent"
+                : "text-white/70 hover:bg-white/5 hover:text-white"
             )}
           >
             <SettingsIcon size={19} />
@@ -336,12 +324,12 @@ function MobileDrawer({
           </Link>
         </nav>
 
-        {/* Sign in / Sign out — visually separated at the bottom */}
-        <div className="border-t border-line dark:border-white/10 px-2 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        {/* Sign in / Sign out */}
+        <div className="border-t border-white/10 px-2 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           {hasUser ? (
             <button
               onClick={() => { onSignOut(); onClose(); }}
-              className="flex w-full min-h-[48px] items-center gap-3 rounded-xl px-3 text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
+              className="flex w-full min-h-[48px] items-center gap-3 rounded-xl px-3 text-sm font-bold text-red-400 hover:bg-red-900/20 transition"
             >
               <IconSignOut size={19} />
               <span className="flex-1 text-left">{t("auth.signOut")}</span>
@@ -350,7 +338,7 @@ function MobileDrawer({
             <Link
               href="/auth"
               onClick={onClose}
-              className="flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-[#2D6A4F] px-4 text-sm font-bold text-white shadow-md hover:bg-[#1B4332] transition"
+              className="flex min-h-[48px] items-center justify-center gap-2 rounded-xl btn-primary-gradient px-4 text-sm font-bold shadow-md transition-all duration-300"
             >
               <IconSignIn size={19} />
               {t("auth.signInSignUp")}
@@ -379,43 +367,27 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isBare = isLanding || isOnboarding || isAuth;
 
   useEffect(() => { setMounted(true); }, []);
-
-  // Close drawer on route change so navigation feels snappy
   useEffect(() => { setDrawerOpen(false); }, [pathname]);
 
-  // AUTH GATE (client-side, RULE 1): Redirect unauthenticated users to /auth
-  // on ANY protected route. This is the client-side enforcement layer for the
-  // localStorage-based mock auth, complementing the server-side middleware.
+  // AUTH GATE
   useEffect(() => {
     if (!mounted) return;
-    // Auth-related pages and landing are allowed without login
     if (isAuth) return;
     const user = localStorage.getItem("eco_user");
-    if (!user) {
-      // RULE 1: Use replace so the browser back button cannot return to the
-      // protected page after being redirected (RULE 3 principle applied here).
-      router.replace("/auth");
-    }
+    if (!user) { router.replace("/auth"); }
   }, [mounted, pathname, isAuth, router]);
 
-  // Use safe values during SSR to prevent hydration mismatch
   const safeProfile = mounted ? profile : { name: "", email: "", avatar: "" };
   const hasUser = mounted && !!profile.name;
 
-  // AUTH GATE (RULE 3): Sign out clears ALL auth state and redirects to /auth.
-  // Uses router.replace so the browser back button cannot return to a
-  // protected page after sign-out.
   async function handleSignOut() {
     try {
-      // Attempt Supabase sign-out if configured
       const { isSupabaseConfigured, createClient } = await import("@/lib/supabase/client");
       if (isSupabaseConfigured()) {
         const supabase = createClient();
         await supabase.auth.signOut();
       }
-    } catch {
-      // Supabase not configured or sign-out failed — continue with localStorage clear
-    }
+    } catch { /* continue with localStorage clear */ }
     localStorage.removeItem("eco_user");
     localStorage.removeItem("eco_settings_profile");
     router.replace("/auth");
@@ -424,7 +396,6 @@ export function AppShell({ children }: { children: ReactNode }) {
   const toggleDrawer = useCallback(() => setDrawerOpen((v) => !v), []);
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
 
-  // Memoize active-state checks — avoids 19×startsWith per render
   const isDrawerItemActive = useMemo(
     () => mobileDrawerCoreItems.some((item) => pathname?.startsWith(item.href))
       || exploreItems.some((item) => pathname?.startsWith(item.href))
@@ -432,7 +403,6 @@ export function AppShell({ children }: { children: ReactNode }) {
     [pathname]
   );
 
-  // Memoize nav items with active states pre-computed
   const activeCoreNav = useMemo(
     () => coreNavItems.map((item) => ({ ...item, active: pathname?.startsWith(item.href) ?? false })),
     [pathname]
@@ -443,30 +413,28 @@ export function AppShell({ children }: { children: ReactNode }) {
   );
 
   return (
-    <div className="min-h-screen bg-mist text-ink dark:bg-[#0B1815] dark:text-white" suppressHydrationWarning>
+    <div className="min-h-screen bg-forest-deep text-text-secondary" suppressHydrationWarning>
       {!isLanding && (
-        <header className="sticky top-0 z-30 border-b border-line/80 bg-white/85 backdrop-blur dark:border-white/10 dark:bg-[#0B1815]/85">
+        <header className="sticky top-0 z-30 glass-nav">
           <div className="mx-auto flex min-h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
             <Logo href="/dashboard" size="md" variant="full" />
             <div className="flex items-center gap-2">
               {!isAuth && (
                 <Link
-                  className="hidden min-h-11 items-center rounded-pill px-4 text-sm font-bold text-primary-dark hover:bg-primary-light dark:text-white dark:hover:bg-white/10 sm:inline-flex"
+                  className="hidden min-h-11 items-center rounded-pill px-4 text-sm font-bold text-white hover:bg-white/10 hover:text-accent sm:inline-flex transition-all duration-300"
                   href="/onboarding"
                 >
                   {t("header.onboarding")}
                 </Link>
               )}
               {!isBare && <NotificationBell />}
-              <ThemeToggle />
-              {/* MOBILE: Hamburger icon — alternative way to open the drawer.
-                  Hidden on desktop (md:hidden). */}
+              {/* Hamburger for mobile */}
               {!isBare && (
                 <button
                   onClick={toggleDrawer}
                   aria-label={t("header.openMenu")}
                   aria-expanded={drawerOpen}
-                  className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-[#F0FDF4] dark:hover:bg-white/10 transition text-[#2D6A4F] dark:text-[#52B788] md:hidden"
+                  className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-white/10 transition-all duration-300 text-white/70 md:hidden"
                 >
                   <HamburgerIcon size={22} />
                 </button>
@@ -476,7 +444,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </header>
       )}
 
-      {/* Main content — pb-20 on mobile to prevent content hiding behind bottom nav */}
+      {/* Main content */}
       <main className={cn(
         !isBare ? "md:pl-64" : undefined,
         !isBare ? "pb-20 md:pb-0" : undefined
@@ -484,7 +452,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         {children}
       </main>
 
-      {/* ─── MOBILE: "More" Slide-in Drawer ─── */}
+      {/* Mobile drawer */}
       {!isBare && (
         <MobileDrawer
           open={drawerOpen}
@@ -496,16 +464,13 @@ export function AppShell({ children }: { children: ReactNode }) {
         />
       )}
 
-      {/* ─── MOBILE: Bottom Navigation Bar ─── */}
-      {/* Fixed to bottom, 5 items: Home, Scanner, Community, Eco Store, More.
-          Height ≈60px + iOS safe area. Hidden on desktop (md:hidden). */}
+      {/* Mobile bottom nav */}
       {!isBare && (
         <nav
           aria-label="Primary"
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-[#52B788]/10 dark:border-white/[0.06] bg-white/80 dark:bg-[#0B1815]/80 backdrop-blur-2xl backdrop-saturate-150 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-8px_32px_rgba(8,80,65,0.1)] dark:shadow-[0_-8px_32px_rgba(0,0,0,0.3)] md:hidden"
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[0.06] bg-forest-deep/80 backdrop-blur-2xl backdrop-saturate-150 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-8px_32px_rgba(0,0,0,0.3)] md:hidden"
         >
           <div className="mx-auto grid max-w-md grid-cols-5 gap-0.5">
-            {/* 4 main nav items */}
             {mobileBottomItems.map((item) => {
               const active = pathname?.startsWith(item.href);
               const Icon = item.icon;
@@ -514,21 +479,19 @@ export function AppShell({ children }: { children: ReactNode }) {
                   aria-current={active ? "page" : undefined}
                   aria-label={t(item.tKey)}
                   className={cn(
-                    "relative flex min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-2xl text-[10px] font-bold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52B788] focus-visible:ring-offset-2",
+                    "relative flex min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-2xl text-[10px] font-bold transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2",
                     active
-                      ? "text-[#2D6A4F] dark:text-[#52B788]"
-                      : "text-[#6B7C6E]/70 dark:text-white/50 hover:text-[#2D6A4F] dark:hover:text-[#52B788]/80"
+                      ? "text-accent"
+                      : "text-white/40 hover:text-accent/80"
                   )}
                   href={item.href as any}
                   key={item.href}
                 >
-                  {/* Active background pill */}
                   {active && (
-                    <span className="absolute inset-x-1 inset-y-0.5 rounded-2xl bg-gradient-to-b from-[#D1FAE5]/70 to-[#D1FAE5]/30 dark:from-[#2D6A4F]/30 dark:to-[#2D6A4F]/10 border border-[#52B788]/15 dark:border-[#52B788]/10" />
+                    <span className="absolute inset-x-1 inset-y-0.5 rounded-2xl bg-accent/10 border border-accent/15" />
                   )}
-                  {/* Active top indicator dot */}
                   {active && (
-                    <span className="absolute -top-1.5 left-1/2 -translate-x-1/2 h-[3px] w-5 rounded-full bg-gradient-to-r from-[#2D6A4F] to-[#52B788]" />
+                    <span className="absolute -top-1.5 left-1/2 -translate-x-1/2 h-[3px] w-5 rounded-full bg-gradient-to-r from-accent to-accent-hover" />
                   )}
                   <span className={cn(
                     "relative z-10 transition-transform duration-300",
@@ -541,24 +504,23 @@ export function AppShell({ children }: { children: ReactNode }) {
               );
             })}
 
-            {/* "More" button — opens the slide-in drawer */}
+            {/* "More" button */}
             <button
               onClick={toggleDrawer}
               aria-label={t("drawer.moreOptions")}
               aria-expanded={drawerOpen}
               className={cn(
-                "relative flex min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-2xl text-[10px] font-bold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52B788] focus-visible:ring-offset-2",
+                "relative flex min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-2xl text-[10px] font-bold transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2",
                 drawerOpen || isDrawerItemActive
-                  ? "text-[#2D6A4F] dark:text-[#52B788]"
-                  : "text-[#6B7C6E]/70 dark:text-white/50 hover:text-[#2D6A4F] dark:hover:text-[#52B788]/80"
+                  ? "text-accent"
+                  : "text-white/40 hover:text-accent/80"
               )}
             >
-              {/* Active background pill */}
               {(drawerOpen || isDrawerItemActive) && (
-                <span className="absolute inset-x-1 inset-y-0.5 rounded-2xl bg-gradient-to-b from-[#D1FAE5]/70 to-[#D1FAE5]/30 dark:from-[#2D6A4F]/30 dark:to-[#2D6A4F]/10 border border-[#52B788]/15 dark:border-[#52B788]/10" />
+                <span className="absolute inset-x-1 inset-y-0.5 rounded-2xl bg-accent/10 border border-accent/15" />
               )}
               {(drawerOpen || isDrawerItemActive) && (
-                <span className="absolute -top-1.5 left-1/2 -translate-x-1/2 h-[3px] w-5 rounded-full bg-gradient-to-r from-[#2D6A4F] to-[#52B788]" />
+                <span className="absolute -top-1.5 left-1/2 -translate-x-1/2 h-[3px] w-5 rounded-full bg-gradient-to-r from-accent to-accent-hover" />
               )}
               <span className={cn(
                 "relative z-10 transition-transform duration-300",
@@ -572,13 +534,13 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
       )}
 
-      {/* ─── Desktop sidebar (unchanged — hidden on mobile via md:flex) ─── */}
+      {/* Desktop sidebar */}
       {!isBare && (
-        <aside aria-label="Main navigation" className="fixed bottom-6 left-6 top-24 hidden w-56 overflow-y-auto rounded-card border border-line bg-white p-2 shadow-soft dark:border-white/10 dark:bg-white/[0.04] md:flex md:flex-col">
+        <aside aria-label="Main navigation" className="fixed bottom-6 left-6 top-24 hidden w-56 overflow-y-auto rounded-card glass-card p-2 md:flex md:flex-col">
           {/* User card */}
-          <div className="mb-2 rounded-card bg-primary-light/50 dark:bg-white/[0.06] p-3">
+          <div className="mb-2 rounded-card bg-white/[0.06] p-3">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full overflow-hidden bg-[#2D6A4F] text-white text-xs font-bold shadow">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full overflow-hidden bg-accent/20 text-accent text-xs font-bold shadow">
                 {mounted && safeProfile.avatar ? (
                   <Image src={safeProfile.avatar} alt="" width={36} height={36} unoptimized className="h-full w-full object-cover" />
                 ) : (
@@ -586,17 +548,17 @@ export function AppShell({ children }: { children: ReactNode }) {
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-bold text-ink dark:text-white">
+                <p className="truncate text-sm font-bold text-white">
                   {safeProfile.name || t("common.guest")}
                 </p>
-                <p className="truncate text-[11px] text-ink/70 dark:text-white/70">
+                <p className="truncate text-[11px] text-white/50">
                   {safeProfile.email || t("common.notSignedIn")}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Main nav — core items only */}
+          {/* Main nav */}
           <nav aria-label="Primary desktop" className="flex-1 space-y-0.5 overflow-y-auto">
             {activeCoreNav.map((item) => {
               const Icon = item.icon;
@@ -604,10 +566,10 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <Link
                   aria-current={item.active ? "page" : undefined}
                   className={cn(
-                    "flex min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52B788]",
+                    "flex min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                     item.active
-                      ? "bg-primary-light text-primary-dark"
-                      : "text-ink/80 hover:bg-primary-light/70 dark:text-white/70"
+                      ? "bg-accent/10 text-accent"
+                      : "text-white/60 hover:bg-white/5 hover:text-white"
                   )}
                   href={item.href as any}
                   key={item.href}
@@ -618,16 +580,16 @@ export function AppShell({ children }: { children: ReactNode }) {
               );
             })}
 
-            {/* ── Explore / More Tools — collapsible section ── */}
+            {/* Explore section */}
             <div className="mt-1">
               <button
                 onClick={() => startTransition(() => setExploreOpen((v) => !v))}
                 aria-expanded={exploreOpen}
                 className={cn(
-                  "flex w-full min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52B788]",
+                  "flex w-full min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                   activeExploreNav.some((item) => item.active)
-                    ? "bg-primary-light text-primary-dark"
-                    : "text-ink/80 hover:bg-primary-light/70 dark:text-white/70"
+                    ? "bg-accent/10 text-accent"
+                    : "text-white/60 hover:bg-white/5 hover:text-white"
                 )}
               >
                 <span className="text-sm">✨</span>
@@ -635,7 +597,6 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <span className={cn("text-[10px] transition-transform duration-200", exploreOpen ? "rotate-90" : "")}>▸</span>
               </button>
 
-              {/* Collapsible panel */}
               <div className={cn(
                 "overflow-hidden transition-[max-height,opacity] duration-300 ease-out will-change-[max-height,opacity]",
                 exploreOpen ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"
@@ -647,10 +608,10 @@ export function AppShell({ children }: { children: ReactNode }) {
                       <Link
                         aria-current={item.active ? "page" : undefined}
                         className={cn(
-                          "flex min-h-9 items-center gap-3 rounded-card px-3 text-[12px] font-bold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52B788]",
+                          "flex min-h-9 items-center gap-3 rounded-card px-3 text-[12px] font-bold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                           item.active
-                            ? "bg-primary-light text-primary-dark"
-                            : "text-ink/80 hover:bg-primary-light/50 dark:text-white/70"
+                            ? "bg-accent/10 text-accent"
+                            : "text-white/60 hover:bg-white/5 hover:text-white"
                         )}
                         href={item.href as any}
                         key={item.href}
@@ -666,28 +627,27 @@ export function AppShell({ children }: { children: ReactNode }) {
           </nav>
 
           {/* Divider */}
-          <div className="my-2 h-px bg-line dark:bg-white/10" />
+          <div className="my-2 section-divider" />
 
-          {/* Settings link */}
+          {/* Settings & auth */}
           <div className="space-y-0.5">
             <Link
               href="/settings"
               className={cn(
-                "flex min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52B788]",
+                "flex min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                 pathname?.startsWith("/settings")
-                  ? "bg-primary-light text-primary-dark"
-                  : "text-ink/80 hover:bg-primary-light/70 dark:text-white/70"
+                  ? "bg-accent/10 text-accent"
+                  : "text-white/60 hover:bg-white/5 hover:text-white"
               )}
             >
               <SettingsIcon size={17} />
               {t("nav.settings")}
             </Link>
 
-            {/* Sign in / out */}
             {hasUser ? (
               <button
                 onClick={handleSignOut}
-                className="flex w-full min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+                className="flex w-full min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold text-red-400 hover:bg-red-900/20 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
               >
               <IconSignOut size={17} />
               {t("auth.signOut")}
@@ -695,7 +655,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             ) : (
               <Link
                 href="/auth"
-                className="flex min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold text-primary-dark hover:bg-primary-light dark:text-[#52B788] dark:hover:bg-white/10 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#52B788]"
+                className="flex min-h-10 items-center gap-3 rounded-card px-3 text-[13px] font-bold text-accent hover:bg-accent/10 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 <IconSignIn size={17} />
                 {t("auth.signIn")}

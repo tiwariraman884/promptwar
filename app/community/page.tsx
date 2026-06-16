@@ -25,15 +25,15 @@ function LeaderRow({
   value: string;
 }) {
   return (
-    <div className="flex min-h-14 items-center gap-3 rounded-card border border-line bg-white px-3 dark:border-white/10 dark:bg-white/5">
-      <span className="grid h-9 w-9 place-items-center rounded-full bg-primary-light font-heading font-extrabold text-primary-dark">
+    <div className="flex min-h-14 items-center gap-3 rounded-card border border-white/10 bg-white/5 px-3">
+      <span className="grid h-9 w-9 place-items-center rounded-full bg-accent/15 font-heading font-extrabold text-accent">
         {rank}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-extrabold text-ink dark:text-white">
+        <p className="truncate text-sm font-extrabold text-white">
           {primary}
         </p>
-        <p className="truncate text-xs font-bold text-ink/70 dark:text-white/55">
+        <p className="truncate text-xs font-bold text-text-muted">
           {secondary}
         </p>
       </div>
@@ -102,16 +102,16 @@ export default function CommunityPage() {
   return (
     <MotionPage>
       <section className="space-y-5">
-        <div className="relative rounded-card bg-primary-dark p-5 text-white shadow-soft overflow-hidden">
+        <div className="relative rounded-card p-5 text-white shadow-soft overflow-hidden glass-card border-0">
           {/* Background image */}
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: "url('/images/community-hero-bg.png')" }}
           />
-          <div className="absolute inset-0 bg-black/40" />
+          <div className="absolute inset-0 cinematic-overlay" />
 
           <div className="relative z-10">
-            <Badge className="bg-white/15 text-white" tone="dark">
+            <Badge className="bg-white/10 text-white/80" tone="dark">
               Haridwar community
             </Badge>
             <h1 className="mt-4 font-heading text-3xl font-extrabold">
