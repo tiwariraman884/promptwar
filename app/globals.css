@@ -2,12 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: light;
-}
+/* ═══════════════════════════════════════════════════ */
+/*  PREMIUM DARK ECO-THEME — GLOBAL STYLES            */
+/* ═══════════════════════════════════════════════════ */
 
-.dark {
+:root {
   color-scheme: dark;
+  --accent: #B8F34A;
+  --accent-hover: #A7E23D;
+  --forest: #1C2F2D;
+  --forest-deep: #0A1414;
+  --glass-bg: rgba(28, 47, 45, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: 16px;
 }
 
 * {
@@ -17,6 +24,8 @@
 html {
   min-width: 320px;
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -24,6 +33,10 @@ body {
   font-family: var(--font-body), "DM Sans", Inter, system-ui, sans-serif;
   letter-spacing: 0;
   text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #0A1414;
+  color: #D1D5DB;
 }
 
 button,
@@ -35,10 +48,112 @@ textarea {
 }
 
 input[type="range"] {
-  accent-color: #1d9e75;
+  accent-color: #B8F34A;
 }
 
-/* Auth hero floating icons */
+/* ── Selection color ─────────────────────────────── */
+::selection {
+  background: rgba(184, 243, 74, 0.25);
+  color: #FFFFFF;
+}
+
+/* ── Scrollbar styling ───────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(85, 97, 90, 0.5);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(85, 97, 90, 0.8);
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  GLASSMORPHISM UTILITIES                           */
+/* ═══════════════════════════════════════════════════ */
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-nav {
+  background: rgba(28, 47, 45, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+}
+.glass-input:focus {
+  border-color: rgba(184, 243, 74, 0.5);
+  box-shadow: 0 0 0 3px rgba(184, 243, 74, 0.1);
+  outline: none;
+}
+.glass-input::placeholder {
+  color: #9CA3AF;
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  CINEMATIC OVERLAY                                 */
+/* ═══════════════════════════════════════════════════ */
+
+.cinematic-overlay {
+  background: linear-gradient(
+    135deg,
+    rgba(10, 20, 20, 0.92) 0%,
+    rgba(28, 47, 45, 0.75) 50%,
+    rgba(49, 75, 51, 0.55) 100%
+  );
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  BUTTON STYLES                                     */
+/* ═══════════════════════════════════════════════════ */
+
+.btn-primary-gradient {
+  background: linear-gradient(135deg, #B8F34A 0%, #8CC63F 100%);
+  color: #0A1414;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+.btn-primary-gradient:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(184, 243, 74, 0.3);
+}
+.btn-primary-gradient:active:not(:disabled) {
+  transform: translateY(0) scale(1);
+}
+
+.btn-glass {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  transition: all 0.3s ease;
+}
+.btn-glass:hover:not(:disabled) {
+  border-color: #B8F34A;
+  color: #B8F34A;
+  background: rgba(184, 243, 74, 0.05);
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  ANIMATIONS                                        */
+/* ═══════════════════════════════════════════════════ */
+
+/* Floating animation */
 @keyframes float {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   33% { transform: translateY(-12px) rotate(5deg); }
@@ -47,6 +162,83 @@ input[type="range"] {
 .animate-float {
   animation: float 8s ease-in-out infinite;
 }
+
+/* Scroll reveal */
+@keyframes revealUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+.reveal-up {
+  opacity: 0;
+  animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Glow pulse */
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(184, 243, 74, 0.1); }
+  50% { box-shadow: 0 0 40px rgba(184, 243, 74, 0.2); }
+}
+.glow-pulse {
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+/* Fade slide up */
+@keyframes fadeSlideUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Modal entrance */
+@keyframes modalIn {
+  0% { opacity: 0; transform: scale(0.95) translateY(12px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Pulsing ring for map markers */
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 0; }
+}
+.animate-pulse-ring {
+  animation: pulse-ring 1.5s ease-out infinite;
+}
+
+/* Gradient shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.shimmer-text {
+  background: linear-gradient(90deg, #B8F34A 0%, #D4FF7A 40%, #B8F34A 80%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 6s linear infinite;
+}
+
+/* Card hover glow */
+.card-hover-glow {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-hover-glow:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(184, 243, 74, 0.08);
+  border-color: rgba(184, 243, 74, 0.15);
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  UTILITY CLASSES                                   */
+/* ═══════════════════════════════════════════════════ */
 
 /* Hide scrollbar but keep scrolling */
 .hide-scrollbar {
@@ -57,7 +249,7 @@ input[type="range"] {
   display: none;
 }
 
-/* Smooth touch scrolling on mobile */
+/* Smooth touch scrolling */
 @media (pointer: coarse) {
   .overflow-x-auto,
   .overflow-y-auto {
@@ -65,80 +257,24 @@ input[type="range"] {
   }
 }
 
-/* Safe area insets for notch phones */
+/* Safe area insets */
 @supports (padding: env(safe-area-inset-bottom)) {
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
 
-/* Prevent text size adjustment on orientation change */
-html {
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-}
-
-/* Pulsing ring animation for submitted map markers */
-@keyframes pulse-ring {
-  0% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.8); opacity: 0; }
-  100% { transform: scale(1); opacity: 0; }
-}
-.animate-pulse-ring {
-  animation: pulse-ring 1.5s ease-out infinite;
-}
-
-/* Quick Wins modal entrance animation */
-@keyframes modalIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.95) translateY(12px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-/* Hero banner entrance animation */
-@keyframes fadeSlideUp {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Respect reduced motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  .animate-pulse-ring,
-  .animate-float,
-  .auth-tree-trunk,
-  .auth-tree-branch,
-  .auth-tree-canopy,
-  .auth-tree-shadow,
-  .auth-hero-entrance,
-  .auth-form-entrance,
-  .auth-form-content-enter,
-  .auth-field-entrance,
-  .auth-glow-pulse {
-    animation: none !important;
-    opacity: 1 !important;
-  }
-  * {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-  }
+/* Section divider gradient */
+.section-divider {
+  background: linear-gradient(90deg, transparent, rgba(85, 97, 90, 0.4), transparent);
+  height: 1px;
 }
 
 /* ═══════════════════════════════════════════════════ */
-/*  AUTH PAGE – ANIMATIONS & EFFECTS                  */
+/*  AUTH PAGE ANIMATIONS (preserved)                  */
 /* ═══════════════════════════════════════════════════ */
 
-/* ── Growing tree ─────────────────────────────────── */
+/* Tree growing animations */
 @keyframes treeTrunkGrow {
   0% { clip-path: inset(100% 0 0 0); opacity: 0; }
   60% { opacity: 1; }
@@ -158,130 +294,80 @@ html {
   100% { opacity: 0.25; transform: scaleX(1); }
 }
 
-.auth-tree-container {
-  opacity: 0.6;
-}
-.auth-tree-trunk {
-  animation: treeTrunkGrow 1.8s ease-out 0.5s both;
-}
-.auth-tree-branch {
-  stroke-dasharray: 100;
-  stroke-dashoffset: 100;
-}
+.auth-tree-container { opacity: 0.6; }
+.auth-tree-trunk { animation: treeTrunkGrow 1.8s ease-out 0.5s both; }
+.auth-tree-branch { stroke-dasharray: 100; stroke-dashoffset: 100; }
 .auth-tree-branch-1 { animation: treeBranchGrow 1s ease-out 1.6s both; }
 .auth-tree-branch-2 { animation: treeBranchGrow 1s ease-out 1.8s both; }
 .auth-tree-branch-3 { animation: treeBranchGrow 1s ease-out 2.0s both; }
 .auth-tree-branch-4 { animation: treeBranchGrow 1s ease-out 2.2s both; }
-
 .auth-tree-canopy-1 { animation: treeCanopyBloom 0.8s ease-out 2.2s both; transform-origin: center; }
 .auth-tree-canopy-2 { animation: treeCanopyBloom 0.8s ease-out 2.4s both; transform-origin: center; }
 .auth-tree-canopy-3 { animation: treeCanopyBloom 0.8s ease-out 2.6s both; transform-origin: center; }
 .auth-tree-canopy-4 { animation: treeCanopyBloom 0.8s ease-out 2.8s both; transform-origin: center; }
 .auth-tree-canopy-5 { animation: treeCanopyBloom 0.8s ease-out 3.0s both; transform-origin: center; }
 .auth-tree-canopy-6 { animation: treeCanopyBloom 0.8s ease-out 3.2s both; transform-origin: center; }
-
 .auth-tree-shadow { animation: treeShadowFade 1s ease-out 2.5s both; transform-origin: center; }
 
-/* ── Hero section entrances ──────────────────────── */
+/* Hero/form entrances */
 @keyframes heroEntrance {
-  0% {
-    opacity: 0;
-    transform: translateY(30px);
-    filter: blur(4px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
-  }
+  0% { opacity: 0; transform: translateY(30px); filter: blur(4px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
 }
 .auth-hero-entrance {
   opacity: 0;
   animation: heroEntrance 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* ── Form card entrance ──────────────────────────── */
 @keyframes formEntrance {
-  0% {
-    opacity: 0;
-    transform: translateY(20px) scale(0.97);
-    filter: blur(6px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
+  0% { opacity: 0; transform: translateY(20px) scale(0.97); filter: blur(6px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 }
 .auth-form-entrance {
   opacity: 0;
   animation: formEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* ── Form content crossfade ──────────────────────── */
 @keyframes formContentEnter {
-  0% {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 .auth-form-content-enter {
   animation: formContentEnter 0.45s ease-out forwards;
 }
 
-/* ── Background glow pulse ───────────────────────── */
-@keyframes glowPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.08); }
+@keyframes fieldEntrance {
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
+.auth-field-entrance {
+  opacity: 0;
+  animation: fieldEntrance 0.5s ease-out forwards;
+}
+
 .auth-glow-pulse {
   animation: glowPulse 8s ease-in-out infinite;
 }
 
-/* ── Stat card hover effects ─────────────────────── */
+/* Auth stat cards */
 .auth-stat-card {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .auth-stat-card:hover {
-  border-color: rgba(0, 230, 118, 0.15);
+  border-color: rgba(184, 243, 74, 0.2);
   background: rgba(255, 255, 255, 0.05);
   transform: translateY(-3px);
-  box-shadow: 0 8px 32px rgba(0, 230, 118, 0.08);
+  box-shadow: 0 8px 32px rgba(184, 243, 74, 0.08);
 }
 
-/* ── Testimonial transitions ─────────────────────── */
-.auth-testimonial-enter {
-  animation: testimonialFadeIn 0.4s ease-out forwards;
-}
-.auth-testimonial-exit {
-  animation: testimonialFadeOut 0.4s ease-in forwards;
-}
-@keyframes testimonialFadeIn {
-  0% { opacity: 0; transform: translateX(16px); }
-  100% { opacity: 1; transform: translateX(0); }
-}
-@keyframes testimonialFadeOut {
-  0% { opacity: 1; transform: translateX(0); }
-  100% { opacity: 0; transform: translateX(-16px); }
-}
-
-/* ── Testimonial card shine ──────────────────────── */
-.auth-testimonial-card {
-  position: relative;
-  overflow: hidden;
-}
+/* Auth testimonial */
+.auth-testimonial-card { position: relative; overflow: hidden; }
 .auth-testimonial-card::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(0, 230, 118, 0.03), transparent);
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(184, 243, 74, 0.03), transparent);
   animation: cardShine 6s ease-in-out infinite;
 }
 @keyframes cardShine {
@@ -289,44 +375,25 @@ html {
   50% { left: 100%; }
 }
 
-/* ── Gradient text shimmer ───────────────────────── */
+/* Auth gradient text */
 .auth-gradient-text {
-  background: linear-gradient(
-    90deg,
-    #00E676 0%,
-    #69F0AE 25%,
-    #00C853 50%,
-    #A5D6A7 75%,
-    #00E676 100%
-  );
+  background: linear-gradient(90deg, #B8F34A 0%, #D4FF7A 25%, #8CC63F 50%, #B8F34A 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: gradientShimmer 6s linear infinite;
-}
-@keyframes gradientShimmer {
-  0% { background-position: 0% center; }
-  100% { background-position: 200% center; }
+  animation: shimmer 6s linear infinite;
 }
 
-/* ── Card glow border effect ─────────────────────── */
-.auth-card-glow {
-  position: relative;
-}
+/* Auth card glow border */
+.auth-card-glow { position: relative; }
 .auth-card-glow::before {
   content: "";
   position: absolute;
   inset: -1px;
   border-radius: 1.5rem;
   padding: 1px;
-  background: linear-gradient(
-    135deg,
-    rgba(0, 230, 118, 0.15) 0%,
-    transparent 40%,
-    transparent 60%,
-    rgba(0, 200, 83, 0.1) 100%
-  );
+  background: linear-gradient(135deg, rgba(184, 243, 74, 0.2) 0%, transparent 40%, transparent 60%, rgba(140, 198, 63, 0.15) 100%);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -334,58 +401,61 @@ html {
   pointer-events: none;
 }
 
-/* ── Form field staggered entrance ───────────────── */
-@keyframes fieldEntrance {
-  0% {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.auth-field-entrance {
-  opacity: 0;
-  animation: fieldEntrance 0.5s ease-out forwards;
-}
-
-/* ── Input focus glow ────────────────────────────── */
-.auth-input-wrapper {
-  position: relative;
-}
+/* Auth input glow */
+.auth-input-wrapper { position: relative; }
 .auth-input-wrapper::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: 0.75rem;
   opacity: 0;
-  box-shadow: 0 0 20px rgba(0, 230, 118, 0.08);
+  box-shadow: 0 0 20px rgba(184, 243, 74, 0.08);
   transition: opacity 0.3s ease;
   pointer-events: none;
 }
-.auth-input-wrapper:focus-within::after {
-  opacity: 1;
-}
+.auth-input-wrapper:focus-within::after { opacity: 1; }
 
-/* ── Submit button hover pulse ───────────────────── */
-.auth-submit-btn {
-  position: relative;
-  overflow: hidden;
-}
+/* Auth submit button */
+.auth-submit-btn { position: relative; overflow: hidden; }
 .auth-submit-btn::after {
   content: "";
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
+  top: 50%; left: 50%;
+  width: 0; height: 0;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.15);
-  transition: width 0.4s ease, height 0.4s ease, top 0.4s ease, left 0.4s ease;
+  transition: width 0.4s ease, height 0.4s ease;
   transform: translate(-50%, -50%);
 }
 .auth-submit-btn:hover:not(:disabled)::after {
-  width: 300px;
-  height: 300px;
+  width: 300px; height: 300px;
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  REDUCED MOTION                                    */
+/* ═══════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-pulse-ring,
+  .reveal-up,
+  .glow-pulse,
+  .shimmer-text,
+  .auth-tree-trunk,
+  .auth-tree-branch,
+  .auth-tree-canopy,
+  .auth-tree-shadow,
+  .auth-hero-entrance,
+  .auth-form-entrance,
+  .auth-form-content-enter,
+  .auth-field-entrance,
+  .auth-glow-pulse,
+  .card-hover-glow {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }

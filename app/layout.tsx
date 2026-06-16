@@ -5,7 +5,6 @@ import "./globals.css";
 import { AppShell } from "@/components/app-shell";
 import { Providers } from "@/app/providers";
 
-/* Fix #13 — Preload fonts via next/font instead of CSS-only loading */
 const dmSans = DM_Sans({
   subsets: ["latin"],
   variable: "--font-body",
@@ -20,7 +19,6 @@ const plusJakarta = Plus_Jakarta_Sans({
   weight: ["600", "700", "800"],
 });
 
-/* Fix #21, #22, #25 — Enhanced metadata with OG, canonical, metadataBase */
 export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL || "https://promptwar-orpin.vercel.app"
@@ -68,7 +66,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1D9E75",
+  themeColor: "#1C2F2D",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -81,16 +79,16 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="en-IN" suppressHydrationWarning className={`${dmSans.variable} ${plusJakarta.variable}`}>
+    <html lang="en-IN" suppressHydrationWarning className={`${dmSans.variable} ${plusJakarta.variable} dark`}>
       <head>
-        {/* Set dark class before React hydrates to prevent mismatch */}
+        {/* Ensure dark class is set and load language preference */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var d=localStorage.getItem('greenstep-theme');if(d==='dark'||(!d&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}try{var l=JSON.parse(localStorage.getItem('eco_language')||'{}');if(l.code){document.documentElement.lang=l.code}}catch(e){}})();`,
+            __html: `(function(){document.documentElement.classList.add('dark');try{var l=JSON.parse(localStorage.getItem('eco_language')||'{}');if(l.code){document.documentElement.lang=l.code}}catch(e){}})();`,
           }}
         />
       </head>
-      <body className={`${dmSans.className}`} suppressHydrationWarning>
+      <body className={`${dmSans.className} bg-forest-deep text-text-secondary`} suppressHydrationWarning>
         <Providers>
           <AppShell>{children}</AppShell>
         </Providers>
