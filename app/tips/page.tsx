@@ -158,16 +158,25 @@ export default function TipsPage() {
     <MotionPage>
       <section className="space-y-8">
         {/* Hero header */}
-        <div className="rounded-card bg-primary-dark p-5 text-white shadow-soft">
-          <Badge className="bg-white/15 text-white" tone="dark">
-            Highest category: {CATEGORY_LABELS[topCategory]}
-          </Badge>
-          <h1 className="mt-4 font-heading text-3xl font-extrabold">
-            Tips & actions
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-white/75">
-            Small changes first, bigger wins when they fit your routine.
-          </p>
+        <div className="relative rounded-card bg-primary-dark p-5 text-white shadow-soft overflow-hidden">
+          {/* Background image */}
+          <div
+            className="absolute inset-0 bg-cover bg-center opacity-25"
+            style={{ backgroundImage: "url('/images/tips-hero-bg.png')" }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary-dark via-primary-dark/85 to-primary-dark/50" />
+
+          <div className="relative z-10">
+            <Badge className="bg-white/15 text-white" tone="dark">
+              Highest category: {CATEGORY_LABELS[topCategory]}
+            </Badge>
+            <h1 className="mt-4 font-heading text-3xl font-extrabold">
+              Tips & actions
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-white/75">
+              Small changes first, bigger wins when they fit your routine.
+            </p>
+          </div>
         </div>
 
         {message && (

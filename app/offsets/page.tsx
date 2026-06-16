@@ -29,8 +29,18 @@ export default function OffsetsPage() {
     <div className="min-h-[calc(100vh-4rem)] bg-[#F8FAF5] dark:bg-[#0B1815] text-[#1B4332] dark:text-[#F8FAF5] pb-12">
       
       {/* Gap Calculator Hero */}
-      <div className="bg-white dark:bg-[#1A2F2A] border-b border-[#52B788]/20 p-6 md:p-12">
-        <div className="max-w-3xl mx-auto text-center space-y-6">
+      <div className="bg-white dark:bg-[#1A2F2A] border-b border-[#52B788]/20 p-6 md:p-12 relative overflow-hidden">
+        {/* Nature image on the right (visible on md+) */}
+        <div className="hidden md:block absolute right-0 top-0 bottom-0 w-1/3">
+          <img
+            src="/images/offsets-nature.png"
+            alt="Reforestation project in the Indian Himalayan foothills"
+            className="h-full w-full object-cover opacity-40"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-white dark:from-[#1A2F2A] via-white/80 dark:via-[#1A2F2A]/80 to-transparent" />
+        </div>
+
+        <div className="max-w-3xl mx-auto text-center space-y-6 relative z-10">
           <h1 className="text-3xl md:text-5xl font-black text-[#2D6A4F] dark:text-[#52B788]">Your Offset Gap</h1>
           
           <div className="grid md:grid-cols-2 gap-8 items-center bg-[#F8FAF5] dark:bg-black/20 rounded-3xl p-6 md:p-8 border border-[#52B788]/30">
@@ -133,9 +143,15 @@ export default function OffsetsPage() {
 
         {/* Education Section */}
         <div className="bg-[#2D6A4F] text-[#F8FAF5] rounded-3xl p-8 md:p-12 relative overflow-hidden">
-          <div className="absolute -right-20 -bottom-20 opacity-10">
-            <Leaf size={300} />
-          </div>
+          {/* Background nature image */}
+          <img
+            src="/images/offsets-nature.png"
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover opacity-15"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#2D6A4F] via-[#2D6A4F]/90 to-[#2D6A4F]/70" />
+
           <div className="relative z-10 max-w-3xl">
             <h2 className="text-3xl font-black mb-6">What is a carbon offset?</h2>
             <p className="text-lg leading-relaxed mb-8 font-medium opacity-90">
