@@ -22,6 +22,8 @@ export default function SignUpForm() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showTOS, setShowTOS] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
   const router = useRouter();
   // AUTH GATE (RULE 2): Read the ?next= param so we can pass it along through
   // the sign-up flow and redirect the user to their intended page after completion.
@@ -246,7 +248,22 @@ export default function SignUpForm() {
           </div>
         </div>
         <span className="text-[11px] text-white/60 leading-relaxed group-hover:text-white/70 transition">
-          I agree to the <span className="text-[#00E676]/70 underline cursor-pointer">Terms of Service</span> and <span className="text-[#00E676]/70 underline cursor-pointer">Privacy Policy</span>
+          I agree to the{" "}
+          <button
+            type="button"
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowTOS(true); }}
+            className="text-[#00E676]/70 underline cursor-pointer hover:text-[#00E676] transition-colors"
+          >
+            Terms of Service
+          </button>{" "}
+          and{" "}
+          <button
+            type="button"
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowPrivacy(true); }}
+            className="text-[#00E676]/70 underline cursor-pointer hover:text-[#00E676] transition-colors"
+          >
+            Privacy Policy
+          </button>
         </span>
       </label>
 
@@ -267,6 +284,190 @@ export default function SignUpForm() {
       </button>
 
       <SocialButtons mode="signup" />
+
+      {/* Terms of Service Modal */}
+      {showTOS && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4"
+          onClick={() => setShowTOS(false)}
+        >
+          <div
+            className="relative w-full max-w-lg max-h-[80vh] rounded-2xl border border-white/10 bg-[#0B1F17]/95 shadow-2xl shadow-black/40 flex flex-col overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#00E676]/10">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E676" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10 9 9 9 8 9"/>
+                  </svg>
+                </div>
+                <h2 className="text-base font-bold text-white">Terms of Service</h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowTOS(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-all"
+                aria-label="Close Terms of Service"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="overflow-y-auto px-6 py-5 space-y-4 text-sm text-white/70 leading-relaxed custom-scrollbar">
+              <p className="text-white/40 text-xs">Last updated: June 2026</p>
+
+              <div>
+                <h3 className="text-white font-semibold mb-1.5">1. Acceptance of Terms</h3>
+                <p>By creating an account and using PromptWar (&quot;the Platform&quot;), you agree to be bound by these Terms of Service. If you do not agree to all of these terms, do not use the Platform.</p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold mb-1.5">2. Account Registration</h3>
+                <p>You must provide accurate, current, and complete information during the registration process. You are responsible for maintaining the security of your account credentials and for all activities that occur under your account. You must notify us immediately of any unauthorized use.</p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold mb-1.5">3. User Conduct</h3>
+                <p>You agree not to use the Platform for any unlawful purpose, to harass or harm other users, to upload malicious content, or to attempt to gain unauthorized access to any portion of the Platform. Violation of these rules may result in account suspension or termination.</p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold mb-1.5">4. Intellectual Property</h3>
+                <p>Content you submit remains your property. By posting content, you grant us a non-exclusive, worldwide, royalty-free license to use, display, and distribute your content on the Platform. You may not copy, modify, or distribute the Platform&apos;s proprietary content without written permission.</p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold mb-1.5">5. Disclaimers & Limitation of Liability</h3>
+                <p>The Platform is provided &quot;as is&quot; without warranties of any kind. We shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of the Platform. Our total liability shall not exceed the amount you paid for using the Platform.</p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold mb-1.5">6. Termination</h3>
+                <p>We reserve the right to suspend or terminate your account at our sole discretion, with or without notice, for conduct that we believe violates these Terms or is harmful to other users, us, or third parties.</p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold mb-1.5">7. Changes to Terms</h3>
+                <p>We may update these Terms from time to time. Continued use of the Platform after changes constitutes acceptance of the updated Terms. We will notify users of material changes via email or in-app notification.</p>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 border-t border-white/10 shrink-0">
+              <button
+                type="button"
+                onClick={() => setShowTOS(false)}
+                className="w-full rounded-xl bg-gradient-to-r from-[#00E676] to-[#00C853] py-2.5 text-sm font-bold text-[#06120C] transition-all hover:shadow-lg hover:shadow-[#00E676]/20"
+              >
+                I Understand
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Privacy Policy Modal */}
+      {showPrivacy && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4"
+          onClick={() => setShowPrivacy(false)}
+        >
+          <div
+            className="relative w-full max-w-lg max-h-[80vh] rounded-2xl border border-white/10 bg-[#0B1F17]/95 shadow-2xl shadow-black/40 flex flex-col overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#00E676]/10">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E676" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                </div>
+                <h2 className="text-base font-bold text-white">Privacy Policy</h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowPrivacy(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-all"
+                aria-label="Close Privacy Policy"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="overflow-y-auto px-6 py-5 space-y-4 text-sm text-white/70 leading-relaxed custom-scrollbar">
+              <p className="text-white/40 text-xs">Last updated: June 2026</p>
+
+              <div>
+                <h3 className="text-white font-semibold mb-1.5">1. Information We Collect</h3>
+                <p>We collect information you provide directly, including your name, email address, country, and role during registration. We also collect usage data such as pages visited, features used, and interaction patterns to improve your experience.</p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold mb-1.5">2. How We Use Your Information</h3>
+                <p>Your information is used to provide and personalize the Platform, communicate important updates, analyze usage trends, and ensure platform security. We do not sell your personal data to third parties.</p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold mb-1.5">3. Data Sharing</h3>
+                <p>We may share your data with trusted service providers who assist in operating the Platform (e.g., hosting, analytics). These providers are contractually obligated to protect your data. We may also disclose data if required by law or to protect our rights.</p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold mb-1.5">4. Cookies & Tracking</h3>
+                <p>We use cookies and similar technologies to remember your preferences, maintain your session, and gather analytics. You can manage cookie preferences through your browser settings, though some features may not work properly if cookies are disabled.</p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold mb-1.5">5. Data Security</h3>
+                <p>We implement industry-standard security measures including encryption, secure connections (HTTPS), and regular security audits to protect your personal information. However, no method of transmission over the Internet is 100% secure.</p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold mb-1.5">6. Your Rights</h3>
+                <p>You have the right to access, correct, or delete your personal data at any time. You may export all your data or request account deletion from the Privacy settings page. We will respond to data access requests within 30 days.</p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold mb-1.5">7. Data Retention</h3>
+                <p>We retain your personal data for as long as your account is active or as needed to provide services. Upon account deletion, we will remove your data within 30 days, except where retention is required by law.</p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold mb-1.5">8. Changes to This Policy</h3>
+                <p>We may update this Privacy Policy periodically. We will notify you of significant changes via email or in-app notification. Continued use of the Platform after changes indicates acceptance of the updated policy.</p>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 border-t border-white/10 shrink-0">
+              <button
+                type="button"
+                onClick={() => setShowPrivacy(false)}
+                className="w-full rounded-xl bg-gradient-to-r from-[#00E676] to-[#00C853] py-2.5 text-sm font-bold text-[#06120C] transition-all hover:shadow-lg hover:shadow-[#00E676]/20"
+              >
+                I Understand
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </form>
   );
 }
