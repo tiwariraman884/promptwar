@@ -91,9 +91,18 @@ function HeroBanner({ cartRef }: { cartRef: React.RefObject<HTMLDivElement | nul
   };
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-br from-[#1B4332] via-[#2D6A4F] to-[#40916C] text-white">
-      {/* Background pattern */}
-      <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(#F8FAF5 1.2px, transparent 1.2px)', backgroundSize: '28px 28px' }} />
+    <div
+      className="relative overflow-hidden text-white"
+      style={{
+        backgroundImage: `
+          linear-gradient(to bottom right, rgba(27,67,50,0.75), rgba(45,106,79,0.55), rgba(64,145,108,0.45)),
+          url('/images/eco-hero-bg.png')
+        `,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
       {/* Gradient glow orb */}
       <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-[#52B788]/20 blur-[100px]" />
       <div className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-[#B7E4C7]/10 blur-[80px]" />
