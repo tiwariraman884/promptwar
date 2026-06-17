@@ -95,7 +95,7 @@ function HeroBanner({ cartRef }: { cartRef: React.RefObject<HTMLDivElement | nul
       className="relative overflow-hidden text-white"
       style={{
         backgroundImage: `
-          linear-gradient(to bottom right, rgba(27,67,50,0.75), rgba(45,106,79,0.55), rgba(64,145,108,0.45)),
+          linear-gradient(to bottom right, rgba(27,67,50,0.50), rgba(45,106,79,0.35), rgba(64,145,108,0.25)),
           url('/images/eco-hero-bg.png')
         `,
         backgroundSize: 'cover',
