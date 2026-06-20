@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { apiError, apiSuccess } from "@/lib/api";
-import { checkRateLimit, aiRateLimit } from "@/lib/rate-limit";
+import { checkRateLimit, aiLimiter } from "@/lib/rate-limit";
 import { aiCoachSchema, formatZodError } from "@/lib/validations";
 import {
   AuthRequiredError,
@@ -54,10 +54,10 @@ The user is on GreenStep India, where they can:
 export async function POST(req: NextRequest) {
   try {
     // Auth check — blocks anonymous requests
-    await requireCurrentUser();
+    const user = await requireCurrentUser();
 
-    // Rate limit — 10 requests per minute
-    const rateLimited = checkRateLimit(req, aiRateLimit);
+    // Rate limit — 10 requests per minute per user (Redis-backed)
+    const rateLimited = await checkRateLimit(req, aiLimiter, user.id);
     if (rateLimited) return rateLimited;
 
     // Validate request body

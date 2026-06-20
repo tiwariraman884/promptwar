@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { apiError, apiSuccess } from "@/lib/api";
-import { checkRateLimit, generalRateLimit } from "@/lib/rate-limit";
+import { checkRateLimit, authLimiter } from "@/lib/rate-limit";
 import { geocodeSchema, formatZodError } from "@/lib/validations";
 import {
   AuthRequiredError,
@@ -10,10 +10,10 @@ import {
 export async function GET(request: NextRequest) {
   try {
     // Auth check — blocks anonymous requests
-    await requireCurrentUser();
+    const user = await requireCurrentUser();
 
-    // Rate limit — 60 requests per minute
-    const rateLimited = checkRateLimit(request, generalRateLimit);
+    // Rate limit — 100 req/min per user (Redis-backed)
+    const rateLimited = await checkRateLimit(request, authLimiter, user.id);
     if (rateLimited) return rateLimited;
 
     // Validate query params

@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { apiError, apiPaginated, apiSuccess } from "@/lib/api";
-import { checkRateLimit, generalRateLimit } from "@/lib/rate-limit";
+import { checkRateLimit, authLimiter } from "@/lib/rate-limit";
 import { entryBodySchema, paginationSchema, formatZodError } from "@/lib/validations";
 import {
   calculateEntry,
@@ -76,8 +76,8 @@ export async function POST(request: NextRequest) {
   try {
     const user = await requireCurrentUser();
 
-    // Rate limit
-    const rateLimited = checkRateLimit(request, generalRateLimit);
+    // Rate limit — 100 req/min per user (Redis-backed)
+    const rateLimited = await checkRateLimit(request, authLimiter, user.id);
     if (rateLimited) return rateLimited;
 
     // Validate request body
@@ -181,8 +181,8 @@ export async function GET(request: NextRequest) {
   try {
     const user = await requireCurrentUser();
 
-    // Rate limit
-    const rateLimited = checkRateLimit(request, generalRateLimit);
+    // Rate limit — 100 req/min per user (Redis-backed)
+    const rateLimited = await checkRateLimit(request, authLimiter, user.id);
     if (rateLimited) return rateLimited;
 
     const { searchParams } = new URL(request.url);
