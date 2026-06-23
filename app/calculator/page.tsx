@@ -280,6 +280,118 @@ const ECO_TIPS: Record<string, string> = {
   events: "🎉 Zero-waste events can reduce carbon footprint by up to 50%.",
 };
 
+/* ─── Sources ─── */
+const CALC_SOURCES: string[] = [
+  "Ministry of Environment, Forest & Climate Change (MoEFCC)",
+  "Central Electricity Authority (CEA) – CO₂ baseline 2023-24",
+  "IPCC AR6 – Transport emission factors",
+];
+
+/* ─── India-specific emission factor labels ─── */
+const FACTOR_LABELS: Record<string, string> = {
+  petrol_car: "petrol car: 0.21 kg/km",
+  diesel_car: "diesel car: 0.24 kg/km",
+  two_wheeler_petrol: "petrol 2W: 0.041 kg/km",
+  two_wheeler_ev: "EV 2W: 0.018 kg/km",
+  bus_diesel: "diesel bus: 0.089 kg/km",
+  metro_rail: "metro: 0.036 kg/km",
+  auto_cng: "CNG auto: 0.06 kg/km",
+  train_ir: "IR train: 0.01 kg/km",
+  flight_domestic: "domestic flight: 0.255 kg/km",
+  flight_intl: "intl flight: 0.195 kg/km",
+  grid_cea: "CEA grid: 0.716 kg CO₂/kWh",
+};
+
+/* ─── Explain Calculation ─── */
+interface ExplanationLine {
+  line: string;
+  formula: string;
+}
+
+function getExplanation(
+  cat: EmissionCategory,
+  input: Record<string, unknown>,
+  kgCo2e: number
+): ExplanationLine[] {
+  const lines: ExplanationLine[] = [];
+  const label = (CATEGORY_LABELS as Record<string, string>)[cat] ?? cat;
+
+  switch (cat) {
+    case "transport": {
+      const mode = String(input.mode ?? "petrol_car");
+      const km = Number(input.distanceKm ?? 0);
+      const freq = Number(input.frequency ?? 1);
+      const factorLabel = FACTOR_LABELS[mode] ?? mode;
+      lines.push({
+        line: `${label}: ${kgCo2e.toFixed(1)} kg CO₂`,
+        formula: `${km} km × ${freq} trips × ${factorLabel}`,
+      });
+      break;
+    }
+    case "energy": {
+      const kwh = Number(input.gridKwh ?? input.billAmountInr ?? 0);
+      const unit = input.gridKwh ? "kWh" : "₹ bill";
+      lines.push({
+        line: `${label}: ${kgCo2e.toFixed(1)} kg CO₂`,
+        formula: `${kwh} ${unit} × ${FACTOR_LABELS.grid_cea}`,
+      });
+      break;
+    }
+    case "diet": {
+      const type = String(input.dietType ?? "vegetarian");
+      const meals = Number(input.mealsPerDay ?? 3);
+      lines.push({
+        line: `${label}: ${kgCo2e.toFixed(1)} kg CO₂`,
+        formula: `${type} diet × ${meals} meals/day`,
+      });
+      break;
+    }
+    default:
+      lines.push({
+        line: `${label}: ${kgCo2e.toFixed(1)} kg CO₂`,
+        formula: `Computed from input parameters`,
+      });
+  }
+  return lines;
+}
+
+/* ─── Confidence Score ─── */
+type ConfidenceLevel = "HIGH" | "MEDIUM" | "LOW";
+
+const DEFAULT_VALUES: Record<string, Record<string, unknown>> = {
+  transport: { mode: "metro_rail", distanceKm: 12, frequency: 1 },
+  energy: { gridKwh: 120, lpgCylinders: 1, hasSolar: false },
+  diet: { dietType: "vegetarian", mealsPerDay: 3, dairyLitres: 0.5, localProduce: true },
+  shopping: {},
+  waste: { totalKgPerWeek: 5, recyclingPercent: 30, compostingPercent: 15 },
+  digital: { streamingHours: 2, videoCallHours: 1, emails: 12, cloudGb: 50 },
+  food_delivery: { ordersPerWeek: 3, avgDeliveryKm: 3.5, packagingWaste: true },
+  water: { litresPerDay: 150, source: "tap", hotWaterLitres: 20, hotWaterMode: "boiler" },
+  pet: { petType: "dog_medium", count: 1, foodKgPerMonth: 8 },
+  events: { attendees: 50, generatorHours: 0, fireworks: false, zeroWaste: false },
+};
+
+function getConfidence(cat: EmissionCategory, input: Record<string, unknown>): ConfidenceLevel {
+  const defaults = DEFAULT_VALUES[cat] ?? {};
+  const keys = Object.keys(defaults);
+  if (keys.length === 0) return "MEDIUM";
+
+  let defaultCount = 0;
+  for (const key of keys) {
+    if (input[key] === defaults[key]) defaultCount++;
+  }
+
+  if (defaultCount >= 3) return "LOW";
+  if (defaultCount >= 1) return "MEDIUM";
+  return "HIGH";
+}
+
+const CONFIDENCE_COLORS: Record<ConfidenceLevel, string> = {
+  HIGH: "bg-green-600 text-white",
+  MEDIUM: "bg-yellow-500 text-white",
+  LOW: "bg-red-500 text-white",
+};
+
 /* ─── Main page ─── */
 export default function CalculatorPage() {
   const searchParams = useSearchParams();
@@ -294,6 +406,8 @@ export default function CalculatorPage() {
   const [saving, setSaving] = useState(false);
   const [notes, setNotes] = useState("");
   const [showBreakdown, setShowBreakdown] = useState(false);
+  const [showExplain, setShowExplain] = useState(false);
+  const [showSources, setShowSources] = useState(false);
 
   // Transport
   const [transportMode, setTransportMode] = useState<TransportMode>("metro_rail");
@@ -775,9 +889,14 @@ export default function CalculatorPage() {
                 <p className="text-xs font-bold uppercase text-ink/70 dark:text-white/55">
                   This entry
                 </p>
-                <p className="font-heading text-4xl font-extrabold text-[#1B4332] dark:text-white tabular-nums">
-                  {safeKgCo2e.toFixed(1)} <span className="text-lg font-bold text-[#6B7C6E]">kgCO₂e</span>
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="font-heading text-4xl font-extrabold text-[#1B4332] dark:text-white tabular-nums">
+                    {safeKgCo2e.toFixed(1)} <span className="text-lg font-bold text-[#6B7C6E]">kgCO₂e</span>
+                  </p>
+                  <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${CONFIDENCE_COLORS[getConfidence(category, activeInput as Record<string, unknown>)]}`}>
+                    Confidence: {getConfidence(category, activeInput as Record<string, unknown>)}
+                  </span>
+                </div>
               </div>
               <Button
                 className="rounded-2xl bg-[#2D6A4F] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-[#2D6A4F]/20 hover:bg-[#1B4332] transition-all"
@@ -818,6 +937,45 @@ export default function CalculatorPage() {
                 ))}
               </div>
             )}
+
+            {/* Explain Calculation */}
+            <div className="mt-3">
+              <button
+                onClick={() => setShowExplain((v) => !v)}
+                aria-expanded={showExplain}
+                className="text-xs font-bold text-[#2D6A4F] dark:text-[#52B788] hover:underline"
+              >
+                {showExplain ? "Hide calculation ▲" : "📐 Explain Calculation / गणना समझें ▼"}
+              </button>
+              {showExplain && (
+                <div className="mt-2 rounded-xl border border-[#D1FAE5]/60 dark:border-white/[0.06] bg-[#F8FAF5] dark:bg-white/[0.02] p-3 space-y-2">
+                  {getExplanation(category, activeInput as Record<string, unknown>, safeKgCo2e).map((exp, i) => (
+                    <div key={i}>
+                      <p className="text-sm font-bold text-[#1B4332] dark:text-white">{exp.line}</p>
+                      <p className="text-xs text-[#6B7C6E] dark:text-white/50">Formula: {exp.formula}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Sources */}
+            <div className="mt-2">
+              <button
+                onClick={() => setShowSources((v) => !v)}
+                aria-expanded={showSources}
+                className="text-xs font-bold text-[#6B7C6E] dark:text-white/50 hover:underline"
+              >
+                {showSources ? "Sources / स्रोत ▲" : "Sources / स्रोत ▼"}
+              </button>
+              {showSources && (
+                <div className="mt-1.5 space-y-0.5">
+                  {CALC_SOURCES.map((src, i) => (
+                    <p key={i} className="text-xs text-[#6B7C6E]/80 dark:text-white/40">{src}</p>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Notes */}
             <div className="mt-3">

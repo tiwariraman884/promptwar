@@ -94,6 +94,40 @@ function getSustainabilityColor(score: number) {
   return "from-red-500 to-rose-700";
 }
 
+/* ─── Confidence ─── */
+type ScanConfidence = "HIGH" | "MEDIUM" | "LOW";
+
+function getScanConfidence(source: string): ScanConfidence {
+  if (source === "local_db" || source === "openfoodfacts") return "HIGH";
+  if (source === "openfoodfacts+ai") return "MEDIUM";
+  return "LOW";
+}
+
+const SCAN_CONFIDENCE_COLORS: Record<ScanConfidence, string> = {
+  HIGH: "bg-green-600 text-white",
+  MEDIUM: "bg-yellow-500 text-white",
+  LOW: "bg-red-500 text-white",
+};
+
+/* ─── Suggest Alternatives ─── */
+const ALTERNATIVES: Record<string, { item: string; co2: number }> = {
+  "plastic bottle": { item: "Steel Bottle", co2: 0.7 },
+  "plastic bag": { item: "Cloth Bag", co2: 0.01 },
+  "disposable cup": { item: "Reusable Cup", co2: 0.05 },
+  "paper cup": { item: "Reusable Cup", co2: 0.05 },
+  "styrofoam": { item: "Banana Leaf Plate", co2: 0.0 },
+  "petrol car": { item: "CNG Auto/Tempo", co2: 0.8 },
+  "incandescent bulb": { item: "LED Bulb", co2: 0.04 },
+};
+
+function findAlternative(product: string): { key: string; alt: { item: string; co2: number } } | null {
+  const lower = product.toLowerCase();
+  for (const [key, alt] of Object.entries(ALTERNATIVES)) {
+    if (lower.includes(key)) return { key, alt };
+  }
+  return null;
+}
+
 /* ─── Main page ─── */
 export default function ScannerPage() {
   const [activeTab, setActiveTab] = useState<TabId>("search");
@@ -602,6 +636,18 @@ export default function ScannerPage() {
                   <p className="mt-3 font-heading text-3xl font-extrabold text-[#1B4332] dark:text-white tabular-nums">
                     {result.footprint_kg} <span className="text-base font-bold text-[#6B7C6E]">kg CO₂e</span>
                   </p>
+                  {/* Confidence badge */}
+                  <div className="mt-2 flex items-center gap-2">
+                    <span
+                      className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${SCAN_CONFIDENCE_COLORS[getScanConfidence(source)]}`}
+                      title="Confidence reflects how closely the detected object matches our emission database."
+                    >
+                      Confidence: {getScanConfidence(source)}
+                    </span>
+                    <span className="text-xs text-[#6B7C6E] dark:text-white/40 cursor-help" title="Confidence reflects how closely the detected object matches our emission database.">
+                      ?
+                    </span>
+                  </div>
                 </div>
 
                 {/* Rating badge */}
@@ -636,7 +682,44 @@ export default function ScannerPage() {
               <div className="mt-4 rounded-xl bg-[#F0FDF4] dark:bg-[#2D6A4F]/15 border border-[#D1FAE5]/60 dark:border-[#2D6A4F]/40 p-3">
                 <p className="text-sm text-[#2D6A4F] dark:text-[#B7E4C7]">💡 {result.comparison}</p>
               </div>
+
+              {/* Explain Result */}
+              {result.tip && (
+                <p className="mt-3 text-sm italic text-[#6B7C6E] dark:text-white/60">
+                  Why: {result.tip}
+                </p>
+              )}
             </div>
+
+            {/* Suggest Alternatives */}
+            {(() => {
+              const match = findAlternative(result.product);
+              if (!match) return null;
+              const saving = Math.max(0, result.footprint_kg - match.alt.co2);
+              return (
+                <div className="rounded-2xl border-2 border-emerald-200 dark:border-emerald-900/30 bg-emerald-50 dark:bg-emerald-900/10 p-5">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-3">
+                    🔄 Suggested Alternative / विकल्प
+                  </h3>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-bold text-[#1B4332] dark:text-white">Detected: {result.product}</span>
+                      <span className="font-bold tabular-nums">{result.footprint_kg} kg CO₂e</span>
+                    </div>
+                    <div className="text-[#6B7C6E] dark:text-white/60 text-xs font-bold">↓ Switch to</div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-bold text-emerald-700 dark:text-emerald-400">{match.alt.item}</span>
+                      <span className="font-bold tabular-nums text-emerald-600">{match.alt.co2} kg CO₂e</span>
+                    </div>
+                    {saving > 0 && (
+                      <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-1">
+                        ✅ Save {saving.toFixed(1)} kg CO₂e
+                      </p>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Lifecycle breakdown */}
             {totalBreakdown > 0 && (

@@ -87,6 +87,85 @@ export default function EnergyAuditPage() {
   const avgMonthlyKwh = 250;
   const vsAvgPct = ((results.totalKwh - avgMonthlyKwh) / avgMonthlyKwh) * 100;
 
+  /* ── Personalized Recommendations (rule engine) ── */
+  interface Recommendation {
+    tip: string;
+    savingKg: number;
+    effortLevel: "Easy" | "Medium" | "Hard";
+  }
+
+  const recommendations = useMemo(() => {
+    const recs: Recommendation[] = [];
+
+    // Rule 1: AC hours > 6
+    const acEntry = entries.get("ac_split") || entries.get("ac_window");
+    if (acEntry && acEntry.hoursPerDay > 6) {
+      const savedKwh = ((acEntry.hoursPerDay - 6) * acEntry.count * (acEntry.starRating === 5 ? 1200 : 1800) * 30) / 1000;
+      recs.push({
+        tip: "Reduce AC usage to 6 hrs/day. Use a timer or smart thermostat.",
+        savingKg: Math.round(savedKwh * GRID_EMISSION_FACTOR * 10) / 10,
+        effortLevel: "Easy",
+      });
+    }
+
+    // Rule 2: Old/high-wattage bulbs (not highest star rating)
+    const bulbEntry = entries.get("led_bulb") || entries.get("tube_light");
+    if (bulbEntry && bulbEntry.count > 0 && (!bulbEntry.starRating || bulbEntry.starRating < 5)) {
+      recs.push({
+        tip: "Switch to 5-star LED bulbs to save up to 60% lighting energy.",
+        savingKg: Math.round(bulbEntry.count * 2.5 * 10) / 10,
+        effortLevel: "Easy",
+      });
+    }
+
+    // Rule 3: Electric geyser > 1 hr/day
+    const geyserEntry = entries.get("geyser");
+    if (geyserEntry && geyserEntry.hoursPerDay > 1) {
+      const savedKwh = ((geyserEntry.hoursPerDay - 1) * geyserEntry.count * 2000 * 30) / 1000;
+      recs.push({
+        tip: "Limit geyser to 1 hr/day. Consider a solar water heater.",
+        savingKg: Math.round(savedKwh * GRID_EMISSION_FACTOR * 10) / 10,
+        effortLevel: "Medium",
+      });
+    }
+
+    // Rule 4: High total kWh (above average)
+    if (results.totalKwh > avgMonthlyKwh * 1.2) {
+      recs.push({
+        tip: "Your usage is 20%+ above Indian average. Audit standby power consumption.",
+        savingKg: Math.round(((results.totalKwh - avgMonthlyKwh) * 0.1 * GRID_EMISSION_FACTOR) * 10) / 10,
+        effortLevel: "Medium",
+      });
+    }
+
+    // Rule 5: Washing machine in hot mode
+    const washerEntry = entries.get("washing_machine");
+    if (washerEntry && washerEntry.count > 0) {
+      recs.push({
+        tip: "Wash clothes in cold water to save ~40% washing energy.",
+        savingKg: Math.round(washerEntry.count * 1.8 * 10) / 10,
+        effortLevel: "Easy",
+      });
+    }
+
+    // Rule 6: Solar recommendation
+    if (results.totalKwh > 200) {
+      recs.push({
+        tip: "Install a 2kW rooftop solar panel. Govt subsidy available under PM Surya Ghar.",
+        savingKg: Math.round(200 * 0.8 * GRID_EMISSION_FACTOR * 10) / 10,
+        effortLevel: "Hard",
+      });
+    }
+
+    // Sort by saving descending, take top 4
+    recs.sort((a, b) => b.savingKg - a.savingKg);
+    return recs.slice(0, 4);
+  }, [entries, results.totalKwh, avgMonthlyKwh]);
+
+  const totalSavingKg = recommendations.reduce((s, r) => s + r.savingKg, 0);
+  const savingPercent = results.totalCo2 > 0 ? Math.min(100, Math.round((totalSavingKg / results.totalCo2) * 100)) : 0;
+  const treesEquivalent = Math.round((totalSavingKg * 12) / 21 * 10) / 10; // 21 kg/tree/year FAO
+
   return (
     <MotionPage>
       <section className="space-y-5">
@@ -290,6 +369,69 @@ export default function EnergyAuditPage() {
                 alert("✅ Audit saved!");
               }}>💾 Save Audit</Button>
             </div>
+
+            {/* ── Personalized Recommendations ── */}
+            {recommendations.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    🎯 Personalized Recommendations
+                    <span className="block text-xs font-normal text-gray-400 dark:text-white/40 mt-0.5">व्यक्तिगत सुझाव</span>
+                  </CardTitle>
+                  <CardDescription>Based on your audit data, sorted by impact</CardDescription>
+                </CardHeader>
+                <div className="space-y-3">
+                  {recommendations.map((rec, i) => (
+                    <div key={i} className="rounded-xl bg-primary/5 border border-primary/20 p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="font-bold text-sm text-primary-dark dark:text-primary flex-1">
+                          #{i + 1} — {rec.tip}
+                        </p>
+                        <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                          rec.effortLevel === "Easy" ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
+                          : rec.effortLevel === "Medium" ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400"
+                          : "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400"
+                        }`}>
+                          {rec.effortLevel}
+                        </span>
+                      </div>
+                      <p className="text-xs text-ink/60 dark:text-white/50 mt-1">
+                        Est. saving: <span className="font-bold text-primary">{rec.savingKg} kg CO₂/month</span>
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
+
+            {/* ── Estimated Total Savings ── */}
+            {totalSavingKg > 0 && (
+              <Card className="text-center py-5">
+                <p className="text-xs font-bold uppercase tracking-wider text-ink/50 dark:text-white/50">
+                  Potential Monthly Savings / संभावित बचत
+                </p>
+                <p className="text-3xl font-black tabular-nums mt-2">
+                  {totalSavingKg.toFixed(1)} <span className="text-base font-bold text-ink/40 dark:text-white/40">kg CO₂/mo</span>
+                </p>
+                <p className="text-xs text-ink/50 dark:text-white/50 mt-1">
+                  ≈ {treesEquivalent} trees planted/year 🌳
+                </p>
+                {/* Savings bar */}
+                <div className="mt-4 mx-auto max-w-xs">
+                  <div className="flex items-center justify-between text-[10px] font-bold text-ink/40 dark:text-white/40 mb-1">
+                    <span>0%</span>
+                    <span>{savingPercent}% of current emissions</span>
+                    <span>100%</span>
+                  </div>
+                  <div className="h-3 w-full rounded-full bg-line dark:bg-white/10 overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-primary to-[#52B788] rounded-full"
+                      style={{ width: `${savingPercent}%`, transition: "width 0.4s ease" }}
+                    />
+                  </div>
+                </div>
+              </Card>
+            )}
           </>
         )}
       </section>

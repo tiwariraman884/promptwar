@@ -53,6 +53,40 @@ const quickCategories: Array<{
   { category: "digital", icon: Wifi }
 ];
 
+/* ─── Carbon Score (0–100, higher = greener) ─── */
+function computeCarbonScore(monthlyKg: number): number {
+  return Math.max(0, Math.round(100 - (monthlyKg / 200) * 100));
+}
+
+/* ─── Risk Level ─── */
+type RiskTier = "LOW" | "MEDIUM" | "HIGH";
+function computeRiskLevel(monthlyKg: number): { tier: RiskTier; icon: string; color: string } {
+  if (monthlyKg < 100) return { tier: "LOW", icon: "✅", color: "text-green-600 dark:text-green-400" };
+  if (monthlyKg <= 250) return { tier: "MEDIUM", icon: "⚠️", color: "text-yellow-600 dark:text-yellow-400" };
+  return { tier: "HIGH", icon: "🔴", color: "text-red-600 dark:text-red-400" };
+}
+
+/* ─── Simple linear regression for forecast ─── */
+function forecastNextMonth(dailySeries: DailyPoint[]): number | null {
+  if (dailySeries.length < 21) return null; // ~3 weeks minimum
+  const n = dailySeries.length;
+  let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+  for (let i = 0; i < n; i++) {
+    sumX += i;
+    sumY += dailySeries[i].kgCo2e;
+    sumXY += i * dailySeries[i].kgCo2e;
+    sumXX += i * i;
+  }
+  const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+  const intercept = (sumY - slope * sumX) / n;
+  // Project next 30 days total
+  let total = 0;
+  for (let d = n; d < n + 30; d++) {
+    total += Math.max(0, intercept + slope * d);
+  }
+  return Math.round(total * 10) / 10;
+}
+
 function StatCard({
   title,
   value,
@@ -260,6 +294,81 @@ export default function DashboardPage() {
               title="Eco-coins"
               value={`${data.coins}`}
             />
+          </div>
+        )}
+
+        {/* ─── New 2×2 stat cards ─── */}
+        {!loading && (
+          <div className="grid grid-cols-2 gap-3" aria-live="polite">
+            {/* Carbon Score */}
+            {(() => {
+              const monthlyKg = data.weeklyTotalKg * 4.3;
+              const score = computeCarbonScore(monthlyKg);
+              return (
+                <StatCard
+                  title="Carbon Score"
+                  value={`${score}`}
+                  helper={
+                    <>
+                      <span className="block text-sm">0–100 scale</span>
+                      <span className="block text-xs text-gray-400 dark:text-white/40">कार्बन स्कोर</span>
+                    </>
+                  }
+                  icon={<Leaf aria-hidden size={20} />}
+                />
+              );
+            })()}
+
+            {/* Carbon Rank */}
+            <StatCard
+              title="vs. Other Users"
+              value="—"
+              helper={
+                <>
+                  <span className="block text-sm">Rank unavailable</span>
+                  <span className="block text-xs text-gray-400 dark:text-white/40">अन्य उपयोगकर्ता</span>
+                </>
+              }
+              icon={<ArrowUpRight aria-hidden size={20} />}
+            />
+
+            {/* Risk Level */}
+            {(() => {
+              const monthlyKg = data.weeklyTotalKg * 4.3;
+              const risk = computeRiskLevel(monthlyKg);
+              return (
+                <StatCard
+                  title="Risk Level"
+                  value={`${risk.icon} ${risk.tier}`}
+                  helper={
+                    <>
+                      <span className="block text-sm">India NDC: ~158 kg/mo</span>
+                      <span className="block text-xs text-gray-400 dark:text-white/40">जोखिम स्तर</span>
+                    </>
+                  }
+                  icon={<AlertCircle aria-hidden size={20} />}
+                  tone={risk.tier === "LOW" ? "green" : "amber"}
+                />
+              );
+            })()}
+
+            {/* Forecast */}
+            {(() => {
+              const forecast = forecastNextMonth(data.dailySeries as DailyPoint[]);
+              return (
+                <StatCard
+                  title="Next Month Forecast"
+                  value={forecast !== null ? `${forecast} kg` : "—"}
+                  helper={
+                    <>
+                      <span className="block text-sm">{forecast !== null ? "Linear projection" : "Insufficient data"}</span>
+                      <span className="block text-xs text-gray-400 dark:text-white/40">अगले महीने का अनुमान</span>
+                    </>
+                  }
+                  icon={<ArrowDownRight aria-hidden size={20} />}
+                />
+              );
+            })()}
           </div>
         )}
 
