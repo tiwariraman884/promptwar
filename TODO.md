@@ -22,7 +22,6 @@
 - [ ] AI ECO COACH persistence endpoints/tables (additive)
 - [ ] AI CARBON SCANNER evidence storage (additive)
 - [ ] GREEN MAP eco-routing extensions (additive)
-- [ ] ECO STORE/ OFFSETS portfolio tracking & certificates (additive)
 - [ ] COMMUNITY + EDUCATION growth features (additive)
 - [ ] REPORTING ENGINE templates & richer exports (additive)
 - [ ] Meal + Travel planners using carbon engine (additive)

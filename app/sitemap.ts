@@ -8,14 +8,12 @@ const routes = [
   "/auth",
   "/dashboard",
   "/calculator",
-  "/tips",
-  "/community",
-  "/profile",
-  "/ai-coach",
+  "/green-communities",
+  "/carbon-analytics",
+  "/ai-assistant",
   "/scanner",
-  "/eco-store",
   "/green-map",
-  "/offsets",
+  "/profile",
   "/onboarding",
   "/settings",
   "/settings/profile",
@@ -25,7 +23,6 @@ const routes = [
   "/settings/privacy",
   "/settings/sessions",
   "/settings/notifications-list",
-  "/history",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

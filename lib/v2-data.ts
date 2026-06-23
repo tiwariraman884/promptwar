@@ -26,10 +26,10 @@ export const featurePages = [
     summary: "Ten-category live calculator with India-specific factors and sticky log bar."
   },
   {
-    href: "/coach",
+    href: "/ai-assistant",
     page: "Page 4",
-    title: "AI Carbon Coach",
-    summary: "Claude-ready chat UI, prompt chips, voice input affordance, weekly plan, and export action."
+    title: "AI Sustainability Assistant",
+    summary: "Chat with EcoCoach AI for personalized carbon advice and browse curated eco tips. Two-tab interface."
   },
   {
     href: "/scanner",
@@ -38,47 +38,30 @@ export const featurePages = [
     summary: "Camera/gallery OCR flow with editable parsed values and scan history."
   },
   {
-    href: "/tips",
+    href: "/green-map",
     page: "Page 6",
-    title: "Tips & Actions",
-    summary: "Impact-by-ease ranked tips, India schemes, reminders, and AI deep links."
-  },
-  {
-    href: "/map",
-    page: "Page 7",
     title: "Green Map",
-    summary: "Filterable Haridwar green spots, radius control, add spot, directions, and check-ins."
+    summary: "Filterable green spots, radius control, add spot, directions, and check-ins."
   },
   {
-    href: "/community",
+    href: "/green-communities",
+    page: "Page 7",
+    title: "Green Communities",
+    summary: "Challenges, groups, leaderboards, and community discussions in one unified hub."
+  },
+  {
+    href: "/carbon-analytics",
     page: "Page 8",
-    title: "Community",
-    summary: "City/state leaderboards, weekly challenge, group challenges, sharing, referrals, and friends."
-  },
-  {
-    href: "/store",
-    page: "Page 9",
-    title: "Eco Store",
-    summary: "Eco-coin reward catalog with redemption flow and earning summary."
-  },
-  {
-    href: "/offsets",
-    page: "Page 10",
-    title: "Carbon Offset Marketplace",
-    summary: "India-focused offset projects, kg slider, Razorpay-ready purchase API, and certificates."
-  },
-  {
-    href: "/groups",
-    page: "Page 11",
-    title: "Family / Group Dashboard",
-    summary: "Create/join groups, household/corporate dashboards, invite codes, and ESG exports."
+    title: "Carbon Analytics",
+    summary: "Overview dashboard, detailed monthly reports with AI action plans, and full activity history."
   },
   {
     href: "/profile",
-    page: "Page 12",
+    page: "Page 9",
     title: "Profile & Settings",
     summary: "Avatar, stats, badges, history, language, privacy, exports, IoT, and account controls."
   }
+
 ] as const;
 
 export const coachSystemPrompt =
@@ -95,7 +78,7 @@ export const quickPromptChips = [
   "What's my biggest source of emissions?",
   "Give me a 7-day green challenge",
   "How can I reduce my food delivery impact?",
-  "Explain carbon offsets in simple terms",
+  "Explain my carbon footprint in simple terms",
   "What government schemes can I use in India?",
   "How do I reduce my electricity bill AND carbon footprint?",
   "Generate my monthly carbon report"
@@ -341,48 +324,10 @@ export const ecoRewards = [
     stock: 64,
     discountPct: 0
   },
-  {
-    id: "gold-standard-offset",
-    title: "Carbon offset certificate",
-    description: "200 coins issues a 10 kg CO2 offset certificate.",
-    coinCost: 200,
-    category: "offset_certificate",
-    partnerName: "Gold Standard project pool",
-    stock: 95,
-    discountPct: 0
-  }
+
 ] as const;
 
-export const offsetProjects = [
-  {
-    id: "uttarakhand-reforestation",
-    title: "Uttarakhand reforestation",
-    location: "Uttarakhand",
-    priceInrPerKg: 12,
-    description: "Native hillside planting and maintenance."
-  },
-  {
-    id: "rajasthan-solar",
-    title: "Rajasthan solar farm",
-    location: "Rajasthan",
-    priceInrPerKg: 15,
-    description: "Verified solar generation replacing grid emissions."
-  },
-  {
-    id: "bihar-cookstoves",
-    title: "Bihar improved cookstoves",
-    location: "Bihar",
-    priceInrPerKg: 10,
-    description: "Efficient stoves that reduce fuel use and indoor smoke."
-  },
-  {
-    id: "maharashtra-mangroves",
-    title: "Maharashtra mangrove restoration",
-    location: "Maharashtra",
-    priceInrPerKg: 18,
-    description: "Coastal blue-carbon restoration and protection."
-  }
-] as const;
+
 
 export const groupDemo = {
   id: "family-haridwar-01",

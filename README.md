@@ -34,10 +34,6 @@ A full-stack, mobile-first Progressive Web App that helps Indian users track, re
 | 💡 **Tips & Quick Wins** | Curated quick wins, big impact actions, and India-specific eco tips with eco-coin rewards |
 | 🏆 **Community** | City and state leaderboards, weekly challenges, referral links, and shareable eco cards |
 | 👤 **Profile** | Stats, badge shelf, monthly history, and settings for city, diet, notifications, and language |
-| 🧩 **Eco Quiz** | Interactive sustainability quizzes to educate and engage users |
-| 🛒 **Eco Store** | Browse and discover eco-friendly products and sustainable alternatives |
-| 🌍 **Carbon Offsets** | Explore and track verified carbon offset projects |
-| 📅 **Green Calendar** | Eco-events calendar with seasonal tips and environmental awareness days |
 | 📈 **Reports** | Detailed carbon reports with export capabilities |
 | 🔔 **Notifications** | In-app notification center for challenges, badges, and community updates |
 | 👥 **Groups** | Create and join eco-groups for collaborative carbon reduction |
@@ -70,8 +66,8 @@ A full-stack, mobile-first Progressive Web App that helps Indian users track, re
 ├────────────────────────────────────────────────────────────────┤
 │                      API Routes (/api/*)                       │
 │  entries · dashboard · leaderboard · tips · challenges         │
-│  ai-coach · scanner · green-spots · groups · eco-store         │
-│  profile · export · offset · geocode                           │
+│  ai-coach · scanner · green-spots · groups                    │
+│  profile · export · geocode                                    │
 ├──────────────────────┬─────────────────────────────────────────┤
 │     Supabase         │           External Services             │
 │  Auth · PostgreSQL   │  Google Gemini · Google Maps · Climatiq │
@@ -159,16 +155,14 @@ promptwar/
 │   │   ├── dashboard/        # Dashboard data
 │   │   ├── entries/          # Carbon entry CRUD
 │   │   ├── leaderboard/      # Community rankings
-│   │   └── ...               # groups, eco-store, offset, etc.
+│   │   └── ...               # groups, etc.
 │   ├── calculator/           # Carbon calculator page
 │   ├── dashboard/            # User dashboard
 │   ├── ai-coach/             # AI Eco Coach chat UI
 │   ├── scanner/              # Product carbon scanner
 │   ├── green-map/            # Eco-friendly locations map
 │   ├── community/            # Leaderboards & challenges
-│   ├── eco-store/            # Sustainable products
-│   ├── offsets/              # Carbon offset projects
-│   └── ...                   # 20+ total routes
+│   └── ...                   # 18+ total routes
 ├── components/               # Reusable React components
 │   ├── EarthGlobe.tsx        # 3D rotating earth animation
 │   ├── IndiaMap3D.tsx        # Interactive India map
@@ -291,7 +285,6 @@ The app ships with production-grade security headers:
 - [ ] AI Eco Coach conversation persistence
 - [ ] Carbon Scanner evidence storage
 - [ ] Green Map eco-routing extensions
-- [ ] Eco Store portfolio tracking & certificates
 - [ ] Meal & travel planners using the carbon engine
 - [ ] Smart energy ingestion endpoints
 - [ ] Corporate ESG workspace

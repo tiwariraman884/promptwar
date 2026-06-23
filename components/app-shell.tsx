@@ -15,18 +15,12 @@ import {
   IconCalculator,
   IconAiCoach,
   IconScanner,
-  IconTips,
   IconGreenMap,
   IconCommunity,
-  IconEcoStore,
-  IconOffsets,
-  IconGroups,
   IconReport,
   IconProfile,
   IconSignIn,
   IconSignOut,
-  IconQuiz,
-  IconCalendar,
   IconLegacy,
   IconEnergy,
   IconAQI,
@@ -48,24 +42,18 @@ function getInitials(name: string) {
 
 /* ─── Core nav items (always visible in sidebar) ─── */
 const coreNavItems: Array<{ href: string; label: string; tKey: string; icon: NavIcon }> = [
-  { href: "/dashboard",     label: "Home",        tKey: "nav.dashboard",   icon: (p) => <IconDashboard  {...p} /> },
-  { href: "/calculator",    label: "Calculator",  tKey: "nav.calculator",  icon: (p) => <IconCalculator {...p} /> },
-  { href: "/ai-coach",      label: "AI Coach",    tKey: "nav.aiCoach",     icon: (p) => <IconAiCoach   {...p} /> },
-  { href: "/scanner",       label: "Scanner",     tKey: "nav.scanner",     icon: (p) => <IconScanner    {...p} /> },
-  { href: "/tips",          label: "Tips",        tKey: "nav.tips",        icon: (p) => <IconTips       {...p} /> },
-  { href: "/green-map",     label: "Green Map",   tKey: "nav.greenMap",    icon: (p) => <IconGreenMap   {...p} /> },
-  { href: "/community",     label: "Community",   tKey: "nav.community",   icon: (p) => <IconCommunity  {...p} /> },
-  { href: "/eco-store",     label: "Eco Store",   tKey: "nav.ecoStore",    icon: (p) => <IconEcoStore   {...p} /> },
-  { href: "/offsets",       label: "Offsets",     tKey: "nav.offsets",     icon: (p) => <IconOffsets    {...p} /> },
-  { href: "/groups",        label: "Groups",      tKey: "nav.groups",      icon: (p) => <IconGroups     {...p} /> },
-  { href: "/report",        label: "Reports",     tKey: "nav.reports",     icon: (p) => <IconReport     {...p} /> },
-  { href: "/profile",       label: "Profile",     tKey: "nav.profile",     icon: (p) => <IconProfile    {...p} /> },
+  { href: "/dashboard",          label: "Home",              tKey: "nav.dashboard",        icon: (p) => <IconDashboard  {...p} /> },
+  { href: "/calculator",         label: "Calculator",        tKey: "nav.calculator",       icon: (p) => <IconCalculator {...p} /> },
+  { href: "/scanner",            label: "Scanner",           tKey: "nav.scanner",          icon: (p) => <IconScanner    {...p} /> },
+  { href: "/green-map",          label: "Green Map",         tKey: "nav.greenMap",         icon: (p) => <IconGreenMap   {...p} /> },
+  { href: "/green-communities",  label: "Communities",       tKey: "nav.greenCommunities", icon: (p) => <IconCommunity  {...p} /> },
+  { href: "/carbon-analytics",   label: "Analytics",         tKey: "nav.carbonAnalytics",  icon: (p) => <IconReport     {...p} /> },
+  { href: "/ai-assistant",       label: "AI Assistant",      tKey: "nav.aiAssistant",      icon: (p) => <IconAiCoach    {...p} /> },
+  { href: "/profile",            label: "Profile",           tKey: "nav.profile",          icon: (p) => <IconProfile    {...p} /> },
 ];
 
 /* ─── Explore / "More Tools" items (collapsible section) ─── */
 const exploreItems: Array<{ href: string; label: string; tKey: string; icon: NavIcon; emoji: string }> = [
-  { href: "/quiz",          label: "Quiz",         tKey: "nav.quiz",         icon: (p) => <IconQuiz        {...p} />, emoji: "🧠" },
-  { href: "/calendar",      label: "Calendar",     tKey: "nav.calendar",     icon: (p) => <IconCalendar    {...p} />, emoji: "📅" },
   { href: "/legacy",        label: "My Legacy",    tKey: "nav.legacy",       icon: (p) => <IconLegacy      {...p} />, emoji: "🌳" },
   { href: "/energy-audit",  label: "Energy Audit", tKey: "nav.energyAudit",  icon: (p) => <IconEnergy      {...p} />, emoji: "🏠" },
   { href: "/aqi",           label: "Air Quality",  tKey: "nav.aqi",          icon: (p) => <IconAQI         {...p} />, emoji: "🌡️" },
@@ -79,21 +67,17 @@ const navItems = [...coreNavItems, ...exploreItems];
 /* ─── MOBILE: Bottom nav shows 4 items + "More" button ─── */
 const mobileBottomItems = [
   coreNavItems[0],  // Home
-  coreNavItems[3],  // Scanner
-  coreNavItems[6],  // Community
-  coreNavItems[7],  // Eco Store
+  coreNavItems[2],  // Scanner
+  coreNavItems[4],  // Communities
+  coreNavItems[6],  // AI Assistant
 ];
 
 /* ─── MOBILE: Drawer contains remaining core + explore ─── */
 const mobileDrawerCoreItems = [
   coreNavItems[1],  // Calculator
-  coreNavItems[2],  // AI Coach
-  coreNavItems[4],  // Tips
-  coreNavItems[5],  // Green Map
-  coreNavItems[8],  // Offsets
-  coreNavItems[9],  // Groups
-  coreNavItems[10], // Reports
-  coreNavItems[11], // Profile
+  coreNavItems[3],  // Green Map
+  coreNavItems[5],  // Analytics
+  coreNavItems[7],  // Profile
 ];
 
 /* ─── SVG Icons ─── */

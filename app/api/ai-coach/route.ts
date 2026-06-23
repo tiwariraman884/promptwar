@@ -47,7 +47,6 @@ The user is on GreenStep India, where they can:
 - Log carbon entries across 10 categories (transport, energy, diet, shopping, waste, digital, food delivery, water, pets, events)
 - View their dashboard with daily/weekly CO₂ tracking
 - Earn eco-coins for logging entries and reducing emissions
-- Browse eco-friendly products in the Eco Store
 - Join community groups and challenges
 `;
 

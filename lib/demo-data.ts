@@ -148,7 +148,6 @@ export const demoDashboard = {
   ),
   totalSavedKg: 86.4,
   treesPlanted: 3,
-  offsetsPurchasedKg: 24,
   goalProgressPct: 38
 };
 
