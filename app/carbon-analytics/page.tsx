@@ -1,15 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Leaf, RefreshCw, ArrowDownRight, AlertCircle, Zap, ArrowUpRight, ShoppingBag } from "lucide-react";
+import dynamic from "next/dynamic";
+import { Leaf, RefreshCw, ArrowDownRight, AlertCircle, Zap, ArrowUpRight, ShoppingBag, BarChart3, Share2, Download, TrendingDown, Sparkles } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { REPORT_BENCHMARKS } from "@/lib/carbonData";
 import { demoEntries, demoMonthlyHistory, demoDashboard } from "@/lib/demo-data";
 import { callClaude } from "@/lib/anthropicClient";
-import {
-  PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip,
-  LineChart, Line, CartesianGrid, XAxis, YAxis, BarChart, Bar,
-} from "recharts";
+
+/* ─── Lazy-loaded chart components (recharts stays out of main bundle) ─── */
+const CategoryDonutChart = dynamic(
+  () => import("@/components/carbon/AnalyticsCharts").then(m => m.CategoryDonutChart),
+  { ssr: false, loading: () => <div className="animate-pulse h-full w-full rounded-xl bg-neutral-100 dark:bg-neutral-800" /> }
+);
+const MonthlyTrendChart = dynamic(
+  () => import("@/components/carbon/AnalyticsCharts").then(m => m.MonthlyTrendChart),
+  { ssr: false, loading: () => <div className="animate-pulse h-full w-full rounded-xl bg-neutral-100 dark:bg-neutral-800" /> }
+);
+const MonthlyBarChart = dynamic(
+  () => import("@/components/carbon/AnalyticsCharts").then(m => m.MonthlyBarChart),
+  { ssr: false, loading: () => <div className="animate-pulse h-full w-full rounded-xl bg-neutral-100 dark:bg-neutral-800" /> }
+);
 
 /* ─── Constants ─── */
 const CATEGORY_DATA = [
@@ -174,7 +185,7 @@ export default function CarbonAnalyticsPage() {
                 { label: "This Month", value: `${Math.round(footprint / 12)} kg`, sub: "CO₂e" },
                 { label: "vs Last Month", value: "-8%", sub: "Improving" },
                 { label: "vs India Avg", value: `${Math.round(((footprint - 1900) / 1900) * 100)}%`, sub: footprint <= 1900 ? "Below avg" : "Above avg" },
-                { label: "Streak", value: `${demoDashboard.streakDays} days`, sub: "Active" },
+                { label: "Streak", value: `7 days`, sub: "Active" },
               ].map((stat, i) => (
                 <div key={i} className="rounded-2xl bg-white dark:bg-[#1A2F2A] p-5 shadow-sm border border-[#52B788]/20">
                   <p className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1">{stat.label}</p>
@@ -232,16 +243,7 @@ export default function CarbonAnalyticsPage() {
                 <h3 className="text-lg font-bold text-[#2D6A4F] dark:text-[#52B788] mb-4">Emissions by Category</h3>
                 <div className="flex flex-col sm:flex-row items-center">
                   <div className="w-full sm:w-1/2 h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie data={CATEGORY_DATA} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value" onClick={(_, index) => setActiveCategory(CATEGORY_DATA[index])} className="cursor-pointer">
-                          {CATEGORY_DATA.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <RechartsTooltip formatter={(val: number) => `${val} kg`} />
-                      </PieChart>
-                    </ResponsiveContainer>
+                    <CategoryDonutChart data={CATEGORY_DATA} onSliceClick={(index) => setActiveCategory(CATEGORY_DATA[index])} />
                   </div>
                   <div className="w-full sm:w-1/2 mt-4 sm:mt-0">
                     <div className="rounded-2xl bg-[#F8FAF5] dark:bg-black/20 p-5 border border-[#52B788]/20">
@@ -260,15 +262,7 @@ export default function CarbonAnalyticsPage() {
               <div className="rounded-3xl bg-white dark:bg-[#1A2F2A] p-6 shadow-sm border border-[#52B788]/20">
                 <h3 className="text-lg font-bold text-[#2D6A4F] dark:text-[#52B788] mb-4">Monthly Trend</h3>
                 <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={MONTHLY_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#52B78820" />
-                      <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
-                      <RechartsTooltip contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }} formatter={(val: number) => [`${val} kg`, "Footprint"]} />
-                      <Line type="monotone" dataKey="value" stroke="#2D6A4F" strokeWidth={3} dot={{ r: 4, fill: "#2D6A4F" }} activeDot={{ r: 6 }} />
-                    </LineChart>
-                  </ResponsiveContainer>
+                  <MonthlyTrendChart data={MONTHLY_DATA} />
                 </div>
               </div>
             </div>
@@ -307,15 +301,7 @@ export default function CarbonAnalyticsPage() {
             <div className="rounded-3xl bg-white dark:bg-[#1A2F2A] p-6 shadow-sm border border-[#52B788]/20 mb-8">
               <h3 className="text-lg font-bold text-[#2D6A4F] dark:text-[#52B788] mb-4">Month-over-Month Comparison</h3>
               <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={MONTHLY_DATA.slice(-6)} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#52B78820" />
-                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
-                    <RechartsTooltip formatter={(val: number) => [`${val} kg`, "Emissions"]} />
-                    <Bar dataKey="value" fill="#2D6A4F" radius={[8, 8, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+                <MonthlyBarChart data={MONTHLY_DATA.slice(-6)} />
               </div>
             </div>
 

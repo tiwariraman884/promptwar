@@ -1,9 +1,16 @@
 "use client";
 
 import { useState, useRef } from "react";
+import dynamic from "next/dynamic";
 import type { UserInputData, CarbonAnalysisResult } from "@/types/carbon";
 import { InputForm } from "@/components/carbon/InputForm";
-import { CarbonDashboard, CarbonDashboardSkeleton } from "@/components/carbon/CarbonDashboard";
+import { CarbonDashboardSkeleton } from "@/components/carbon/CarbonDashboard";
+
+/* ── Lazy-load the heavy dashboard (recharts + framer-motion) ── */
+const CarbonDashboard = dynamic(
+  () => import("@/components/carbon/CarbonDashboard").then(m => m.CarbonDashboard),
+  { ssr: false, loading: () => <CarbonDashboardSkeleton /> }
+);
 
 const DEFAULT_INPUT: UserInputData = {
   diet: {

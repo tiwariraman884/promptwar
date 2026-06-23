@@ -62,12 +62,34 @@ try {
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+
+  // ── Performance: SWC minification ──
+  swcMinify: true,
+
+  // ── Performance: HTTP compression ──
+  compress: true,
+
+  // ── Performance: strip console.* in production ──
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+
+  // ── Performance: image optimization for India 3G/4G ──
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [360, 414, 768, 1024, 1280],
+    minimumCacheTTL: 86400, // 24-hour cache
+  },
+
   experimental: {
     typedRoutes: true,
-    optimizePackageImports: ["lucide-react"],
+    optimizePackageImports: ["lucide-react", "recharts", "framer-motion"],
+    scrollRestoration: true,
   },
+
   async headers() {
     return [
+      // ── Security headers (all routes) ──
       {
         source: "/(.*)",
         headers: [
@@ -104,6 +126,15 @@ const nextConfig = {
             ].join("; "),
           },
         ],
+      },
+      // ── Performance: immutable cache for static assets ──
+      {
+        source: '/_next/static/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+      {
+        source: '/fonts/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
       },
     ];
   },

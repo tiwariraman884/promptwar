@@ -9,13 +9,20 @@ export function isSupabaseConfigured() {
   );
 }
 
+/* ── Singleton: reuse the same client instance across all components ── */
+let cachedClient: ReturnType<typeof createBrowserClient> | null = null;
+
 export function createClient() {
+  if (cachedClient) return cachedClient;
+
   if (!isSupabaseConfigured()) {
     throw new Error("Supabase environment variables are not configured.");
   }
 
-  return createBrowserClient(
+  cachedClient = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
+
+  return cachedClient;
 }
