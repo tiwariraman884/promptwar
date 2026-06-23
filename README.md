@@ -28,19 +28,17 @@ A full-stack, mobile-first Progressive Web App that helps Indian users track, re
 |--------|-------------|
 | 🧮 **Carbon Calculator** | Multi-category calculator (transport, energy, diet, shopping, waste, digital) with live kgCO₂e totals and India-specific emission factors |
 | 📊 **Dashboard** | Today's CO₂e, weekly comparison vs India average, streak tracking, eco-coins, 30-day Recharts trend chart, and quick-add bottom sheet |
-| 🤖 **AI Eco Coach** | Gemini-powered conversational coach that provides personalized sustainability advice |
+| 🌍 **Green Communities** | Unified hub combining community challenges, eco-groups, city/state leaderboards, and community discussions in a tabbed interface |
+| 📈 **Carbon Analytics** | Overview dashboard with donut/trend charts, monthly reports with AI-generated action plans, and full activity history with filtering |
+| 🤖 **AI Assistant** | Two-tab assistant: AI Coach chat (Gemini-powered conversational coach) and curated eco tips with eco-coin rewards |
 | 📷 **Carbon Scanner** | AI-powered product scanner that estimates the carbon footprint of items via camera/image upload |
 | 🗺️ **Green Map** | Google Maps integration showing eco-friendly spots, green businesses, and eco-routing in your city |
-| 💡 **Tips & Quick Wins** | Curated quick wins, big impact actions, and India-specific eco tips with eco-coin rewards |
-| 🏆 **Community** | City and state leaderboards, weekly challenges, referral links, and shareable eco cards |
+| 🔬 **Carbon Intelligence Engine** | Multi-step lifestyle survey that generates a personalized carbon risk score, monthly forecast, reduction roadmap, and emissions timeline |
 | 👤 **Profile** | Stats, badge shelf, monthly history, and settings for city, diet, notifications, and language |
-| 📈 **Reports** | Detailed carbon reports with export capabilities |
 | 🔔 **Notifications** | In-app notification center for challenges, badges, and community updates |
-| 👥 **Groups** | Create and join eco-groups for collaborative carbon reduction |
 | ⚡ **Energy Audit** | Home energy audit tool with personalized efficiency recommendations |
 | 🏠 **Bill Predictor** | Predict future utility bills based on current usage patterns |
 | 🚗 **Commute Tracker** | Track daily commute emissions with route alternatives |
-| 📜 **History** | Complete emission history log with filtering and search |
 
 ### Platform Features
 
@@ -158,11 +156,13 @@ promptwar/
 │   │   └── ...               # groups, etc.
 │   ├── calculator/           # Carbon calculator page
 │   ├── dashboard/            # User dashboard
-│   ├── ai-coach/             # AI Eco Coach chat UI
+│   ├── green-communities/    # Challenges, groups, leaderboards, discussions
+│   ├── carbon-analytics/     # Overview, reports, activity history
+│   ├── ai-assistant/         # AI Coach chat + eco tips
 │   ├── scanner/              # Product carbon scanner
 │   ├── green-map/            # Eco-friendly locations map
-│   ├── community/            # Leaderboards & challenges
-│   └── ...                   # 18+ total routes
+│   ├── carbon-engine/        # Carbon Intelligence Engine survey
+│   └── ...                   # 15+ total routes
 ├── components/               # Reusable React components
 │   ├── EarthGlobe.tsx        # 3D rotating earth animation
 │   ├── IndiaMap3D.tsx        # Interactive India map
