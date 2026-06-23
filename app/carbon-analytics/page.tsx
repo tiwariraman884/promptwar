@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BarChart3, Clock, TrendingDown, AlertCircle, Sparkles, Download, Share2, FileText } from "lucide-react";
+import { Leaf, RefreshCw, ArrowDownRight, AlertCircle, Zap, ArrowUpRight, ShoppingBag } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { REPORT_BENCHMARKS } from "@/lib/carbonData";
 import { demoEntries, demoMonthlyHistory, demoDashboard } from "@/lib/demo-data";
@@ -155,13 +155,13 @@ export default function CarbonAnalyticsPage() {
           <div className="overflow-x-auto hide-scrollbar pb-1">
             <TabsList className="w-full sm:w-auto">
               <TabsTrigger value="overview" className="gap-1.5">
-                <BarChart3 size={16} /> Overview
+                <Leaf size={16} /> Overview
               </TabsTrigger>
               <TabsTrigger value="reports" className="gap-1.5">
-                <FileText size={16} /> Reports
+                <ShoppingBag size={16} /> Reports
               </TabsTrigger>
               <TabsTrigger value="history" className="gap-1.5">
-                <Clock size={16} /> History
+                <RefreshCw size={16} /> History
               </TabsTrigger>
             </TabsList>
           </div>

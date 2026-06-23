@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import type { ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Send, Bot, Lightbulb, CheckCircle2, Coins, Recycle, TrainFront, Utensils, Zap } from "lucide-react";
+import { Send, Zap, Lightbulb, CheckCircle2, Coins, Recycle, TrainFront, Utensils } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useSettings } from "@/lib/settings-context";
 import { Badge } from "@/components/ui/badge";
@@ -259,7 +259,7 @@ export default function AiAssistantPage() {
         <div className="max-w-6xl mx-auto px-4 md:px-8 py-10">
           <div className="flex items-center gap-3 mb-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm">
-              <Bot size={24} />
+              <Zap size={24} />
             </div>
             <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold">AI-Powered</span>
           </div>
@@ -276,7 +276,7 @@ export default function AiAssistantPage() {
           <div className="overflow-x-auto hide-scrollbar pb-1">
             <TabsList className="w-full sm:w-auto">
               <TabsTrigger value="chat" className="gap-1.5">
-                <Bot size={16} /> AI Coach
+                <Zap size={16} /> AI Coach
               </TabsTrigger>
               <TabsTrigger value="tips" className="gap-1.5">
                 <Lightbulb size={16} /> Eco Tips
