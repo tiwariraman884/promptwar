@@ -579,7 +579,12 @@ function buildRoadmap(
     }
   }
 
-  return selected.slice(0, 5).map((action, idx) => ({
+  // Sort final selection by impact (descending) before assigning ranks
+  const finalSorted = selected
+    .slice(0, 5)
+    .sort((a, b) => b.estimated_monthly_reduction_kg - a.estimated_monthly_reduction_kg);
+
+  return finalSorted.map((action, idx) => ({
     rank: idx + 1,
     action_title: action.action_title,
     estimated_monthly_reduction_kg: action.estimated_monthly_reduction_kg,

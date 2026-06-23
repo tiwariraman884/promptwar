@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { apiError, apiSuccess } from "@/lib/api";
-import { checkRateLimit, standardLimiter } from "@/lib/rate-limit";
+import { checkRateLimit, authLimiter } from "@/lib/rate-limit";
 import { carbonIntelligenceSchema, formatZodError } from "@/lib/validations";
 import { analyzeCarbon } from "@/lib/carbon-intelligence";
 import {
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     const user = await requireCurrentUser();
 
     // Rate limit — standard limiter (no external API calls, so no AI tier needed)
-    const rateLimited = await checkRateLimit(req, standardLimiter, user.id);
+    const rateLimited = await checkRateLimit(req, authLimiter, user.id);
     if (rateLimited) return rateLimited;
 
     // Validate request body
