@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import dynamic from "next/dynamic";
 import type { UserInputData, CarbonAnalysisResult } from "@/types/carbon";
 import { InputForm } from "@/components/carbon/InputForm";
-import { CarbonDashboardSkeleton } from "@/components/carbon/CarbonDashboard";
+import { CarbonDashboardSkeleton } from "@/components/carbon/CarbonDashboardSkeleton";
 
 /* ── Lazy-load the heavy dashboard (recharts + framer-motion) ── */
 const CarbonDashboard = dynamic(
