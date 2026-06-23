@@ -179,8 +179,6 @@ Current month: ${new Date().toLocaleString("en-IN", { month: "long", year: "nume
 /* ── Map UI input types to the local engine's input types ── */
 
 function mapToLocalEngine(input: UserInputData) {
-  const { analyzeCarbon: _ , ...rest } = {} as any; // just for typing
-
   const foodTypeMap: Record<string, "vegan" | "vegetarian" | "non_veg_chicken" | "non_veg_mixed" | "non_veg_beef"> = {
     vegan: "vegan",
     vegetarian: "vegetarian",
