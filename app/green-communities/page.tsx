@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Trophy, Users, Leaf, Zap } from "lucide-react";
+import { Trophy, Users, MessageSquare, Target } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ChallengeCard } from "@/components/green-communities/ChallengeCard";
 import { GroupCard } from "@/components/green-communities/GroupCard";
@@ -73,7 +73,7 @@ export default function GreenCommunitiesPage() {
           <div className="overflow-x-auto hide-scrollbar pb-1">
             <TabsList className="w-full sm:w-auto">
               <TabsTrigger value="challenges" className="gap-1.5">
-                <Zap size={16} /> Challenges
+                <Target size={16} /> Challenges
               </TabsTrigger>
               <TabsTrigger value="groups" className="gap-1.5">
                 <Users size={16} /> Groups
@@ -82,7 +82,7 @@ export default function GreenCommunitiesPage() {
                 <Trophy size={16} /> Leaderboards
               </TabsTrigger>
               <TabsTrigger value="discussions" className="gap-1.5">
-                <Leaf size={16} /> Discussions
+                <MessageSquare size={16} /> Discussions
               </TabsTrigger>
             </TabsList>
           </div>
@@ -90,7 +90,7 @@ export default function GreenCommunitiesPage() {
           {/* Tab 1: Challenges */}
           <TabsContent value="challenges">
             <p className="text-neutral-600 dark:text-neutral-400 font-medium mb-6 flex items-center gap-2">
-              <Zap size={18} /> Join community challenges to amplify your impact.
+              <Target size={18} /> Join community challenges to amplify your impact.
             </p>
             <div className="grid md:grid-cols-2 gap-6">
               {GROUP_CHALLENGES.map((challenge, idx) => (

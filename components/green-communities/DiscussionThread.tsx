@@ -1,6 +1,6 @@
 "use client";
 
-import { Leaf, RefreshCw } from "lucide-react";
+import { MessageCircle, Clock } from "lucide-react";
 
 export interface ThreadData {
   id: string;
@@ -106,7 +106,7 @@ export function DiscussionThread({ onNewThread }: { onNewThread: () => void }) {
                     {thread.category}
                   </span>
                   <span className="flex items-center gap-1 text-xs text-neutral-400">
-                    <RefreshCw size={12} />
+                    <Clock size={12} />
                     {thread.timeAgo}
                   </span>
                 </div>
@@ -116,7 +116,7 @@ export function DiscussionThread({ onNewThread }: { onNewThread: () => void }) {
                 <p className="text-sm text-neutral-500 mt-1 line-clamp-1">{thread.preview}</p>
                 <div className="flex items-center gap-4 mt-3 text-xs font-semibold text-neutral-400">
                   <span className="flex items-center gap-1">
-                    <Leaf size={14} />
+                    <MessageCircle size={14} />
                     {thread.replies} replies
                   </span>
                   <span>by {thread.author}</span>
