@@ -3,10 +3,7 @@
 import { useState, useRef } from "react";
 import type { UserInputData, CarbonAnalysisResult } from "@/types/carbon";
 import { InputForm } from "@/components/carbon/InputForm";
-import { RiskScoreCard, RiskScoreCardSkeleton } from "@/components/carbon/RiskScoreCard";
-import { ForecastChart, ForecastChartSkeleton } from "@/components/carbon/ForecastChart";
-import { RoadmapCard, RoadmapCardSkeleton } from "@/components/carbon/RoadmapCard";
-import { EmissionsTimeline, EmissionsTimelineSkeleton } from "@/components/carbon/EmissionsTimeline";
+import { CarbonDashboard, CarbonDashboardSkeleton } from "@/components/carbon/CarbonDashboard";
 
 const DEFAULT_INPUT: UserInputData = {
   diet: {
@@ -131,40 +128,12 @@ export default function CarbonEnginePage() {
                 </div>
               )}
 
-              {/* Results grid */}
-              <div className="grid gap-6 lg:grid-cols-2">
-                {/* Risk Score */}
-                {isLoading ? (
-                  <RiskScoreCardSkeleton />
-                ) : result ? (
-                  <RiskScoreCard data={result.carbon_risk_score} />
-                ) : null}
-
-                {/* Forecast */}
-                {isLoading ? (
-                  <ForecastChartSkeleton />
-                ) : result ? (
-                  <ForecastChart data={result.monthly_forecast} />
-                ) : null}
-
-                {/* Roadmap — full width */}
-                <div className="lg:col-span-2">
-                  {isLoading ? (
-                    <RoadmapCardSkeleton />
-                  ) : result ? (
-                    <RoadmapCard data={result.reduction_roadmap} />
-                  ) : null}
-                </div>
-
-                {/* Emissions Timeline — full width */}
-                <div className="lg:col-span-2">
-                  {isLoading ? (
-                    <EmissionsTimelineSkeleton />
-                  ) : result ? (
-                    <EmissionsTimeline data={result.predicted_emissions_timeline} />
-                  ) : null}
-                </div>
-              </div>
+              {/* Dashboard */}
+              {isLoading ? (
+                <CarbonDashboardSkeleton />
+              ) : result ? (
+                <CarbonDashboard result={result} />
+              ) : null}
             </section>
           )}
         </div>
