@@ -55,7 +55,8 @@ components:
         data:
           type: object
         error:
-          type: "null"
+          type: string
+          nullable: true
         requestId:
           type: string
           example: req_a1b2c3d4-e5f6-7890-abcd-ef1234567890
@@ -68,7 +69,8 @@ components:
           type: boolean
           enum: [false]
         data:
-          type: "null"
+          type: object
+          nullable: true
         error:
           type: string
           example: Invalid input
@@ -236,7 +238,8 @@ components:
           type: boolean
           enum: [false]
         data:
-          type: "null"
+          type: object
+          nullable: true
         error:
           type: string
           example: Rate limit exceeded. Try again in 60 seconds.
