@@ -106,6 +106,12 @@ ALTER TABLE audit_logs     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE activity_logs  ENABLE ROW LEVEL SECURITY;
 
 -- Users see only their own rows
+DROP POLICY IF EXISTS "own_role"     ON user_roles;
+DROP POLICY IF EXISTS "own_devices"  ON user_devices;
+DROP POLICY IF EXISTS "own_sessions" ON user_sessions;
+DROP POLICY IF EXISTS "own_activity" ON activity_logs;
+DROP POLICY IF EXISTS "own_audit"    ON audit_logs;
+
 CREATE POLICY "own_role"     ON user_roles    FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "own_devices"  ON user_devices  FOR ALL    USING (auth.uid() = user_id);
 CREATE POLICY "own_sessions" ON user_sessions FOR SELECT USING (auth.uid() = user_id);
