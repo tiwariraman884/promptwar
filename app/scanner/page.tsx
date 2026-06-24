@@ -4,8 +4,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { MotionPage } from "@/components/motion-page";
 import { Button } from "@/components/ui/button";
 import { showSettingsToast } from "@/components/settings/SettingsToast";
-import { cn, formatKg } from "@/lib/utils";
-import { Search, Leaf, Recycle } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Search } from "lucide-react";
 
 /* ─── Types ─── */
 interface ProductResult {
@@ -138,7 +138,7 @@ export default function ScannerPage() {
   const [source, setSource] = useState("");
   const [error, setError] = useState("");
   const [history, setHistory] = useState<ScanHistoryItem[]>([]);
-  const [showHistory, setShowHistory] = useState(false);
+  const [_showHistory, _setShowHistory] = useState(false);
   const [cameraActive, setCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState("");
   const [detectedCode, setDetectedCode] = useState("");
@@ -301,7 +301,7 @@ export default function ScannerPage() {
       setCameraActive(true);
       // FIX: Start the barcode decoding loop when camera starts
       startScanningLoop();
-    } catch (err) {
+    } catch (_err) {
       setCameraError("Camera access denied. Please allow camera permissions in your browser settings.");
       setCameraActive(false);
     }
@@ -328,7 +328,7 @@ export default function ScannerPage() {
   const addToFootprint = () => {
     if (!result) return;
     try {
-      const response = fetch("/api/entries", {
+      const _response = fetch("/api/entries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

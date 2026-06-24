@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useSettings } from "@/lib/settings-context";
 import { SettingsCard } from "@/components/settings/SettingsCard";
-import { SettingsToggle } from "@/components/settings/SettingsToggle";
 import { showSettingsToast } from "@/components/settings/SettingsToast";
 import { IconArrowLeft, IconCheck, IconLanguage } from "@/components/icons/EcoIcons";
 

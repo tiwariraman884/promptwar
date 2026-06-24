@@ -90,7 +90,7 @@ const RECYCLE_CENTERS: LayerPin[] = [
 export default function GreenMapPage() {
   /* ── Store ── */
   const selectedCity = useGreenMapStore((s) => s.selectedCity);
-  const setSelectedCity = useGreenMapStore((s) => s.setSelectedCity);
+  const _setSelectedCity = useGreenMapStore((s) => s.setSelectedCity);
   const selectedType = useGreenMapStore((s) => s.selectedType);
   const searchResult = useGreenMapStore((s) => s.searchResult);
   const clearSearchResult = useGreenMapStore((s) => s.clearSearchResult);

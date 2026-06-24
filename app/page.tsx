@@ -100,7 +100,7 @@ export default function LandingPage() {
 
       {/* ═══ FEATURE CARDS ═══ */}
       <section className="mx-auto grid max-w-6xl gap-3 px-4 pb-10 sm:grid-cols-2 lg:grid-cols-4">
-        {featurePages.slice(1, 5).map((feature, i) => (
+        {featurePages.slice(1, 5).map((feature, _i) => (
           <Link
             className="glass-card card-hover-glow p-5 group"
             href={feature.href as Route}
