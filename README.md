@@ -341,7 +341,7 @@ Deployed on **Vercel** at [promptwar-orpin.vercel.app](https://promptwar-orpin.v
 
 ## 📚 Documentation
 
-Production-grade enterprise documentation suite — **105.9 KB** across **69 sections** with **17 Mermaid diagrams**.
+Production-grade enterprise documentation suite — **125+ KB** across **11 files** with **17 Mermaid diagrams** + **OpenAPI 3.0.3 spec**.
 
 ```
 docs/
@@ -352,7 +352,10 @@ docs/
 ├── Testing.md          # Testing Strategy & CI/CD              (12.2 KB)
 ├── Security.md         # Security Model & OWASP Compliance     (14.0 KB)
 ├── Deployment.md       # Deployment & Infrastructure Guide     (10.6 KB)
-└── UserGuide.md        # End-User Guide & FAQ                  (11.6 KB)
+├── UserGuide.md        # End-User Guide & FAQ                  (11.6 KB)
+├── Accessibility.md    # WCAG 2.1 AA Compliance Audit          (7.5 KB)
+├── Performance.md      # Performance Optimization Guide        (8.5 KB)
+└── openapi.yaml        # OpenAPI 3.0.3 Specification           (12.0 KB)
 ```
 
 | Document | Size | Diagrams | Key Sections |
@@ -360,11 +363,14 @@ docs/
 | [PRD.md](docs/PRD.md) | 10.7 KB | — | Product vision · 4 user personas · 30 functional requirements · user stories · success metrics · phased roadmap |
 | [Architecture.md](docs/Architecture.md) | 13.2 KB | 7 | System architecture · frontend/backend/DB layers · auth flow · data flow diagrams · caching strategy · scalability playbook |
 | [ERD.md](docs/ERD.md) | 18.0 KB | 1 | Full ER diagram · 17 tables · 23 foreign keys · 17 indexes · 8 unique constraints · CHECK constraints · trigger functions |
-| [API.md](docs/API.md) | 15.6 KB | 1 | All 25 endpoints · request/response schemas · rate limiting tiers · error codes · pagination · partial OpenAPI 3.0 YAML spec |
-| [Testing.md](docs/Testing.md) | 12.2 KB | 2 | Testing pyramid · 387 tests across 31 files · unit/integration/E2E breakdown · coverage thresholds (80%+) · CI/CD pipeline |
-| [Security.md](docs/Security.md) | 14.0 KB | 3 | Authentication flow · 6×15 RBAC permission matrix · session lifecycle · OWASP Top 10 compliance · CSP · 18 audit actions · metadata sanitization |
-| [Deployment.md](docs/Deployment.md) | 10.6 KB | 3 | Environment setup · Vercel deployment · Supabase + Upstash config · CI/CD pipeline · rollback strategy · monitoring · scaling playbook |
-| [UserGuide.md](docs/UserGuide.md) | 11.6 KB | — | Getting started · registration/login · dashboard guide · calculator walkthrough · analytics (5 tabs) · gamification · AI features · troubleshooting · FAQ |
+| [API.md](docs/API.md) | 15.6 KB | 1 | All 25 endpoints · request/response schemas · rate limiting tiers · error codes · pagination |
+| [Testing.md](docs/Testing.md) | 12.2 KB | 2 | Testing pyramid · 387 tests across 31 files · unit/integration/E2E breakdown · CI/CD pipeline |
+| [Security.md](docs/Security.md) | 14.0 KB | 3 | Authentication flow · 6×15 RBAC permission matrix · OWASP Top 10 · CSP · 18 audit actions |
+| [Deployment.md](docs/Deployment.md) | 10.6 KB | 3 | Vercel deployment · Supabase + Upstash config · CI/CD pipeline · rollback strategy |
+| [UserGuide.md](docs/UserGuide.md) | 11.6 KB | — | Feature walkthroughs · gamification · AI features · troubleshooting · FAQ |
+| [Accessibility.md](docs/Accessibility.md) | 7.5 KB | — | WCAG 2.1 AA audit · ARIA patterns · keyboard navigation · color contrast · screen reader support |
+| [Performance.md](docs/Performance.md) | 8.5 KB | 1 | Lighthouse targets · bundle analysis · caching architecture · font/image optimization |
+| [openapi.yaml](docs/openapi.yaml) | 12.0 KB | — | OpenAPI 3.0.3 spec · 15 endpoints · schemas · auth · rate limiting |
 
 > **Suitable for:** Enterprise deployment · Investor presentations · Academic evaluation · Open-source contribution · Team onboarding
 

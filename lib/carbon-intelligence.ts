@@ -550,6 +550,12 @@ export function analyzeCarbon(input: CarbonIntelligenceInput): CarbonIntelligenc
     (bau.reduce((s, v) => s + v, 0) - optimized.reduce((s, v) => s + v, 0)) * 2
   );
 
+  // ── 6. Explainability summary ──
+  const avgConfidence = roadmap.length > 0
+    ? Math.round(roadmap.reduce((sum, a) => sum + a.confidence_percent, 0) / roadmap.length)
+    : 0;
+  const dataSources = [...new Set(roadmap.map((a) => a.data_source))];
+
   return {
     carbon_risk_score: {
       overall: clampedOverall,
@@ -575,6 +581,14 @@ export function analyzeCarbon(input: CarbonIntelligenceInput): CarbonIntelligenc
       business_as_usual: bau,
       optimized_path: optimized,
       total_annual_savings_kg: totalAnnualSavings,
+    },
+    explainability: {
+      total_estimated_annual_savings_kg: round2(totalRoadmapReduction * 12),
+      average_confidence_percent: avgConfidence,
+      data_sources: dataSources,
+      methodology: "Deterministic rule-based analysis using India-specific emission factors (IPCC AR6, CEA India, BEE, MoRTH). " +
+        "Risk scores use sigmoid-calibrated category comparison against India per-capita averages. " +
+        "Confidence levels reflect strength of underlying data and effort feasibility.",
     },
   };
 }

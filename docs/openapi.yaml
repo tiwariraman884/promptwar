@@ -1,0 +1,774 @@
+openapi: 3.0.3
+info:
+  title: GreenStep India API
+  description: |
+    RESTful API for the GreenStep India carbon footprint tracking platform.
+    All endpoints return a consistent JSON envelope with `success`, `data`, `error`, and optional `requestId` fields.
+  version: 0.1.0
+  contact:
+    name: GreenStep India
+    url: https://github.com/tiwariraman884/promptwar
+  license:
+    name: Private
+    url: https://github.com/tiwariraman884/promptwar
+
+servers:
+  - url: https://promptwar-orpin.vercel.app/api
+    description: Production
+  - url: http://localhost:3000/api
+    description: Development
+
+tags:
+  - name: Entries
+    description: Carbon emission entry CRUD
+  - name: Dashboard
+    description: Dashboard aggregation data
+  - name: Calculator
+    description: Carbon calculator operations
+  - name: Leaderboard
+    description: Community rankings
+  - name: Challenges
+    description: Eco challenges
+  - name: Groups
+    description: Community groups
+  - name: Tips
+    description: Eco tips and recommendations
+  - name: AI
+    description: AI-powered features (Coach, Scanner)
+  - name: Profile
+    description: User profile management
+  - name: Auth
+    description: Authentication and authorization
+  - name: Admin
+    description: Admin panel operations (RBAC-protected)
+  - name: Export
+    description: Data export
+
+components:
+  schemas:
+    ApiSuccess:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          type: object
+        error:
+          type: "null"
+        requestId:
+          type: string
+          example: req_a1b2c3d4-e5f6-7890-abcd-ef1234567890
+      required: [success, data, error]
+
+    ApiFailure:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        data:
+          type: "null"
+        error:
+          type: string
+          example: Invalid input
+        requestId:
+          type: string
+      required: [success, data, error]
+
+    CarbonEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        category:
+          type: string
+          enum: [transport, energy, diet, shopping, waste, digital]
+        sub_category:
+          type: string
+        amount:
+          type: number
+          minimum: 0
+        unit:
+          type: string
+        kg_co2e:
+          type: number
+          minimum: 0
+        notes:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required: [id, user_id, date, category, kg_co2e]
+
+    DashboardData:
+      type: object
+      properties:
+        today_kg:
+          type: number
+        week_kg:
+          type: number
+        month_kg:
+          type: number
+        streak_days:
+          type: number
+        eco_coins:
+          type: number
+        india_avg_daily:
+          type: number
+        trend:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+              kg:
+                type: number
+
+    LeaderboardEntry:
+      type: object
+      properties:
+        rank:
+          type: integer
+        user_id:
+          type: string
+        display_name:
+          type: string
+        total_kg_saved:
+          type: number
+        badge_count:
+          type: integer
+
+    Challenge:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        target_kg:
+          type: number
+        duration_days:
+          type: integer
+        participants:
+          type: integer
+        status:
+          type: string
+          enum: [active, completed, upcoming]
+
+    Tip:
+      type: object
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        category:
+          type: string
+        impact_level:
+          type: string
+          enum: [low, medium, high]
+        coins_reward:
+          type: integer
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+        city:
+          type: string
+        diet_type:
+          type: string
+        total_entries:
+          type: integer
+        total_kg_saved:
+          type: number
+        eco_coins:
+          type: integer
+        badges:
+          type: array
+          items:
+            type: string
+        streak_days:
+          type: integer
+
+    AuditLogEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+        action:
+          type: string
+        severity:
+          type: string
+          enum: [low, medium, high]
+        metadata:
+          type: object
+        ip_address:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    RateLimitError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        data:
+          type: "null"
+        error:
+          type: string
+          example: Rate limit exceeded. Try again in 60 seconds.
+
+  securitySchemes:
+    supabaseAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Supabase JWT token from cookie or Authorization header
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiFailure"
+          example:
+            success: false
+            data: null
+            error: Authentication required
+
+    RateLimited:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RateLimitError"
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+          description: Request limit per window
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+          description: Remaining requests in window
+        Retry-After:
+          schema:
+            type: integer
+          description: Seconds until rate limit resets
+
+    ValidationError:
+      description: Input validation failed
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiFailure"
+          example:
+            success: false
+            data: null
+            error: "Validation error: category is required"
+
+paths:
+  /entries:
+    get:
+      tags: [Entries]
+      summary: List carbon entries
+      description: Retrieve paginated carbon emission entries for the authenticated user.
+      security:
+        - supabaseAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [transport, energy, diet, shopping, waste, digital]
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Paginated list of entries
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/CarbonEntry"
+                      pagination:
+                        type: object
+                        properties:
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+                          totalPages:
+                            type: integer
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+    post:
+      tags: [Entries]
+      summary: Create carbon entry
+      description: Log a new carbon emission entry.
+      security:
+        - supabaseAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date
+                category:
+                  type: string
+                  enum: [transport, energy, diet, shopping, waste, digital]
+                sub_category:
+                  type: string
+                amount:
+                  type: number
+                  minimum: 0
+                unit:
+                  type: string
+                kg_co2e:
+                  type: number
+                  minimum: 0
+                notes:
+                  type: string
+              required: [date, category, kg_co2e]
+      responses:
+        "201":
+          description: Entry created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/CarbonEntry"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /dashboard:
+    get:
+      tags: [Dashboard]
+      summary: Get dashboard data
+      description: Aggregated dashboard statistics including today's emissions, weekly total, streak, and trend data.
+      security:
+        - supabaseAuth: []
+      responses:
+        "200":
+          description: Dashboard data
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/DashboardData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /leaderboard:
+    get:
+      tags: [Leaderboard]
+      summary: Get leaderboard
+      description: Community leaderboard rankings by total kg CO₂ saved.
+      parameters:
+        - name: scope
+          in: query
+          schema:
+            type: string
+            enum: [city, state, national]
+            default: city
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Leaderboard entries
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/LeaderboardEntry"
+
+  /challenges:
+    get:
+      tags: [Challenges]
+      summary: List challenges
+      description: Active and upcoming eco challenges.
+      responses:
+        "200":
+          description: Challenge list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Challenge"
+
+  /tips:
+    get:
+      tags: [Tips]
+      summary: Get eco tips
+      description: Curated sustainability tips with eco-coin rewards.
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Tips list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Tip"
+
+  /ai-coach:
+    post:
+      tags: [AI]
+      summary: Chat with AI Coach
+      description: Send a message to the Gemini-powered AI sustainability coach.
+      security:
+        - supabaseAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  maxLength: 2000
+                context:
+                  type: object
+                  description: Optional context about user's carbon data
+              required: [message]
+      responses:
+        "200":
+          description: AI coach response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          reply:
+                            type: string
+                          suggestions:
+                            type: array
+                            items:
+                              type: string
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /scanner:
+    post:
+      tags: [AI]
+      summary: Scan product for carbon footprint
+      description: Analyze a product by name, barcode, or AI vision to estimate its carbon footprint.
+      security:
+        - supabaseAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  description: Product name or barcode
+                image_base64:
+                  type: string
+                  description: Base64-encoded product image for AI analysis
+              required: [query]
+      responses:
+        "200":
+          description: Product carbon analysis
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          product_name:
+                            type: string
+                          estimated_kg_co2e:
+                            type: number
+                          confidence:
+                            type: string
+                            enum: [high, medium, low]
+                          source:
+                            type: string
+                          alternatives:
+                            type: array
+                            items:
+                              type: object
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /profile:
+    get:
+      tags: [Profile]
+      summary: Get user profile
+      security:
+        - supabaseAuth: []
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/UserProfile"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    patch:
+      tags: [Profile]
+      summary: Update user profile
+      security:
+        - supabaseAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                display_name:
+                  type: string
+                  maxLength: 50
+                city:
+                  type: string
+                diet_type:
+                  type: string
+      responses:
+        "200":
+          description: Updated profile
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /auth/role:
+    get:
+      tags: [Auth]
+      summary: Get current user role
+      description: Returns the RBAC role of the authenticated user.
+      security:
+        - supabaseAuth: []
+      responses:
+        "200":
+          description: User role
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          role:
+                            type: string
+                            enum: [super_admin, admin, moderator, premium_user, user, guest]
+
+  /admin/users:
+    get:
+      tags: [Admin]
+      summary: List all users (admin only)
+      description: Paginated list of all users. Requires `admin` or `super_admin` role.
+      security:
+        - supabaseAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User list
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: Insufficient permissions
+
+  /admin/audit:
+    get:
+      tags: [Admin]
+      summary: Get audit logs (admin only)
+      description: Paginated audit log entries. Requires `admin` or `super_admin` role.
+      security:
+        - supabaseAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: severity
+          in: query
+          schema:
+            type: string
+            enum: [low, medium, high]
+        - name: action
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Audit log entries
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/AuditLogEntry"
+
+  /export:
+    get:
+      tags: [Export]
+      summary: Export user data
+      description: Export carbon emission data as CSV.
+      security:
+        - supabaseAuth: []
+      parameters:
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [csv, json]
+            default: csv
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Exported data file
+          content:
+            text/csv:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CarbonEntry"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
