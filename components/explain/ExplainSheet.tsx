@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import type { AIExplanation } from "@/lib/types/carbon-twin-types";
 
 interface ExplainSheetProps {

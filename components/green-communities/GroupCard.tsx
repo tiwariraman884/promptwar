@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, Share2 } from "lucide-react";
+import { Plus } from "lucide-react";
 
 interface GroupActivity {
   name: string;

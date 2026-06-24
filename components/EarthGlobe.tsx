@@ -304,7 +304,7 @@ export default function EarthGlobe({ selectedCity }: GlobeProps) {
   }, [drawGlobe]);
 
   const coords = CITY_COORDS[selectedCity];
-  const p = coords ? latLngToSphere(coords.lat, coords.lng, sizeRef.current * 0.38, rotYRef.current) : null;
+  const _p = coords ? latLngToSphere(coords.lat, coords.lng, sizeRef.current * 0.38, rotYRef.current) : null;
 
   return (
     <div

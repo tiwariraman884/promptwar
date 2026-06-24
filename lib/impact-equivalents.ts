@@ -7,7 +7,7 @@ interface Equivalent {
   threshold: number; // minimum kg CO₂ saved to show this
 }
 
-const EQUIVALENTS: Equivalent[] = [
+const _EQUIVALENTS: Equivalent[] = [
   { emoji: "💡", threshold: 0.1, text: "LED bulbs powered for a day", detail: "1 LED bulb uses ~0.07 kg CO₂/day" },
   { emoji: "☕", threshold: 0.05, text: "cups of chai boiled", detail: "1 cup of chai ≈ 0.05 kg CO₂" },
   { emoji: "📱", threshold: 0.01, text: "smartphone charges", detail: "1 full charge ≈ 0.007 kg CO₂" },
@@ -62,7 +62,7 @@ export function generateStoryText(kgSaved: number, period: string, userName: str
 export function generateMonthlyStories(
   kgSaved: number,
   topCategory: string,
-  userName: string,
+  _userName: string,
 ): Array<{ emoji: string; headline: string; detail: string }> {
   const stories: Array<{ emoji: string; headline: string; detail: string }> = [];
 

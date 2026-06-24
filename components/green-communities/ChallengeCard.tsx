@@ -1,7 +1,7 @@
 "use client";
 
-import { Trophy, Users, WandSparkles, HelpCircle } from "lucide-react";
-import { useState } from "react";
+import { Users, HelpCircle } from "lucide-react";
+
 
 interface ChallengeData {
   id: string;

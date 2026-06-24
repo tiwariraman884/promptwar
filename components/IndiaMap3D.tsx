@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 
 /* ─────────────── City Coordinates ─────────────── */
 interface CityCoord { lat: number; lng: number; state: string }

@@ -129,7 +129,7 @@ export type CarbonIntelligenceOutput = {
    ═══════════════════════════════════════════════════════════════════ */
 
 /** India per-capita monthly average in kgCO₂e (~1.9 t/yr) */
-const INDIA_MONTHLY_AVG_KG = INDIA_ANNUAL_AVERAGE_KG / 12; // ≈ 172.5
+const _INDIA_MONTHLY_AVG_KG = INDIA_ANNUAL_AVERAGE_KG / 12; // ≈ 172.5
 
 /** Seasonal multipliers indexed 0–11 (Jan–Dec) for India */
 const SEASONAL_MULTIPLIERS: Record<number, { factor: number; note: string }> = {

@@ -2,7 +2,7 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { checkPermission } from './check-permission';
 import type { Permission, UserRole } from '@/lib/types/security';
-import { NextRequest } from 'next/server';
+import { type NextRequest } from 'next/server';
 
 /**
  * Server Component guard.
