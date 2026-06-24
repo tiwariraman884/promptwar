@@ -26,6 +26,10 @@ import {
   IconAQI,
   IconBillPredict,
   IconCommute,
+  IconCarbonTwin,
+  IconSimulator,
+  IconRoadmap,
+  IconHealthScore,
 } from "@/components/icons/EcoIcons";
 
 /* ─── Types ─── */
@@ -48,6 +52,10 @@ const coreNavItems: Array<{ href: string; label: string; tKey: string; icon: Nav
   { href: "/green-map",          label: "Green Map",         tKey: "nav.greenMap",         icon: (p) => <IconGreenMap   {...p} /> },
   { href: "/green-communities",  label: "Communities",       tKey: "nav.greenCommunities", icon: (p) => <IconCommunity  {...p} /> },
   { href: "/carbon-analytics",   label: "Analytics",         tKey: "nav.carbonAnalytics",  icon: (p) => <IconReport     {...p} /> },
+  { href: "/twin",               label: "Carbon Twin",       tKey: "nav.carbonTwin",       icon: (p) => <IconCarbonTwin {...p} /> },
+  { href: "/simulator",          label: "Simulator",         tKey: "nav.simulator",        icon: (p) => <IconSimulator  {...p} /> },
+  { href: "/roadmap",            label: "Roadmap",           tKey: "nav.roadmap",          icon: (p) => <IconRoadmap    {...p} /> },
+  { href: "/health",             label: "Health Score",      tKey: "nav.healthScore",      icon: (p) => <IconHealthScore {...p} /> },
   { href: "/ai-assistant",       label: "AI Assistant",      tKey: "nav.aiAssistant",      icon: (p) => <IconAiCoach    {...p} /> },
   { href: "/profile",            label: "Profile",           tKey: "nav.profile",          icon: (p) => <IconProfile    {...p} /> },
 ];
