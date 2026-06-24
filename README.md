@@ -9,7 +9,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![Supabase](https://img.shields.io/badge/Supabase-Auth_&_DB-3FCF8E?logo=supabase&logoColor=white)](https://supabase.com/)
 [![Build](https://github.com/tiwariraman884/promptwar/actions/workflows/testing.yml/badge.svg)](https://github.com/tiwariraman884/promptwar/actions/workflows/testing.yml)
-[![Tests](https://img.shields.io/badge/Tests-387_passing-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Tests](https://img.shields.io/badge/Tests-448_passing-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev/)
 [![Coverage](https://img.shields.io/badge/Coverage-80%25+-brightgreen?logo=codecov&logoColor=white)]()
 [![Playwright](https://img.shields.io/badge/E2E-Playwright-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev/)
 [![Version](https://img.shields.io/badge/v0.1.0-blue?logo=github)]()
@@ -36,7 +36,7 @@ A full-stack, mobile-first Progressive Web App that helps Indian users track, re
 | 🤖 **AI Coach** | Gemini 2.5 Flash-powered sustainability advisor with India-specific knowledge (emission factors, government schemes, ₹ cost comparisons) |
 | 📷 **Carbon Scanner** | Product carbon analysis via barcode, name, or AI — with local DB (8 products), OpenFoodFacts, and Gemini fallback |
 | 🧬 **Carbon Twin** | Digital twin lifestyle model with 5 profile dimensions (diet, travel, energy, shopping, waste) and monthly emission snapshots |
-| 🔬 **Carbon Intelligence** | Full lifestyle survey → personalized carbon risk score, monthly forecast, reduction roadmap, and emissions timeline |
+| 🔬 **Carbon Intelligence** | Full lifestyle survey → personalized carbon risk score, monthly forecast, reduction roadmap with explainability (reason, confidence %, data source citation), and emissions timeline |
 | 🎯 **Simulator** | What-if scenario analysis — change habits and see projected emission reductions in real-time |
 | 🗺️ **Green Map** | Google Maps integration showing eco-friendly spots and green businesses in your city |
 | 🌍 **Green Communities** | Community challenges, eco-groups, city/state leaderboards, and discussions |
@@ -56,6 +56,7 @@ A full-stack, mobile-first Progressive Web App that helps Indian users track, re
 | 🌐 **i18n** | Bilingual support (English + Hindi) with translation-ready architecture |
 | 📱 **PWA** | Installable with offline caching — emission factors, core pages, Google Fonts |
 | 🎮 **Gamification** | Eco-coins, badges, streaks, XP, challenges — with server-side validation |
+| 📊 **Observability** | Structured JSON logging, UUID request tracing (`x-request-id`), global error boundary with digest |
 
 ---
 
@@ -68,7 +69,7 @@ A full-stack, mobile-first Progressive Web App that helps Indian users track, re
 │  Recharts (12+ chart types) · Radix UI · Lucide Icons               │
 ├──────────────────────────────────────────────────────────────────────┤
 │                       Middleware Layer                                │
-│  Auth Gate · IP Injection · Admin Guard · Route Protection           │
+│  Auth Gate · IP Injection · Request ID · Admin Guard · Route Protect │
 ├──────────────────────────────────────────────────────────────────────┤
 │                      API Routes (25 endpoints)                       │
 │  entries · dashboard · leaderboard · tips · challenges · ai-coach    │
@@ -194,22 +195,25 @@ promptwar/
 ├── lib/                          # Business logic (pure functions)
 │   ├── calculator-engine.ts      # Core emission calculations
 │   ├── analytics-engine.ts       # Analytics computations (6 functions)
+│   ├── carbon-intelligence.ts    # Carbon Intelligence Engine + explainability
 │   ├── emission-factors.ts       # India-specific factors
 │   ├── rate-limit.ts             # Redis rate limiter (Lua scripts)
 │   ├── audit-logger.ts           # Append-only audit logging
 │   ├── session-manager.ts        # Session lifecycle
+│   ├── logger.ts                 # Structured JSON logger (env-aware)
+│   ├── request-id.ts             # UUID request ID generation
 │   ├── rbac/                     # Role-based access control
 │   ├── types/                    # TypeScript type definitions
 │   └── ...
-├── __tests__/                    # Test suite (387 tests)
-│   ├── unit/                     # 17 unit test files
+├── __tests__/                    # Test suite (448 tests)
+│   ├── unit/                     # 21 unit test files
 │   ├── integration/              # 5 integration test files
 │   ├── lib/                      # 9 library tests
 │   └── e2e/                      # 3 Playwright E2E tests
 ├── supabase/                     # Database schema + migrations
 │   ├── schema.sql                # Base schema (8 tables)
 │   └── migrations/               # 2 migration files (9 more tables)
-├── docs/                         # Documentation suite (8 files)
+├── docs/                         # Documentation suite (12 files)
 └── vitest.config.ts              # Test configuration (80% thresholds)
 ```
 
@@ -217,7 +221,7 @@ promptwar/
 
 ## 🧪 Testing
 
-**387 tests** across **31 test files** — all passing ✅
+**448 tests** across **35 test files** — all passing ✅
 
 ```bash
 # Run all tests
@@ -243,10 +247,12 @@ npm run validate    # typecheck → lint → test → build
 
 ```
 __tests__/
-├── unit/              # Pure function tests (17 files)
+├── unit/              # Pure function tests (21 files)
 │   ├── security-types, rbac, audit-logger, rate-limit
 │   ├── calculator-engine, emission-factors, health-score
 │   ├── device-fingerprint, settings-db, forecast-engine
+│   ├── request-id, logger, analytics-engine
+│   ├── carbon-intelligence-explainability
 │   └── ... (with dedicated branch coverage files)
 ├── integration/       # Multi-module workflows (5 files)
 │   ├── calculator-flow, emission-pipeline, explainer-flow
@@ -355,7 +361,8 @@ docs/
 ├── UserGuide.md        # End-User Guide & FAQ                  (11.6 KB)
 ├── Accessibility.md    # WCAG 2.1 AA Compliance Audit          (7.5 KB)
 ├── Performance.md      # Performance Optimization Guide        (8.5 KB)
-└── openapi.yaml        # OpenAPI 3.0.3 Specification           (12.0 KB)
+├── openapi.yaml        # OpenAPI 3.0.3 Specification           (12.0 KB)
+└── coverage-summary.md # Test Coverage Breakdown                (3.0 KB)
 ```
 
 | Document | Size | Diagrams | Key Sections |
@@ -364,13 +371,14 @@ docs/
 | [Architecture.md](docs/Architecture.md) | 13.2 KB | 7 | System architecture · frontend/backend/DB layers · auth flow · data flow diagrams · caching strategy · scalability playbook |
 | [ERD.md](docs/ERD.md) | 18.0 KB | 1 | Full ER diagram · 17 tables · 23 foreign keys · 17 indexes · 8 unique constraints · CHECK constraints · trigger functions |
 | [API.md](docs/API.md) | 15.6 KB | 1 | All 25 endpoints · request/response schemas · rate limiting tiers · error codes · pagination |
-| [Testing.md](docs/Testing.md) | 12.2 KB | 2 | Testing pyramid · 387 tests across 31 files · unit/integration/E2E breakdown · CI/CD pipeline |
+| [Testing.md](docs/Testing.md) | 12.2 KB | 2 | Testing pyramid · 448 tests across 35 files · unit/integration/E2E breakdown · CI/CD pipeline |
 | [Security.md](docs/Security.md) | 14.0 KB | 3 | Authentication flow · 6×15 RBAC permission matrix · OWASP Top 10 · CSP · 18 audit actions |
 | [Deployment.md](docs/Deployment.md) | 10.6 KB | 3 | Vercel deployment · Supabase + Upstash config · CI/CD pipeline · rollback strategy |
 | [UserGuide.md](docs/UserGuide.md) | 11.6 KB | — | Feature walkthroughs · gamification · AI features · troubleshooting · FAQ |
 | [Accessibility.md](docs/Accessibility.md) | 7.5 KB | — | WCAG 2.1 AA audit · ARIA patterns · keyboard navigation · color contrast · screen reader support |
 | [Performance.md](docs/Performance.md) | 8.5 KB | 1 | Lighthouse targets · bundle analysis · caching architecture · font/image optimization |
 | [openapi.yaml](docs/openapi.yaml) | 12.0 KB | — | OpenAPI 3.0.3 spec · 15 endpoints · schemas · auth · rate limiting |
+| [coverage-summary.md](docs/coverage-summary.md) | 3.0 KB | — | Per-module coverage · fully covered modules · gaps · new tests added |
 
 > **Suitable for:** Enterprise deployment · Investor presentations · Academic evaluation · Open-source contribution · Team onboarding
 
@@ -400,7 +408,7 @@ docs/
 
 ## 🤝 Contributing
 
-Contributions are welcome! Before submitting a PR:
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guides on adding calculator categories, badges, and API routes.
 
 ```bash
 # Run the full validation pipeline
@@ -416,6 +424,8 @@ This project is private. All rights reserved.
 ---
 
 <div align="center">
+
+**Production Audit Score: 92.1 / 100** · [Full Audit Report](FINAL_PROJECT_AUDIT.md)
 
 Built with 💚 for a greener India
 
