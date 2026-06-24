@@ -9,7 +9,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![Supabase](https://img.shields.io/badge/Supabase-Auth_&_DB-3FCF8E?logo=supabase&logoColor=white)](https://supabase.com/)
 [![Build](https://github.com/tiwariraman884/promptwar/actions/workflows/testing.yml/badge.svg)](https://github.com/tiwariraman884/promptwar/actions/workflows/testing.yml)
-[![Tests](https://img.shields.io/badge/Tests-250+-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Tests](https://img.shields.io/badge/Tests-387_passing-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev/)
 [![Coverage](https://img.shields.io/badge/Coverage-80%25+-brightgreen?logo=codecov&logoColor=white)]()
 [![Playwright](https://img.shields.io/badge/E2E-Playwright-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev/)
 [![Version](https://img.shields.io/badge/v0.1.0-blue?logo=github)]()
@@ -18,7 +18,7 @@
 
 A full-stack, mobile-first Progressive Web App that helps Indian users track, reduce, and offset their carbon footprint — starting from Haridwar, Uttarakhand and designed to scale nationally.
 
-[Live Demo](https://promptwar-orpin.vercel.app) · [Contributing](CONTRIBUTING.md) · [Report Bug](https://github.com/tiwariraman884/promptwar/issues)
+[Live Demo](https://promptwar-orpin.vercel.app) · [Documentation](docs/) · [Report Bug](https://github.com/tiwariraman884/promptwar/issues)
 
 </div>
 
@@ -31,50 +31,58 @@ A full-stack, mobile-first Progressive Web App that helps Indian users track, re
 | Module | Description |
 |--------|-------------|
 | 🧮 **Carbon Calculator** | Multi-category calculator (transport, energy, diet, shopping, waste, digital) with live kgCO₂e totals and India-specific emission factors |
-| 📊 **Dashboard** | Today's CO₂e, weekly comparison vs India average, streak tracking, eco-coins, 30-day Recharts trend chart, and quick-add bottom sheet |
-| 🌍 **Green Communities** | Unified hub combining community challenges, eco-groups, city/state leaderboards, and community discussions in a tabbed interface |
-| 📈 **Carbon Analytics** | Overview dashboard with donut/trend charts, monthly reports with AI-generated action plans, and full activity history with filtering |
-| 🤖 **AI Assistant** | Two-tab assistant: AI Coach chat (Gemini-powered conversational coach) and curated eco tips with eco-coin rewards |
-| 📷 **Carbon Scanner** | AI-powered product scanner that estimates the carbon footprint of items via camera/image upload |
-| 🗺️ **Green Map** | Google Maps integration showing eco-friendly spots, green businesses, and eco-routing in your city |
-| 🔬 **Carbon Intelligence Engine** | Multi-step lifestyle survey that generates a personalized carbon risk score, monthly forecast, reduction roadmap, and emissions timeline |
-| 👤 **Profile** | Stats, badge shelf, monthly history, and settings for city, diet, notifications, and language |
-| 🔔 **Notifications** | In-app notification center for challenges, badges, and community updates |
-| ⚡ **Energy Audit** | Home energy audit tool with personalized efficiency recommendations |
-| 🏠 **Bill Predictor** | Predict future utility bills based on current usage patterns |
-| 🚗 **Commute Tracker** | Track daily commute emissions with route alternatives |
+| 📊 **Dashboard** | Today's CO₂e, weekly comparison vs India average (5.2 kg/day), streak tracking, eco-coins, 30-day Recharts trend chart |
+| 📈 **Enterprise Analytics** | 5-tab analytics engine with 12+ interactive charts — daily trends, weekly bars, forecast with confidence bands, goal rings, radar, heatmap, and gauges |
+| 🤖 **AI Coach** | Gemini 2.5 Flash-powered sustainability advisor with India-specific knowledge (emission factors, government schemes, ₹ cost comparisons) |
+| 📷 **Carbon Scanner** | Product carbon analysis via barcode, name, or AI — with local DB (8 products), OpenFoodFacts, and Gemini fallback |
+| 🧬 **Carbon Twin** | Digital twin lifestyle model with 5 profile dimensions (diet, travel, energy, shopping, waste) and monthly emission snapshots |
+| 🔬 **Carbon Intelligence** | Full lifestyle survey → personalized carbon risk score, monthly forecast, reduction roadmap, and emissions timeline |
+| 🎯 **Simulator** | What-if scenario analysis — change habits and see projected emission reductions in real-time |
+| 🗺️ **Green Map** | Google Maps integration showing eco-friendly spots and green businesses in your city |
+| 🌍 **Green Communities** | Community challenges, eco-groups, city/state leaderboards, and discussions |
+| 🏠 **Energy Audit** | Home energy audit tool with personalized efficiency recommendations |
+| 💡 **Quick Wins** | Curated eco tips with eco-coin rewards for completion |
 
-### Platform Features
+### Enterprise Platform
 
-- 📱 **PWA** — Installable on any device with offline page caching and cached emission factor data
-- 🔒 **Auth** — Supabase magic link + Google OAuth with localStorage fallback for demo mode
-- 🛡️ **Security** — HSTS, CSP, X-Frame-Options, rate limiting (Upstash Redis) on all API routes
-- 🌐 **i18n Ready** — Translation-ready architecture with separated string files
-- 📊 **Analytics** — Optional PostHog integration for usage insights
-- 🎨 **Animations** — Framer Motion page transitions, 3D Earth globe, and interactive India map
-- ♿ **SEO** — Dynamic sitemap, robots.txt, and meta tags on every page
+| Feature | Description |
+|---------|-------------|
+| 🔐 **RBAC** | 6-tier role system (super_admin → guest) with 15 granular permissions |
+| 🛡️ **Admin Panel** | User management, role assignment, session oversight, and force-logout |
+| 📋 **Audit Logging** | 18 security action types across 3 severity levels — append-only, never-throw |
+| 📱 **Device Fingerprinting** | Device registration, trust/block management, new-device detection alerts |
+| 🔒 **Session Management** | Create, touch, revoke lifecycle with 30-day expiry and device linking |
+| ⚡ **Rate Limiting** | Redis-backed (Upstash) with atomic Lua scripts — token bucket + sliding window algorithms, 4 configurable tiers |
+| 🌐 **i18n** | Bilingual support (English + Hindi) with translation-ready architecture |
+| 📱 **PWA** | Installable with offline caching — emission factors, core pages, Google Fonts |
+| 🎮 **Gamification** | Eco-coins, badges, streaks, XP, challenges — with server-side validation |
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-┌────────────────────────────────────────────────────────────────┐
-│                          Client (PWA)                          │
-│  Next.js 14 App Router · Tailwind · Framer Motion · Zustand   │
-├────────────────────────────────────────────────────────────────┤
-│                      Middleware Layer                           │
-│  Auth Gate · Rate Limiting · Route Protection                  │
-├────────────────────────────────────────────────────────────────┤
-│                      API Routes (/api/*)                       │
-│  entries · dashboard · leaderboard · tips · challenges         │
-│  ai-coach · scanner · green-spots · groups                    │
-│  profile · export · geocode                                    │
-├──────────────────────┬─────────────────────────────────────────┤
-│     Supabase         │           External Services             │
-│  Auth · PostgreSQL   │  Google Gemini · Google Maps · Climatiq │
-│  Row Level Security  │  Upstash Redis · PostHog · OpenFoodFacts│
-└──────────────────────┴─────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│                         Client (PWA)                                 │
+│  Next.js 14 App Router · TailwindCSS · Framer Motion · Zustand      │
+│  Recharts (12+ chart types) · Radix UI · Lucide Icons               │
+├──────────────────────────────────────────────────────────────────────┤
+│                       Middleware Layer                                │
+│  Auth Gate · IP Injection · Admin Guard · Route Protection           │
+├──────────────────────────────────────────────────────────────────────┤
+│                      API Routes (25 endpoints)                       │
+│  entries · dashboard · leaderboard · tips · challenges · ai-coach    │
+│  scanner · green-spots · groups · profile · export · geocode         │
+│  admin/users · admin/audit · admin/sessions · auth/role · activity   │
+│  device/register · sessions · roadmap · carbon-intelligence · explain│
+├───────────────────┬──────────────────────────────────────────────────┤
+│    Supabase       │              External Services                   │
+│  Auth (GoTrue)    │  Google Gemini 2.5 Flash · Google Maps           │
+│  PostgreSQL 15    │  Upstash Redis · PostHog · OpenFoodFacts         │
+│  17 Tables + RLS  │  Climatiq (optional)                             │
+│  23 Foreign Keys  │                                                  │
+│  17 Indexes       │                                                  │
+└───────────────────┴──────────────────────────────────────────────────┘
 ```
 
 ---
@@ -85,7 +93,7 @@ A full-stack, mobile-first Progressive Web App that helps Indian users track, re
 
 - **Node.js** 18+ and **npm** 9+
 - (Optional) Supabase project for auth & database
-- (Optional) Google Maps API key, Gemini API key
+- (Optional) Google Gemini API key, Google Maps API key
 
 ### Installation
 
@@ -99,13 +107,13 @@ npm install
 
 # Set up environment variables
 cp .env.example .env.local
-# Edit .env.local with your values (see Environment Variables below)
+# Edit .env.local with your values (see below)
 
 # Start the development server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Without Supabase environment variables, the app automatically uses **demo data** so the dashboard, calculator, tips, community, and profile flows can all be explored locally.
+Open [http://localhost:3000](http://localhost:3000). Without Supabase environment variables, the app automatically runs in **demo mode** with 30 days of synthetic data — all features are fully explorable.
 
 ---
 
@@ -117,32 +125,38 @@ Copy `.env.example` to `.env.local` and configure:
 |----------|----------|-------------|
 | `NEXT_PUBLIC_SUPABASE_URL` | For auth/DB | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | For auth/DB | Supabase anonymous key |
-| `SUPABASE_SERVICE_ROLE_KEY` | For server ops | Supabase service role key |
+| `SUPABASE_SERVICE_ROLE_KEY` | For admin ops | Supabase service role key |
+| `GEMINI_API_KEY` | For AI features | Google Gemini API key |
 | `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | For Green Map | Google Maps JS API key |
 | `GOOGLE_MAPS_API_KEY` | For geocoding | Google Maps server-side key |
-| `GEMINI_API_KEY` | For AI features | Google Gemini API key |
-| `NEXT_PUBLIC_ANTHROPIC_API_KEY` | No | Legacy AI provider (optional) |
 | `UPSTASH_REDIS_REST_URL` | For rate limiting | Upstash Redis REST URL |
 | `UPSTASH_REDIS_REST_TOKEN` | For rate limiting | Upstash Redis REST token |
-| `CLIMATIQ_API_KEY` | No | External emission factor enrichment |
-| `EMISSIONS_DEV_API_URL` | No | Development emission API endpoint |
 | `NEXT_PUBLIC_POSTHOG_KEY` | No | PostHog analytics project key |
-| `NEXT_PUBLIC_POSTHOG_HOST` | No | PostHog host (default: `https://app.posthog.com`) |
-| `NEXT_PUBLIC_APP_URL` | No | Public app URL for SEO/sitemap |
+| `CLIMATIQ_API_KEY` | No | External emission factor enrichment |
+| `NEXT_PUBLIC_APP_URL` | No | Public app URL for SEO |
 
-> **Note:** Rate limit thresholds are also configurable via env vars (`RATE_LIMIT_ANON_MAX`, `RATE_LIMIT_AUTH_MAX`, etc.) — see `.env.example` for defaults.
+> **Note:** Rate limit thresholds are also configurable via env vars (`RATE_LIMIT_ANON_MAX`, `RATE_LIMIT_AUTH_MAX`, `RATE_LIMIT_AI_MAX`, `RATE_LIMIT_SENSITIVE_MAX`) — see `.env.example` for defaults.
 
 ---
 
-## 🗄️ Supabase Setup
+## 🗄️ Database Setup
 
 1. Create a [Supabase](https://supabase.com/) project
-2. Run [`supabase/schema.sql`](supabase/schema.sql) in the Supabase SQL editor
-3. Enable **Magic Link** auth and **Google OAuth** in Supabase Auth providers
-4. Copy the Supabase URL and Anon Key into `.env.local`
-5. For production, add the same variables to your Vercel project settings
+2. Run the following SQL files in order in the **Supabase SQL Editor**:
+   ```
+   supabase/schema.sql                          # Core tables (profiles, entries, gamification)
+   supabase/migrations/001_carbon_twin_tables.sql  # Carbon Twin, snapshots, roadmaps
+   supabase/migrations/002_security_tables.sql     # RBAC, devices, sessions, audit logs
+   ```
+3. Copy the Supabase URL and keys into `.env.local`
+4. First admin: after signup, run in SQL Editor:
+   ```sql
+   INSERT INTO user_roles (user_id, role)
+   VALUES ('<your-uuid>', 'super_admin')
+   ON CONFLICT (user_id) DO UPDATE SET role = 'super_admin';
+   ```
 
-> In demo mode (no Supabase configured), all API routes return deterministic mock data for fast prototyping.
+> In demo mode (no Supabase configured), all API routes return deterministic mock data.
 
 ---
 
@@ -150,72 +164,103 @@ Copy `.env.example` to `.env.local` and configure:
 
 ```
 promptwar/
-├── app/                      # Next.js App Router
-│   ├── api/                  # 16 API route groups
-│   │   ├── ai-coach/         # AI coaching endpoints
-│   │   ├── scanner/          # Carbon scanner endpoints
-│   │   ├── dashboard/        # Dashboard data
-│   │   ├── entries/          # Carbon entry CRUD
-│   │   ├── leaderboard/      # Community rankings
-│   │   └── ...               # groups, etc.
-│   ├── calculator/           # Carbon calculator page
-│   ├── dashboard/            # User dashboard
-│   ├── green-communities/    # Challenges, groups, leaderboards, discussions
-│   ├── carbon-analytics/     # Overview, reports, activity history
-│   ├── ai-assistant/         # AI Coach chat + eco tips
-│   ├── scanner/              # Product carbon scanner
-│   ├── green-map/            # Eco-friendly locations map
-│   ├── carbon-engine/        # Carbon Intelligence Engine survey
-│   └── ...                   # 15+ total routes
-├── components/               # Reusable React components
-│   ├── EarthGlobe.tsx        # 3D rotating earth animation
-│   ├── IndiaMap3D.tsx        # Interactive India map
-│   ├── app-shell.tsx         # Main layout with nav & auth gate
-│   ├── ui/                   # Design system primitives
+├── app/                          # Next.js App Router
+│   ├── api/                      # 25 API route handlers
+│   │   ├── entries/              # Emission entry CRUD
+│   │   ├── dashboard/            # Dashboard aggregation
+│   │   ├── ai-coach/             # Gemini AI chat proxy
+│   │   ├── scanner/              # Product carbon scanner
+│   │   ├── admin/                # Admin panel APIs (RBAC-protected)
+│   │   │   ├── users/            # User management + ban + role
+│   │   │   ├── audit/            # Audit log queries
+│   │   │   └── sessions/         # Session management + revoke
+│   │   └── ...                   # 15+ more route groups
+│   ├── analytics/                # Enterprise analytics (5-tab)
+│   ├── calculator/               # Carbon calculator
+│   ├── dashboard/                # User dashboard
+│   ├── carbon-twin/              # Digital twin profile
+│   ├── simulator/                # What-if simulator
+│   ├── admin/                    # Admin panel
+│   └── ...                       # 20+ total pages
+├── components/
+│   ├── app-shell.tsx             # Navigation wrapper
+│   ├── analytics/                # 10 chart components
+│   │   ├── DailyTrendChart.tsx   # Recharts ComposedChart
+│   │   ├── ForecastAreaChart.tsx  # Confidence band chart
+│   │   ├── GoalProgressRing.tsx  # Animated SVG ring
+│   │   ├── HotspotHeatmap.tsx    # CSS-based grid heatmap
+│   │   └── ...
+│   └── ui/                       # Design system primitives
+├── lib/                          # Business logic (pure functions)
+│   ├── calculator-engine.ts      # Core emission calculations
+│   ├── analytics-engine.ts       # Analytics computations (6 functions)
+│   ├── emission-factors.ts       # India-specific factors
+│   ├── rate-limit.ts             # Redis rate limiter (Lua scripts)
+│   ├── audit-logger.ts           # Append-only audit logging
+│   ├── session-manager.ts        # Session lifecycle
+│   ├── rbac/                     # Role-based access control
+│   ├── types/                    # TypeScript type definitions
 │   └── ...
-├── lib/                      # Business logic (pure functions)
-│   ├── calculator-engine.ts  # Core emission calculations
-│   ├── emission-factors.ts   # India-specific factors
-│   ├── gamification.ts       # Badges, coins, streaks
-│   ├── rate-limit.ts         # API rate limiting (Upstash)
-│   ├── validations.ts        # Zod input schemas
-│   └── ...
-├── __tests__/                # Unit tests (Vitest)
-├── supabase/                 # Database schema
-├── public/                   # PWA assets, icons, manifest
-└── vitest.config.ts          # Test configuration
+├── __tests__/                    # Test suite (387 tests)
+│   ├── unit/                     # 17 unit test files
+│   ├── integration/              # 5 integration test files
+│   ├── lib/                      # 9 library tests
+│   └── e2e/                      # 3 Playwright E2E tests
+├── supabase/                     # Database schema + migrations
+│   ├── schema.sql                # Base schema (8 tables)
+│   └── migrations/               # 2 migration files (9 more tables)
+├── docs/                         # Documentation suite (8 files)
+└── vitest.config.ts              # Test configuration (80% thresholds)
 ```
 
 ---
 
 ## 🧪 Testing
 
-The project uses [Vitest](https://vitest.dev/) with V8 coverage.
+**387 tests** across **31 test files** — all passing ✅
 
 ```bash
 # Run all tests
-npm run test
+npm test
 
-# Run tests in watch mode
-npm run test:watch
+# Unit tests only (verbose)
+npm run test:unit
 
-# Run tests with coverage report
+# Integration tests only
+npm run test:integration
+
+# E2E tests (Playwright)
+npm run test:e2e
+
+# Coverage report (80% threshold enforced)
 npm run test:coverage
+
+# Full validation pipeline
+npm run validate    # typecheck → lint → test → build
 ```
 
-### Current Coverage (113 tests, 8 test files — all passing ✅)
+### Test Architecture
 
-| File | Statements | Branches | Functions | Lines |
-|------|-----------|----------|-----------|-------|
-| **Overall** | **45.84%** | **49.31%** | **45.54%** | **48.20%** |
-| emission-factors.ts | 100% | 100% | 100% | 100% |
-| gamification.ts | 100% | 100% | 100% | 100% |
-| impact-equivalents.ts | 100% | 100% | 100% | 100% |
-| validations.ts | 100% | 100% | 100% | 100% |
-| legacy-calc.ts | 100% | 90% | 100% | 100% |
-| calculator-engine.ts | 83.78% | 83.48% | 95.23% | 84.93% |
-| utils.ts | 90.9% | 100% | 83.33% | 88.88% |
-| rate-limit.ts | 78.04% | 55.81% | 100% | 78.75% |
+```
+__tests__/
+├── unit/              # Pure function tests (17 files)
+│   ├── security-types, rbac, audit-logger, rate-limit
+│   ├── calculator-engine, emission-factors, health-score
+│   ├── device-fingerprint, settings-db, forecast-engine
+│   └── ... (with dedicated branch coverage files)
+├── integration/       # Multi-module workflows (5 files)
+│   ├── calculator-flow, emission-pipeline, explainer-flow
+│   ├── rbac-workflow, session-lifecycle
+│   └── ...
+├── lib/               # Library-level tests (9 files)
+│   └── validations, gamification, rate-limit, utils, ...
+└── e2e/               # Playwright browser tests (3 files)
+    └── auth, calculator, dashboard
+```
+
+### Coverage Thresholds
+
+All metrics enforced at **80%+** — statements, branches, functions, and lines.
 
 ---
 
@@ -228,34 +273,44 @@ npm run test:coverage
 | `npm run start` | Start production server |
 | `npm run lint` | ESLint check |
 | `npm run typecheck` | TypeScript check (`tsc --noEmit`) |
-| `npm run test` | Run all unit tests |
-| `npm run test:watch` | Run tests in watch mode |
-| `npm run test:coverage` | Run tests with V8 coverage report |
+| `npm test` | Run all unit + integration tests |
+| `npm run test:unit` | Unit tests only (verbose) |
+| `npm run test:integration` | Integration tests only (verbose) |
+| `npm run test:e2e` | Playwright E2E tests |
+| `npm run test:coverage` | Tests with V8 coverage report |
+| `npm run test:all` | Unit + Integration + Coverage |
 | `npm run validate` | Full pipeline: typecheck → lint → test → build |
-| `npm run precommit` | Pre-commit check: typecheck → lint → test |
+| `npm run precommit` | Pre-commit: typecheck → lint → test |
+
+---
+
+## 🔒 Security
+
+GreenStep implements defense-in-depth security:
+
+| Layer | Implementation |
+|-------|---------------|
+| **Auth** | Supabase Auth (GoTrue) with HTTP-only cookie JWT |
+| **RBAC** | 6 roles × 15 permissions — `super_admin`, `admin`, `moderator`, `premium_user`, `user`, `guest` |
+| **RLS** | Row Level Security on all 17 tables — `auth.uid() = user_id` |
+| **Rate Limiting** | 4-tier Redis rate limiting with atomic Lua scripts (token bucket + sliding window) |
+| **Headers** | HSTS, CSP, X-Frame-Options: DENY, X-Content-Type-Options, Referrer-Policy, Permissions-Policy |
+| **Audit** | 18 action types, 3 severity levels, append-only, metadata sanitization |
+| **Input Validation** | Zod schemas on all API inputs |
+| **API Keys** | All secrets server-side only (never `NEXT_PUBLIC_`) |
+| **Sessions** | 30-day expiry with device fingerprinting, trust/block, and admin force-logout |
 
 ---
 
 ## 🚢 Deployment
 
-The app is deployed on **Vercel** at [promptwar-orpin.vercel.app](https://promptwar-orpin.vercel.app).
+Deployed on **Vercel** at [promptwar-orpin.vercel.app](https://promptwar-orpin.vercel.app).
 
-### Deploy to Vercel
+1. Connect repository to [Vercel](https://vercel.com/)
+2. Add environment variables from `.env.example` to Vercel project settings
+3. Push to `main` — Vercel auto-deploys
 
-1. Push to the `main` branch on GitHub
-2. Connect the repository to [Vercel](https://vercel.com/)
-3. Add all environment variables from `.env.example` to the Vercel project settings
-4. Vercel auto-deploys on every push to `main`
-
-### Security Headers (auto-configured)
-
-The app ships with production-grade security headers:
-- `Strict-Transport-Security` (HSTS)
-- `Content-Security-Policy` (CSP)
-- `X-Frame-Options: DENY`
-- `X-Content-Type-Options: nosniff`
-- `Referrer-Policy: strict-origin-when-cross-origin`
-- `Permissions-Policy` (camera, microphone, geolocation)
+**CI/CD Pipeline:** Lint → TypeCheck → Unit Tests → Integration Tests → Coverage Check (≥80%) → Build → Deploy
 
 ---
 
@@ -263,93 +318,74 @@ The app ships with production-grade security headers:
 
 | Layer | Technology |
 |-------|------------|
-| **Framework** | Next.js 14 (App Router) |
-| **Language** | TypeScript 5 |
-| **Styling** | Tailwind CSS 3 |
+| **Framework** | Next.js 14 (App Router, Node.js Runtime) |
+| **Language** | TypeScript 5.7 |
+| **Styling** | Tailwind CSS 3.4 |
 | **Animations** | Framer Motion 11 |
-| **State Management** | Zustand 5 |
+| **State** | Zustand 5 |
 | **Validation** | Zod 4 |
-| **Auth & Database** | Supabase (PostgreSQL + Auth) |
-| **AI** | Google Gemini API |
+| **Charts** | Recharts 2.15 (12+ chart types) |
+| **Components** | Radix UI (Tabs, Collapsible) |
+| **Icons** | Lucide React |
+| **Auth & Database** | Supabase (PostgreSQL 15 + GoTrue Auth) |
+| **AI** | Google Gemini 2.5 Flash |
 | **Maps** | Google Maps API |
-| **Rate Limiting** | Upstash Redis |
+| **Cache** | Upstash Redis (serverless) |
 | **Analytics** | PostHog |
-| **Charts** | Recharts |
-| **Testing** | Vitest + @vitest/coverage-v8 |
-| **Deployment** | Vercel |
-| **PWA** | next-pwa (Workbox) |
+| **Testing** | Vitest 4 + Playwright 1.61 |
+| **Coverage** | @vitest/coverage-v8 |
+| **Deployment** | Vercel (Edge CDN + Serverless) |
+| **PWA** | next-pwa (Workbox runtime caching) |
+
+---
+
+## 📚 Documentation
+
+Full enterprise documentation suite in [`/docs`](docs/):
+
+| Document | Description |
+|----------|-------------|
+| [PRD.md](docs/PRD.md) | Product vision, personas, requirements, user stories, roadmap |
+| [Architecture.md](docs/Architecture.md) | System diagrams, data flows, scalability strategy |
+| [ERD.md](docs/ERD.md) | Complete database schema — 17 tables, all keys and constraints |
+| [API.md](docs/API.md) | All 25 endpoints with request/response schemas and OpenAPI spec |
+| [Testing.md](docs/Testing.md) | Testing strategy, coverage targets, CI/CD flow |
+| [Security.md](docs/Security.md) | RBAC matrix, OWASP compliance, audit logging, CSP |
+| [Deployment.md](docs/Deployment.md) | Environment setup, Vercel deployment, rollback strategy |
+| [UserGuide.md](docs/UserGuide.md) | Feature walkthroughs, gamification, troubleshooting, FAQ |
 
 ---
 
 ## 🗺️ Roadmap
 
-- [ ] Runtime-safety validation patterns for all API handlers
-- [ ] Consistent auth/RBAC guard helpers across routes
-- [ ] Observability utilities (request IDs + structured logs)
-- [ ] AI Eco Coach conversation persistence
-- [ ] Carbon Scanner evidence storage
-- [ ] Green Map eco-routing extensions
-- [ ] Meal & travel planners using the carbon engine
-- [ ] Smart energy ingestion endpoints
-- [ ] Corporate ESG workspace
-- [ ] Carbon wallet + certificate QR codes
-- [ ] Redis caching for heavy reads
-- [ ] Background jobs for scan processing & report generation
-- [ ] Accessibility & performance polish pass
+### Near-term
+- [ ] WhatsApp bot for quick carbon logging
+- [ ] OCR receipt scanning for automated entries
+- [ ] Social features — friend challenges, carbon comparison
+- [ ] Eco-coin marketplace with partner rewards
+
+### Medium-term
+- [ ] Vernacular languages (Tamil, Telugu, Bengali, Marathi)
+- [ ] Household carbon tracking (multi-user profiles)
+- [ ] Carbon offset marketplace (verified Indian projects)
+- [ ] Enterprise API for corporate ESG reporting
+
+### Long-term
+- [ ] Government integration (Swachh Bharat, PM-KUSUM dashboards)
+- [ ] Wearable integration (auto commute detection)
+- [ ] Schools program (curriculum-integrated tracking)
+- [ ] Blockchain-based carbon credit tokenization
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for development workflow, project structure, and how to add new features.
+Contributions are welcome! Before submitting a PR:
 
 ```bash
-# Full validation before submitting a PR
+# Run the full validation pipeline
 npm run validate
 ```
-
----
-
-## 🧪 Testing
-
-### Architecture
-
-```
-__tests__/
-├── lib/              # Original unit tests (9 files, 149 tests)
-├── unit/             # New unit tests (13 files)
-├── integration/      # Integration tests (5 files)
-└── e2e/              # Playwright E2E tests (3 files)
-```
-
-### Commands
-
-| Command | Description |
-|---------|-------------|
-| `npm test` | Run all Vitest tests |
-| `npm run test:unit` | Unit tests only |
-| `npm run test:integration` | Integration tests only |
-| `npm run test:e2e` | Playwright E2E tests |
-| `npm run test:coverage` | Run with coverage report |
-| `npm run test:all` | Unit + Integration + Coverage |
-| `npm run test:watch` | Watch mode |
-
-### Coverage Targets
-
-- **Statements**: 80%+
-- **Branches**: 80%+
-- **Functions**: 80%+
-- **Lines**: 80%+
-
-Coverage reports are generated in `./coverage/` and uploaded as CI artifacts.
-
-### CI/CD
-
-Tests run automatically on:
-- Pull Requests to `main`
-- Pushes to `main`
-
-Pipeline: Lint → TypeCheck → Unit Tests → Integration Tests → E2E → Coverage Report
 
 ---
 
