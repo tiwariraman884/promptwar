@@ -7,6 +7,7 @@ function makeBreakdown(total: number): EmissionBreakdown {
   const perCat = total / 5;
   return {
     totalMonthlyCO2Kg: total,
+    calculatedAt: new Date().toISOString(),
     byCategory: [
       { category: 'diet', label: 'Diet', labelHindi: 'आहार', monthlyCO2Kg: perCat, percentOfTotal: 20 },
       { category: 'travel', label: 'Travel', labelHindi: 'यात्रा', monthlyCO2Kg: perCat, percentOfTotal: 20 },
@@ -48,12 +49,13 @@ describe('health-score branch coverage', () => {
   });
 
   it('handles category without matching benchmark', () => {
-    const breakdown: EmissionBreakdown = {
+    const breakdown = {
       totalMonthlyCO2Kg: 100,
+      calculatedAt: new Date().toISOString(),
       byCategory: [
-        { category: 'unknown_cat' as string, label: 'Unknown', labelHindi: 'अज्ञात', monthlyCO2Kg: 100, percentOfTotal: 100 },
+        { category: 'unknown_cat', label: 'Unknown', labelHindi: 'अज्ञात', monthlyCO2Kg: 100, percentOfTotal: 100 },
       ],
-    };
+    } as unknown as EmissionBreakdown;
     const result = calcHealthScore(breakdown);
     expect(result.overallScore).toBeGreaterThanOrEqual(0);
   });
@@ -61,6 +63,7 @@ describe('health-score branch coverage', () => {
   it('handles category without matching weight', () => {
     const breakdown: EmissionBreakdown = {
       totalMonthlyCO2Kg: 50,
+      calculatedAt: new Date().toISOString(),
       byCategory: [
         { category: 'diet', label: 'Diet', labelHindi: 'आहार', monthlyCO2Kg: 10, percentOfTotal: 20 },
         { category: 'travel', label: 'Travel', labelHindi: 'यात्रा', monthlyCO2Kg: 10, percentOfTotal: 20 },

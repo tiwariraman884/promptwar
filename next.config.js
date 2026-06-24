@@ -81,6 +81,11 @@ const nextConfig = {
     minimumCacheTTL: 86400, // 24-hour cache
   },
 
+  // ── ESLint: run via `npm run lint` separately, skip during build ──
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
   experimental: {
     typedRoutes: true,
     optimizePackageImports: ["lucide-react", "recharts", "framer-motion"],

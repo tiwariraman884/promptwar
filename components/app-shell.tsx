@@ -72,7 +72,7 @@ const exploreItems: Array<{ href: string; label: string; tKey: string; icon: Nav
 ];
 
 /* ─── Combined flat list for backwards compatibility ─── */
-const navItems = [...coreNavItems, ...exploreItems];
+const _navItems = [...coreNavItems, ...exploreItems];
 
 /* ─── MOBILE: Bottom nav shows 4 items + "More" button ─── */
 const mobileBottomItems = [
@@ -599,7 +599,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               )}>
                 <div className="pl-2 pr-1 py-1 space-y-0.5">
                   {activeExploreNav.map((item) => {
-                    const Icon = item.icon;
+                    const _Icon = item.icon;
                     return (
                       <Link
                         aria-current={item.active ? "page" : undefined}

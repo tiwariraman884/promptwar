@@ -76,7 +76,7 @@ describe('Session Manager', () => {
       await revokeSession('sess-123', 'admin-1', 'Suspicious activity');
       expect(mockFrom).toHaveBeenCalledWith('user_sessions');
       expect(mockUpdate).toHaveBeenCalledTimes(1);
-      const updateArg = mockUpdate.mock.calls[0][0];
+      const updateArg = (mockUpdate.mock.calls as unknown as [Record<string, unknown>][])[0][0];
       expect(updateArg.status).toBe('revoked');
       expect(updateArg.revoked_by).toBe('admin-1');
       expect(updateArg.revoked_reason).toBe('Suspicious activity');
@@ -84,7 +84,7 @@ describe('Session Manager', () => {
 
     it('uses default reason', async () => {
       await revokeSession('sess-123', 'admin-1');
-      const updateArg = mockUpdate.mock.calls[0][0];
+      const updateArg = (mockUpdate.mock.calls as unknown as [Record<string, unknown>][])[0][0];
       expect(updateArg.revoked_reason).toBe('Manual revocation');
     });
 

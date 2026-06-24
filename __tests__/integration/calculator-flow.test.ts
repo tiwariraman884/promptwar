@@ -46,7 +46,7 @@ describe('Calculator → Health Score → Forecast Pipeline', () => {
     // Each category in health score should correspond to a breakdown category
     const breakdownCats = new Set(breakdown.byCategory.map(c => c.category));
     for (const cs of score.categoryScores) {
-      expect(breakdownCats.has(cs.category)).toBe(true);
+      expect(breakdownCats.has(cs.category as typeof breakdown.byCategory[number]['category'])).toBe(true);
     }
   });
 

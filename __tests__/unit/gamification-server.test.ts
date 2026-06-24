@@ -24,7 +24,7 @@ describe('awardCoins', () => {
   const mockSelect = vi.fn(() => ({ eq: mockEq }));
   const mockFrom = vi.fn(() => ({ select: mockSelect, upsert: mockUpsert }));
 
-  const mockSupabase = { from: mockFrom } as ReturnType<typeof vi.fn>;
+  const mockSupabase = { from: mockFrom } as unknown as Parameters<typeof awardCoins>[0];
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -54,7 +54,7 @@ describe('updateStreak', () => {
   const mockSelect = vi.fn(() => ({ eq: mockEq }));
   const mockFrom = vi.fn(() => ({ select: mockSelect, upsert: mockUpsert }));
 
-  const mockSupabase = { from: mockFrom } as ReturnType<typeof vi.fn>;
+  const mockSupabase = { from: mockFrom } as unknown as Parameters<typeof updateStreak>[0];
 
   beforeEach(() => {
     vi.clearAllMocks();

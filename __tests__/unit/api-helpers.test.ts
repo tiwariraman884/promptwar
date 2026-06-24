@@ -73,16 +73,16 @@ describe('apiPaginated', () => {
 
   it('calculates totalPages correctly', () => {
     const result = apiPaginated([], { page: 1, limit: 5, total: 12 });
-    expect(result.body.pagination.totalPages).toBe(3); // ceil(12/5) = 3
+    expect((result.body as unknown as Record<string, unknown>).pagination).toEqual({ page: 1, limit: 5, total: 12, totalPages: 3 }); // ceil(12/5) = 3
   });
 
   it('handles zero total', () => {
     const result = apiPaginated([], { page: 1, limit: 10, total: 0 });
-    expect(result.body.pagination.totalPages).toBe(0);
+    expect((result.body as unknown as Record<string, unknown>).pagination).toEqual({ page: 1, limit: 10, total: 0, totalPages: 0 });
   });
 
   it('handles exact page boundary', () => {
     const result = apiPaginated([], { page: 1, limit: 10, total: 30 });
-    expect(result.body.pagination.totalPages).toBe(3);
+    expect((result.body as unknown as Record<string, unknown>).pagination).toEqual({ page: 1, limit: 10, total: 30, totalPages: 3 });
   });
 });
