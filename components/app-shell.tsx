@@ -52,7 +52,7 @@ const coreNavItems: Array<{ href: string; label: string; tKey: string; icon: Nav
   { href: "/scanner",            label: "Scanner",           tKey: "nav.scanner",          icon: (p) => <IconScanner    {...p} /> },
   { href: "/green-map",          label: "Green Map",         tKey: "nav.greenMap",         icon: (p) => <IconGreenMap   {...p} /> },
   { href: "/green-communities",  label: "Communities",       tKey: "nav.greenCommunities", icon: (p) => <IconCommunity  {...p} /> },
-  { href: "/carbon-analytics",   label: "Analytics",         tKey: "nav.carbonAnalytics",  icon: (p) => <IconReport     {...p} /> },
+  { href: "/analytics",          label: "Analytics",         tKey: "nav.carbonAnalytics",  icon: (p) => <IconReport     {...p} /> },
   { href: "/twin",               label: "Carbon Twin",       tKey: "nav.carbonTwin",       icon: (p) => <IconCarbonTwin {...p} /> },
   { href: "/simulator",          label: "Simulator",         tKey: "nav.simulator",        icon: (p) => <IconSimulator  {...p} /> },
   { href: "/roadmap",            label: "Roadmap",           tKey: "nav.roadmap",          icon: (p) => <IconRoadmap    {...p} /> },
