@@ -2,8 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { AuditTable } from '@/components/admin/AuditTable';
-import type { AuditLog, AuditAction, AuditSeverity } from '@/lib/types/security';
-import { hasPermission } from '@/lib/types/security';
+import type { AuditLog, AuditAction } from '@/lib/types/security';
 import { useRole } from '@/hooks/use-role';
 
 const AUDIT_ACTIONS: AuditAction[] = [

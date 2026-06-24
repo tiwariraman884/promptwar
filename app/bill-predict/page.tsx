@@ -3,8 +3,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { MotionPage } from "@/components/motion-page";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { STATE_ELECTRICITY_RATES, GRID_EMISSION_FACTOR } from "@/lib/energy-audit-data";
 
 export default function BillPredictPage() {

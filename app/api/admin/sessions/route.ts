@@ -31,7 +31,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const { data } = await query;
 
   // Get user emails
-  const userIds = [...new Set((data ?? []).map(s => s.user_id as string))];
+  const _userIds = [...new Set((data ?? []).map(s => s.user_id as string))];
   const { data: { users: authUsers } } = await adminSupabase.auth.admin.listUsers({ perPage: 100 });
   const emailMap = new Map<string, string>();
   (authUsers ?? []).forEach(u => emailMap.set(u.id, u.email ?? 'unknown'));
