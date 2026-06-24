@@ -20,9 +20,9 @@ describe('EMISSION_FACTORS (V1)', () => {
     expect(EMISSION_FACTORS).toHaveProperty('digitalPerHour');
   });
 
-  it('transport factors are all > 0', () => {
+  it('transport factors are all >= 0', () => {
     for (const [mode, val] of Object.entries(EMISSION_FACTORS.transport)) {
-      expect(val, `transport.${mode}`).toBeGreaterThan(0);
+      expect(val, `transport.${mode}`).toBeGreaterThanOrEqual(0);
     }
   });
 

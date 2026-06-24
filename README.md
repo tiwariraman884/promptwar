@@ -8,7 +8,11 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![Supabase](https://img.shields.io/badge/Supabase-Auth_&_DB-3FCF8E?logo=supabase&logoColor=white)](https://supabase.com/)
-[![Vitest](https://img.shields.io/badge/Vitest-113_tests-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Build](https://github.com/tiwariraman884/promptwar/actions/workflows/testing.yml/badge.svg)](https://github.com/tiwariraman884/promptwar/actions/workflows/testing.yml)
+[![Tests](https://img.shields.io/badge/Tests-250+-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Coverage](https://img.shields.io/badge/Coverage-80%25+-brightgreen?logo=codecov&logoColor=white)]()
+[![Playwright](https://img.shields.io/badge/E2E-Playwright-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev/)
+[![Version](https://img.shields.io/badge/v0.1.0-blue?logo=github)]()
 [![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000?logo=vercel)](https://promptwar-orpin.vercel.app)
 [![License](https://img.shields.io/badge/license-Private-red)]()
 
@@ -303,6 +307,49 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for dev
 # Full validation before submitting a PR
 npm run validate
 ```
+
+---
+
+## 🧪 Testing
+
+### Architecture
+
+```
+__tests__/
+├── lib/              # Original unit tests (9 files, 149 tests)
+├── unit/             # New unit tests (13 files)
+├── integration/      # Integration tests (5 files)
+└── e2e/              # Playwright E2E tests (3 files)
+```
+
+### Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm test` | Run all Vitest tests |
+| `npm run test:unit` | Unit tests only |
+| `npm run test:integration` | Integration tests only |
+| `npm run test:e2e` | Playwright E2E tests |
+| `npm run test:coverage` | Run with coverage report |
+| `npm run test:all` | Unit + Integration + Coverage |
+| `npm run test:watch` | Watch mode |
+
+### Coverage Targets
+
+- **Statements**: 80%+
+- **Branches**: 80%+
+- **Functions**: 80%+
+- **Lines**: 80%+
+
+Coverage reports are generated in `./coverage/` and uploaded as CI artifacts.
+
+### CI/CD
+
+Tests run automatically on:
+- Pull Requests to `main`
+- Pushes to `main`
+
+Pipeline: Lint → TypeCheck → Unit Tests → Integration Tests → E2E → Coverage Report
 
 ---
 

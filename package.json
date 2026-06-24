@@ -11,7 +11,11 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:unit": "vitest run --reporter=verbose __tests__/unit __tests__/lib",
+    "test:integration": "vitest run --reporter=verbose __tests__/integration",
+    "test:e2e": "npx playwright test",
     "test:coverage": "vitest run --coverage",
+    "test:all": "npm run test:unit && npm run test:integration && npm run test:coverage",
     "validate": "npm run typecheck && npm run lint && npm run test && npm run build",
     "precommit": "npm run typecheck && npm run lint && npm run test"
   },
