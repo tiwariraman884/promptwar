@@ -8,7 +8,6 @@ import {
   IconEditAccount,
   IconLanguage,
   IconBell,
-  IconProfile,
 } from "@/components/icons/EcoIcons";
 import { cn } from "@/lib/utils";
 

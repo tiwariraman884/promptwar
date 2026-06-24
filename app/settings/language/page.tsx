@@ -42,7 +42,7 @@ export default function LanguageSettingsPage() {
     showSettingsToast(`Language set to ${lang.name}`);
   }
 
-  function handleRegionSave() {
+  function _handleRegionSave() {
     showSettingsToast("Region preferences saved");
   }
 

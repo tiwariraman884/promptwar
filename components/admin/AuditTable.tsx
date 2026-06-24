@@ -1,7 +1,7 @@
 'use client';
 
 import { SeverityBadge } from './SeverityBadge';
-import type { AuditLog, AuditSeverity, AuditAction } from '@/lib/types/security';
+import type { AuditLog } from '@/lib/types/security';
 
 function timeAgo(dateStr: string): string {
   const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
