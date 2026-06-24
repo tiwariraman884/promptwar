@@ -5,7 +5,7 @@
 
 -- ── USER ROLES TABLE ────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS user_roles (
-  id          UUID DEFAULT gen_random_uuid(f70b2cf8-b5d2-47bd-bb6d-fad6289254e8) PRIMARY KEY,
+  id          UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id     UUID REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE NOT NULL,
   role        TEXT NOT NULL DEFAULT 'user'
                 CHECK (role IN ('super_admin','admin','moderator','premium_user','user','guest')),
