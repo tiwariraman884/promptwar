@@ -22,8 +22,6 @@ import { MotionPage } from "@/components/motion-page";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
 import { showSettingsToast } from "@/components/settings/SettingsToast";
 import {
   calculateDiet,
@@ -49,7 +47,6 @@ import {
 } from "@/lib/calculator-engine";
 import {
   CATEGORY_LABELS,
-  CATEGORY_ORDER,
   type DietType,
   type EmissionCategory,
   type EventCateringType,

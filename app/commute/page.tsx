@@ -4,7 +4,6 @@ import { useState } from "react";
 import { MotionPage } from "@/components/motion-page";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 
 const MODES = [
   { id: "car_petrol", emoji: "🚗", name: "Petrol Car", kgPerKm: 0.15, speedKmh: 25, costPerKm: 8.5, color: "#ef4444" },

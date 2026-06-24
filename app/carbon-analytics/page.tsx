@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { Leaf, RefreshCw, ArrowDownRight, AlertCircle, Zap, ArrowUpRight, ShoppingBag, BarChart3, Share2, Download, TrendingDown, Sparkles } from "lucide-react";
+import { Leaf, RefreshCw, AlertCircle, ShoppingBag, BarChart3, Share2, Download, TrendingDown, Sparkles } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { REPORT_BENCHMARKS } from "@/lib/carbonData";
-import { demoEntries, demoMonthlyHistory, demoDashboard } from "@/lib/demo-data";
+import { demoEntries, demoMonthlyHistory } from "@/lib/demo-data";
 import { callClaude } from "@/lib/anthropicClient";
 
 /* ─── Lazy-loaded chart components (recharts stays out of main bundle) ─── */

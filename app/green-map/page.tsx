@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
 import { GREEN_MAP_LOCATIONS, CITY_COORDS } from "@/lib/carbonData";
 import { useGreenMapStore, type EcoLocation } from "@/lib/green-map-store";
-import { MapPin, Plus, Navigation, RefreshCw, X } from "lucide-react";
+import { MapPin, Plus, RefreshCw, X } from "lucide-react";
 
 import { CityFilter } from "@/components/green-map/CityFilter";
 import { MapSearchBar } from "@/components/green-map/MapSearchBar";
