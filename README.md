@@ -341,18 +341,32 @@ Deployed on **Vercel** at [promptwar-orpin.vercel.app](https://promptwar-orpin.v
 
 ## 📚 Documentation
 
-Full enterprise documentation suite in [`/docs`](docs/):
+Production-grade enterprise documentation suite — **105.9 KB** across **69 sections** with **17 Mermaid diagrams**.
 
-| Document | Description |
-|----------|-------------|
-| [PRD.md](docs/PRD.md) | Product vision, personas, requirements, user stories, roadmap |
-| [Architecture.md](docs/Architecture.md) | System diagrams, data flows, scalability strategy |
-| [ERD.md](docs/ERD.md) | Complete database schema — 17 tables, all keys and constraints |
-| [API.md](docs/API.md) | All 25 endpoints with request/response schemas and OpenAPI spec |
-| [Testing.md](docs/Testing.md) | Testing strategy, coverage targets, CI/CD flow |
-| [Security.md](docs/Security.md) | RBAC matrix, OWASP compliance, audit logging, CSP |
-| [Deployment.md](docs/Deployment.md) | Environment setup, Vercel deployment, rollback strategy |
-| [UserGuide.md](docs/UserGuide.md) | Feature walkthroughs, gamification, troubleshooting, FAQ |
+```
+docs/
+├── PRD.md              # Product Requirements Document        (10.7 KB)
+├── Architecture.md     # System Architecture & Data Flows     (13.2 KB)
+├── ERD.md              # Entity Relationship Diagram           (18.0 KB)
+├── API.md              # API Reference & OpenAPI Spec          (15.6 KB)
+├── Testing.md          # Testing Strategy & CI/CD              (12.2 KB)
+├── Security.md         # Security Model & OWASP Compliance     (14.0 KB)
+├── Deployment.md       # Deployment & Infrastructure Guide     (10.6 KB)
+└── UserGuide.md        # End-User Guide & FAQ                  (11.6 KB)
+```
+
+| Document | Size | Diagrams | Key Sections |
+|----------|------|:--------:|-------------|
+| [PRD.md](docs/PRD.md) | 10.7 KB | — | Product vision · 4 user personas · 30 functional requirements · user stories · success metrics · phased roadmap |
+| [Architecture.md](docs/Architecture.md) | 13.2 KB | 7 | System architecture · frontend/backend/DB layers · auth flow · data flow diagrams · caching strategy · scalability playbook |
+| [ERD.md](docs/ERD.md) | 18.0 KB | 1 | Full ER diagram · 17 tables · 23 foreign keys · 17 indexes · 8 unique constraints · CHECK constraints · trigger functions |
+| [API.md](docs/API.md) | 15.6 KB | 1 | All 25 endpoints · request/response schemas · rate limiting tiers · error codes · pagination · partial OpenAPI 3.0 YAML spec |
+| [Testing.md](docs/Testing.md) | 12.2 KB | 2 | Testing pyramid · 387 tests across 31 files · unit/integration/E2E breakdown · coverage thresholds (80%+) · CI/CD pipeline |
+| [Security.md](docs/Security.md) | 14.0 KB | 3 | Authentication flow · 6×15 RBAC permission matrix · session lifecycle · OWASP Top 10 compliance · CSP · 18 audit actions · metadata sanitization |
+| [Deployment.md](docs/Deployment.md) | 10.6 KB | 3 | Environment setup · Vercel deployment · Supabase + Upstash config · CI/CD pipeline · rollback strategy · monitoring · scaling playbook |
+| [UserGuide.md](docs/UserGuide.md) | 11.6 KB | — | Getting started · registration/login · dashboard guide · calculator walkthrough · analytics (5 tabs) · gamification · AI features · troubleshooting · FAQ |
+
+> **Suitable for:** Enterprise deployment · Investor presentations · Academic evaluation · Open-source contribution · Team onboarding
 
 ---
 
