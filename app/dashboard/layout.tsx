@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { DeviceTracker } from "@/components/security/DeviceTracker";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -9,5 +10,10 @@ export const metadata: Metadata = {
 };
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
-  return children;
+  return (
+    <>
+      <DeviceTracker />
+      {children}
+    </>
+  );
 }

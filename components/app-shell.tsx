@@ -30,6 +30,7 @@ import {
   IconSimulator,
   IconRoadmap,
   IconHealthScore,
+  IconLock,
 } from "@/components/icons/EcoIcons";
 
 /* ─── Types ─── */
@@ -58,6 +59,7 @@ const coreNavItems: Array<{ href: string; label: string; tKey: string; icon: Nav
   { href: "/health",             label: "Health Score",      tKey: "nav.healthScore",      icon: (p) => <IconHealthScore {...p} /> },
   { href: "/ai-assistant",       label: "AI Assistant",      tKey: "nav.aiAssistant",      icon: (p) => <IconAiCoach    {...p} /> },
   { href: "/profile",            label: "Profile",           tKey: "nav.profile",          icon: (p) => <IconProfile    {...p} /> },
+  { href: "/settings/security",  label: "Security",          tKey: "nav.security",         icon: (p) => <IconLock       {...p} /> },
 ];
 
 /* ─── Explore / "More Tools" items (collapsible section) ─── */
