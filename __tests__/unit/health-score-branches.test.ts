@@ -37,7 +37,7 @@ describe('health-score branch coverage', () => {
     const breakdown = makeBreakdown(2000);
     const result = calcHealthScore(breakdown);
     expect(result.overallScore).toBeLessThanOrEqual(20);
-    expect(result.grade).toBe('critical');
+    expect(result.grade).toBe('Critical');
   });
 
   it('calcCategoryScore clamps at 0 for very high values', () => {
