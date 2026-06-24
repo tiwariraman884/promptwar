@@ -6,12 +6,14 @@ export type ApiSuccess<T> = {
   success: true;
   data: T;
   error: null;
+  requestId?: string;
 };
 
 export type ApiFailure = {
   success: false;
   data: null;
   error: string;
+  requestId?: string;
 };
 
 export type ApiPaginated<T> = ApiSuccess<T> & {
@@ -25,9 +27,9 @@ export type ApiPaginated<T> = ApiSuccess<T> & {
 
 /* ─── Helpers ─── */
 
-export function apiSuccess<T>(data: T, status = 200) {
+export function apiSuccess<T>(data: T, status = 200, requestId?: string) {
   return NextResponse.json<ApiSuccess<T>>(
-    { success: true, data, error: null },
+    { success: true, data, error: null, ...(requestId && { requestId }) },
     { status }
   );
 }
@@ -51,9 +53,9 @@ export function apiPaginated<T>(
   );
 }
 
-export function apiError(error: string, status = 400) {
+export function apiError(error: string, status = 400, requestId?: string) {
   return NextResponse.json<ApiFailure>(
-    { success: false, data: null, error },
+    { success: false, data: null, error, ...(requestId && { requestId }) },
     { status }
   );
 }

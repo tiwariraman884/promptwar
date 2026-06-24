@@ -74,6 +74,24 @@ export type RoadmapAction = {
   estimated_monthly_reduction_kg: number;
   effort_level: "Easy" | "Medium" | "Hard";
   india_tip: string;
+  /** Explainability: why this recommendation was generated */
+  reason: string;
+  /** Explainability: confidence percentage (0–100) */
+  confidence_percent: number;
+  /** Explainability: data source citation */
+  data_source: string;
+};
+
+/** Summary of the explainability metadata for the entire analysis */
+export type ExplainabilitySummary = {
+  /** Total estimated annual savings if all roadmap actions are adopted */
+  total_estimated_annual_savings_kg: number;
+  /** Average confidence across all recommendations */
+  average_confidence_percent: number;
+  /** List of all data sources referenced */
+  data_sources: string[];
+  /** Methodology description */
+  methodology: string;
 };
 
 export type CarbonIntelligenceOutput = {
@@ -102,6 +120,8 @@ export type CarbonIntelligenceOutput = {
     optimized_path: [number, number, number, number, number, number];
     total_annual_savings_kg: number;
   };
+  /** Explainability layer — metadata for all recommendations */
+  explainability: ExplainabilitySummary;
 };
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -128,7 +148,14 @@ const SEASONAL_MULTIPLIERS: Record<number, { factor: number; note: string }> = {
 };
 
 /** Candidate reduction actions pool — sorted by typical impact */
-type ActionCandidate = Omit<RoadmapAction, "rank"> & { category: keyof CarbonIntelligenceOutput["carbon_risk_score"]["category_breakdown"]; min_score: number };
+type ActionCandidate = Omit<RoadmapAction, "rank" | "reason" | "confidence_percent"> & {
+  category: keyof CarbonIntelligenceOutput["carbon_risk_score"]["category_breakdown"];
+  min_score: number;
+  /** Base confidence before adjustment (0–100) */
+  base_confidence: number;
+  /** Data source citation */
+  data_source: string;
+};
 
 const ACTION_POOL: ActionCandidate[] = [
   {
@@ -138,6 +165,8 @@ const ACTION_POOL: ActionCandidate[] = [
     estimated_monthly_reduction_kg: 45,
     effort_level: "Medium",
     india_tip: "Under FAME-II, electric 2-wheelers get ₹15,000+ subsidy. Check state EV policies for additional discounts.",
+    base_confidence: 82,
+    data_source: "IPCC AR6 WG3, MoRTH India transport data",
   },
   {
     category: "travel",
@@ -146,6 +175,8 @@ const ACTION_POOL: ActionCandidate[] = [
     estimated_monthly_reduction_kg: 35,
     effort_level: "Medium",
     india_tip: "Indian Railways runs on 60% electric traction (Green Railways mission). Delhi–Mumbai Rajdhani emits 90% less CO₂ than a flight.",
+    base_confidence: 88,
+    data_source: "Indian Railways Green Mission report, DGCA India",
   },
   {
     category: "travel",
@@ -154,6 +185,8 @@ const ACTION_POOL: ActionCandidate[] = [
     estimated_monthly_reduction_kg: 20,
     effort_level: "Easy",
     india_tip: "Apps like Quick Ride and sRide are popular carpooling options in metro cities; save ₹2,000+/month.",
+    base_confidence: 75,
+    data_source: "IPCC AR6 WG3, India urban transport studies",
   },
   {
     category: "electricity",
@@ -162,6 +195,8 @@ const ACTION_POOL: ActionCandidate[] = [
     estimated_monthly_reduction_kg: 55,
     effort_level: "Hard",
     india_tip: "PM-KUSUM and state net-metering policies offer 40% subsidy. A 3kW system pays for itself in 4–5 years.",
+    base_confidence: 90,
+    data_source: "MNRE India, CEA grid emission factor",
   },
   {
     category: "electricity",
@@ -170,6 +205,8 @@ const ACTION_POOL: ActionCandidate[] = [
     estimated_monthly_reduction_kg: 15,
     effort_level: "Easy",
     india_tip: "UJALA scheme offers LED bulbs at ₹70. BEE 5-star ACs use 30% less energy than 3-star models.",
+    base_confidence: 92,
+    data_source: "BEE India, UJALA scheme data",
   },
   {
     category: "electricity",
@@ -178,6 +215,8 @@ const ACTION_POOL: ActionCandidate[] = [
     estimated_monthly_reduction_kg: 25,
     effort_level: "Easy",
     india_tip: "Set AC to 24°C (BEE recommendation) — every degree below 24 increases consumption by 6%.",
+    base_confidence: 85,
+    data_source: "BEE India energy efficiency guidelines",
   },
   {
     category: "diet",
@@ -186,6 +225,8 @@ const ACTION_POOL: ActionCandidate[] = [
     estimated_monthly_reduction_kg: 20,
     effort_level: "Easy",
     india_tip: "India has the world's richest vegetarian cuisine. A thali meal has ~60% lower footprint than a non-veg one.",
+    base_confidence: 87,
+    data_source: "IPCC AR6 WG3, FAO India livestock data",
   },
   {
     category: "diet",
@@ -194,6 +235,8 @@ const ACTION_POOL: ActionCandidate[] = [
     estimated_monthly_reduction_kg: 10,
     effort_level: "Easy",
     india_tip: "Local sabzi mandis and farmer cooperatives cut transport emissions. Apps like Kisan Network connect directly to farms.",
+    base_confidence: 72,
+    data_source: "FAO food-miles research, India agricultural data",
   },
   {
     category: "diet",
@@ -202,6 +245,8 @@ const ACTION_POOL: ActionCandidate[] = [
     estimated_monthly_reduction_kg: 12,
     effort_level: "Medium",
     india_tip: "Indian households waste ~50 kg food/year. Meal planning and using leftovers can cut this by 60%.",
+    base_confidence: 78,
+    data_source: "UNEP Food Waste Index, India household surveys",
   },
   {
     category: "shopping",
@@ -210,6 +255,8 @@ const ACTION_POOL: ActionCandidate[] = [
     estimated_monthly_reduction_kg: 15,
     effort_level: "Easy",
     india_tip: "Indian brands like No Nasties, Doodlage, and local khadi stores offer sustainable alternatives at similar prices.",
+    base_confidence: 70,
+    data_source: "Ellen MacArthur Foundation, India textile industry data",
   },
   {
     category: "shopping",
@@ -218,6 +265,8 @@ const ACTION_POOL: ActionCandidate[] = [
     estimated_monthly_reduction_kg: 10,
     effort_level: "Easy",
     india_tip: "Repair instead of replace — India's Right to Repair movement is growing. Cashify and OLX offer refurbished devices.",
+    base_confidence: 74,
+    data_source: "UNEP e-waste monitor, India MeitY data",
   },
   {
     category: "shopping",
@@ -226,6 +275,8 @@ const ACTION_POOL: ActionCandidate[] = [
     estimated_monthly_reduction_kg: 8,
     effort_level: "Medium",
     india_tip: "Use a 48-hour rule before buying non-essentials. The average Indian household can save ₹3,000/month this way.",
+    base_confidence: 65,
+    data_source: "Consumer behaviour studies, India e-commerce data",
   },
   {
     category: "waste",
@@ -234,6 +285,8 @@ const ACTION_POOL: ActionCandidate[] = [
     estimated_monthly_reduction_kg: 12,
     effort_level: "Medium",
     india_tip: "Daily Dump and similar composters cost ₹1,500–3,000. Swachh Bharat Abhiyan encourages source segregation in all ULBs.",
+    base_confidence: 85,
+    data_source: "IPCC AR6 waste chapter, Swachh Bharat data",
   },
   {
     category: "waste",
@@ -242,6 +295,8 @@ const ACTION_POOL: ActionCandidate[] = [
     estimated_monthly_reduction_kg: 5,
     effort_level: "Easy",
     india_tip: "India banned single-use plastics in 2022. Carry cloth bags, steel bottles, and tiffin boxes — most shops now accept them.",
+    base_confidence: 80,
+    data_source: "MoEFCC India SUP ban data, CPCB reports",
   },
   {
     category: "waste",
@@ -250,6 +305,8 @@ const ACTION_POOL: ActionCandidate[] = [
     estimated_monthly_reduction_kg: 8,
     effort_level: "Medium",
     india_tip: "Register with local kabadiwala apps like Bintix or ScrapQ for doorstep dry-waste pickup and earn ₹200–500/month.",
+    base_confidence: 76,
+    data_source: "CPCB India waste management reports",
   },
 ];
 
@@ -469,7 +526,8 @@ export function analyzeCarbon(input: CarbonIntelligenceInput): CarbonIntelligenc
 
   // ── 4. Reduction roadmap (top 5) ──
   const categoryScores = { diet: dietScore, travel: travelScore, electricity: electricityScore, shopping: shoppingScore, waste: wasteScore };
-  const roadmap = buildRoadmap(categoryScores);
+  const categoryKg = { diet: dietKg, travel: travelKg, electricity: electricityKg, shopping: shoppingKg, waste: wasteKg };
+  const roadmap = buildRoadmap(categoryScores, categoryKg, totalMonthlyKg);
 
   // ── 5. Predicted emissions timeline (6 months) ──
   const totalRoadmapReduction = roadmap.reduce((sum, a) => sum + a.estimated_monthly_reduction_kg, 0);
@@ -526,7 +584,9 @@ export function analyzeCarbon(input: CarbonIntelligenceInput): CarbonIntelligenc
    ═══════════════════════════════════════════════════════════════════ */
 
 function buildRoadmap(
-  categoryScores: Record<string, number>
+  categoryScores: Record<string, number>,
+  categoryKg: Record<string, number>,
+  totalMonthlyKg: number
 ): RoadmapAction[] {
   // Sort all categories by score descending to identify high-impact areas
   const sortedCategories = Object.entries(categoryScores)
@@ -584,11 +644,33 @@ function buildRoadmap(
     .slice(0, 5)
     .sort((a, b) => b.estimated_monthly_reduction_kg - a.estimated_monthly_reduction_kg);
 
-  return finalSorted.map((action, idx) => ({
-    rank: idx + 1,
-    action_title: action.action_title,
-    estimated_monthly_reduction_kg: action.estimated_monthly_reduction_kg,
-    effort_level: action.effort_level,
-    india_tip: action.india_tip,
-  }));
+  return finalSorted.map((action, idx) => {
+    // Generate explainability: reason based on category contribution
+    const catKg = categoryKg[action.category] ?? 0;
+    const catPercent = totalMonthlyKg > 0 ? Math.round((catKg / totalMonthlyKg) * 100) : 0;
+    const catScore = categoryScores[action.category] ?? 0;
+
+    // Adjust confidence based on category score strength
+    const scoreBoost = catScore > 60 ? 5 : catScore > 40 ? 0 : -5;
+    const confidence = Math.round(clamp(action.base_confidence + scoreBoost, 40, 98));
+
+    const reason = `${capitalize(action.category)} contributes ${catPercent}% of your monthly footprint ` +
+      `(${catKg} kg CO₂e) with a risk score of ${catScore}/100. ` +
+      `This action targets your ${catPercent >= 25 ? "highest" : catPercent >= 15 ? "significant" : "moderate"}-impact area.`;
+
+    return {
+      rank: idx + 1,
+      action_title: action.action_title,
+      estimated_monthly_reduction_kg: action.estimated_monthly_reduction_kg,
+      effort_level: action.effort_level,
+      india_tip: action.india_tip,
+      reason,
+      confidence_percent: confidence,
+      data_source: action.data_source,
+    };
+  });
+}
+
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }

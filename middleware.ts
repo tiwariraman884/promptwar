@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { getOrCreateRequestId } from "@/lib/request-id";
 
 // Force Node.js runtime — Supabase SSR uses process.version which isn't
 // available in Edge Runtime.
@@ -55,14 +56,20 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
 
   // Allow public paths through without any auth check
+  // Generate or propagate request ID for all requests
+  const requestId = getOrCreateRequestId(request.headers);
+
   if (isPublicPath(pathname)) {
-    return NextResponse.next();
+    const response = NextResponse.next();
+    response.headers.set("x-request-id", requestId);
+    return response;
   }
 
   // When Supabase is not configured, rely on client-side auth
   if (!hasSupabaseEnv()) {
     const response = NextResponse.next();
     response.headers.set("x-client-ip", getClientIP(request));
+    response.headers.set("x-request-id", requestId);
     return response;
   }
 
@@ -96,8 +103,9 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Inject IP header for use in API routes and audit logging
+  // Inject IP and request ID headers for audit logging and tracing
   response.headers.set("x-client-ip", getClientIP(request));
+  response.headers.set("x-request-id", requestId);
 
   // Admin path: block unauthenticated access (role checked server-side in page)
   if (isAdminPath(pathname) && !user) {
