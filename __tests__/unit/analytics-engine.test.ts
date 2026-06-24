@@ -138,13 +138,14 @@ describe("getForecastTrends", () => {
 });
 
 describe("getGoalAnalytics", () => {
+  const profile = {
+    goal_pct: 20,        // 20% reduction goal
+    goal_months: 6,
+    baseline_kg_day: 8,  // baseline 8 kg/day
+  };
+
   it("returns goal analytics with progress", () => {
-    const goal = getGoalAnalytics(
-      SAMPLE_ENTRIES,
-      100, // target 100 kg reduction
-      new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10), // deadline: 30 days
-      7  // streak
-    );
+    const goal = getGoalAnalytics(profile, SAMPLE_ENTRIES, 7, 14);
     expect(typeof goal.goalPct).toBe("number");
     expect(typeof goal.progressPct).toBe("number");
     expect(typeof goal.dailyBudgetKg).toBe("number");
@@ -153,13 +154,13 @@ describe("getGoalAnalytics", () => {
   });
 
   it("successProbability is between 0 and 100", () => {
-    const goal = getGoalAnalytics(SAMPLE_ENTRIES, 100, "2025-12-31", 5);
+    const goal = getGoalAnalytics(profile, SAMPLE_ENTRIES, 5, 10);
     expect(goal.successProbability).toBeGreaterThanOrEqual(0);
     expect(goal.successProbability).toBeLessThanOrEqual(100);
   });
 
   it("difficultyScore is between 1 and 5", () => {
-    const goal = getGoalAnalytics(SAMPLE_ENTRIES, 100, "2025-12-31", 5);
+    const goal = getGoalAnalytics(profile, SAMPLE_ENTRIES, 5, 10);
     expect(goal.difficultyScore).toBeGreaterThanOrEqual(1);
     expect(goal.difficultyScore).toBeLessThanOrEqual(5);
   });
@@ -205,23 +206,17 @@ describe("getAdvancedInsights", () => {
 });
 
 describe("exportToCSV", () => {
-  it("returns a string with CSV headers", () => {
-    const csv = exportToCSV(SAMPLE_ENTRIES);
-    expect(typeof csv).toBe("string");
-    expect(csv).toContain("Date");
-    expect(csv).toContain("Category");
-    expect(csv).toContain("CO2e");
+  it("does not throw when called with entries in Node env (no window)", () => {
+    const data = SAMPLE_ENTRIES.map(e => ({
+      Date: e.entry_date,
+      Category: e.category,
+      "kg CO2e": e.kg_co2e,
+    }));
+    // In Node.js, window is undefined so exportToCSV should return early gracefully
+    expect(() => exportToCSV(data, "test-export")).not.toThrow();
   });
 
-  it("includes data rows", () => {
-    const csv = exportToCSV(SAMPLE_ENTRIES);
-    const lines = csv.trim().split("\n");
-    expect(lines.length).toBeGreaterThan(1); // header + data
-  });
-
-  it("returns header-only for empty entries", () => {
-    const csv = exportToCSV([]);
-    const lines = csv.trim().split("\n");
-    expect(lines.length).toBe(1); // just header
+  it("does not throw when called with empty data", () => {
+    expect(() => exportToCSV([], "empty")).not.toThrow();
   });
 });
