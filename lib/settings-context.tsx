@@ -47,16 +47,33 @@ const SettingsContext = createContext<SettingsContextValue | null>(null);
 /* ─── Provider ─── */
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [profile, setProfile] = useState<UserProfile>(SettingsDB.getProfile());
-  const [language, setLanguage] = useState<LanguagePrefs>(SettingsDB.getLanguage());
-  const [notifications, setNotifications] = useState<NotificationPrefs>(SettingsDB.getNotificationPrefs());
-  const [appearance, setAppearance] = useState<AppearancePrefs>(SettingsDB.getAppearance());
-  const [privacy, setPrivacy] = useState<PrivacyPrefs>(SettingsDB.getPrivacy());
+  // Initialize with static defaults to match server render (no localStorage access).
+  // The useEffect below hydrates from localStorage after mount.
+  const [profile, setProfile] = useState<UserProfile>({
+    id: "", name: "", username: "", email: "", phone: "", bio: "", avatar: "",
+    createdAt: "", lastLogin: "", passwordHash: "",
+  });
+  const [language, setLanguage] = useState<LanguagePrefs>({
+    code: "en", unitSystem: "metric", currency: "INR", dateFormat: "DD/MM/YYYY",
+  });
+  const [notifications, setNotifications] = useState<NotificationPrefs>({
+    paused: false, loginAlerts: true, securityAlerts: true, passwordChanges: true,
+    accountUpdates: true, dailyCarbonReminders: true, weeklyReports: true,
+    streakReminders: true, challengeUpdates: true, badgeUnlocks: true,
+    ecoCoinRewards: true, productUpdates: true, newsletter: false,
+    sustainabilityTips: true, monthlySummaries: true, browserNotifications: false,
+    mobileNotifications: false, instantAlerts: false, quietFrom: "22:00",
+    quietTo: "07:00", noWeekends: false,
+  });
+  const [appearance, setAppearance] = useState<AppearancePrefs>({ theme: "system" });
+  const [privacy, setPrivacy] = useState<PrivacyPrefs>({
+    profileVisibility: "public", dataSharing: false, analyticsOptIn: false,
+  });
   const [sessions, setSessions] = useState<SessionInfo[]>([]);
   const [notificationItems, setNotificationItems] = useState<NotificationItem[]>([]);
   const [loaded, setLoaded] = useState(false);
 
-  // Load on mount
+  // Hydrate from localStorage after mount (client-only)
   useEffect(() => {
     setProfile(SettingsDB.getProfile());
     setLanguage(SettingsDB.getLanguage());

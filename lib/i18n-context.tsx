@@ -3,20 +3,15 @@
 /**
  * I18n context — provides the `t()` translation function to the entire app.
  *
- * HOW IT WORKS:
- * - Reads the current language code from the SettingsProvider
- * - Looks up the matching translation dictionary from translations.ts
- * - The `t(key)` function returns the translated string, or falls back to English
- * - When the user changes language in settings, this context re-renders all
- *   consumers so the UI updates immediately (no page refresh needed)
- *
- * WHAT WAS BROKEN:
- * The language switcher updated the language.code in localStorage and showed
- * a ✓ checkmark, but nothing consumed that code to translate UI strings.
- * All text was hardcoded in English. This context bridges the gap.
+ * HYDRATION-SAFE:
+ * During SSR and the first client render, `loaded` is false, so we always
+ * use the English dictionary. After the useEffect in SettingsProvider
+ * hydrates language from localStorage, `loaded` flips to true and we
+ * switch to the user's preferred language. This prevents the
+ * "Text content does not match server-rendered HTML" hydration error.
  */
 
-import { createContext, useContext, useCallback, useEffect, useMemo, type ReactNode } from "react";
+import { createContext, useContext, useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useSettings } from "@/lib/settings-context";
 import { translations, type TranslationDict } from "@/lib/translations";
 
@@ -30,14 +25,22 @@ interface I18nContextValue {
 const I18nContext = createContext<I18nContextValue | null>(null);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const { language } = useSettings();
-  const locale = language.code || "en";
+  const { language, loaded } = useSettings();
+
+  // On the server and during initial client render, always use "en".
+  // Only switch to the user's language after hydration is complete.
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => { setHydrated(true); }, []);
+
+  const locale = hydrated && loaded ? (language.code || "en") : "en";
 
   // WCAG 3.1.2: Update the document's lang attribute so screen readers
   // use the correct pronunciation rules for the active language.
   useEffect(() => {
-    document.documentElement.lang = locale === "en" ? "en-IN" : locale;
-  }, [locale]);
+    if (hydrated && loaded) {
+      document.documentElement.lang = locale === "en" ? "en-IN" : locale;
+    }
+  }, [locale, hydrated, loaded]);
 
   // Get the active dictionary, falling back to English
   const dict: TranslationDict = useMemo(
