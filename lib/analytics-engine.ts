@@ -478,8 +478,8 @@ export function getAdvancedInsights(entries: EmissionEntry[]): AdvancedInsights 
   const recommendations: AdvancedInsights["recommendations"] = [
     {
       title: `Reduce ${topCat} emissions by 20%`,
-      description: `Your top emission source is ${topCat}. Reducing it by 20% would save ${round(topImpactActivities[0]?.kgTotal * 0.2 ?? 5)} kg.`,
-      potentialSavingKg: round(topImpactActivities[0]?.kgTotal * 0.2 ?? 5),
+      description: `Your top emission source is ${topCat}. Reducing it by 20% would save ${round((topImpactActivities[0]?.kgTotal ?? 25) * 0.2)} kg.`,
+      potentialSavingKg: round((topImpactActivities[0]?.kgTotal ?? 25) * 0.2),
       effort: "Medium",
     },
     {

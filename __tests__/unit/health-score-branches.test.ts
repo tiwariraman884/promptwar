@@ -7,23 +7,20 @@ function makeBreakdown(total: number): EmissionBreakdown {
   const perCat = total / 5;
   return {
     totalMonthlyCO2Kg: total,
-    totalDailyCO2Kg: total / 30,
     byCategory: [
-      { category: 'diet', label: 'Diet', labelHindi: 'आहार', monthlyCO2Kg: perCat, dailyCO2Kg: perCat / 30, percentOfTotal: 20 },
-      { category: 'travel', label: 'Travel', labelHindi: 'यात्रा', monthlyCO2Kg: perCat, dailyCO2Kg: perCat / 30, percentOfTotal: 20 },
-      { category: 'energy', label: 'Energy', labelHindi: 'ऊर्जा', monthlyCO2Kg: perCat, dailyCO2Kg: perCat / 30, percentOfTotal: 20 },
-      { category: 'shopping', label: 'Shopping', labelHindi: 'खरीदारी', monthlyCO2Kg: perCat, dailyCO2Kg: perCat / 30, percentOfTotal: 20 },
-      { category: 'waste', label: 'Waste', labelHindi: 'कचरा', monthlyCO2Kg: perCat, dailyCO2Kg: perCat / 30, percentOfTotal: 20 },
+      { category: 'diet', label: 'Diet', labelHindi: 'आहार', monthlyCO2Kg: perCat, percentOfTotal: 20 },
+      { category: 'travel', label: 'Travel', labelHindi: 'यात्रा', monthlyCO2Kg: perCat, percentOfTotal: 20 },
+      { category: 'energy', label: 'Energy', labelHindi: 'ऊर्जा', monthlyCO2Kg: perCat, percentOfTotal: 20 },
+      { category: 'shopping', label: 'Shopping', labelHindi: 'खरीदारी', monthlyCO2Kg: perCat, percentOfTotal: 20 },
+      { category: 'waste', label: 'Waste', labelHindi: 'कचरा', monthlyCO2Kg: perCat, percentOfTotal: 20 },
     ],
   };
 }
 
 describe('health-score branch coverage', () => {
   it('grade "average" when score is 40-59', () => {
-    // Very high emissions → average score
     const breakdown = makeBreakdown(300);
     const result = calcHealthScore(breakdown);
-    // If it lands at average, great. If not, find the right total
     expect(result.grade).toBeTruthy();
   });
 
@@ -53,26 +50,23 @@ describe('health-score branch coverage', () => {
   it('handles category without matching benchmark', () => {
     const breakdown: EmissionBreakdown = {
       totalMonthlyCO2Kg: 100,
-      totalDailyCO2Kg: 3.33,
       byCategory: [
-        { category: 'unknown_cat' as string, label: 'Unknown', labelHindi: 'अज्ञात', monthlyCO2Kg: 100, dailyCO2Kg: 3.33, percentOfTotal: 100 },
+        { category: 'unknown_cat' as string, label: 'Unknown', labelHindi: 'अज्ञात', monthlyCO2Kg: 100, percentOfTotal: 100 },
       ],
     };
     const result = calcHealthScore(breakdown);
-    // Should skip unknown category and still return valid score
     expect(result.overallScore).toBeGreaterThanOrEqual(0);
   });
 
   it('handles category without matching weight', () => {
     const breakdown: EmissionBreakdown = {
       totalMonthlyCO2Kg: 50,
-      totalDailyCO2Kg: 1.67,
       byCategory: [
-        { category: 'diet', label: 'Diet', labelHindi: 'आहार', monthlyCO2Kg: 10, dailyCO2Kg: 0.33, percentOfTotal: 20 },
-        { category: 'travel', label: 'Travel', labelHindi: 'यात्रा', monthlyCO2Kg: 10, dailyCO2Kg: 0.33, percentOfTotal: 20 },
-        { category: 'energy', label: 'Energy', labelHindi: 'ऊर्जा', monthlyCO2Kg: 10, dailyCO2Kg: 0.33, percentOfTotal: 20 },
-        { category: 'shopping', label: 'Shopping', labelHindi: 'खरीदारी', monthlyCO2Kg: 10, dailyCO2Kg: 0.33, percentOfTotal: 20 },
-        { category: 'waste', label: 'Waste', labelHindi: 'कचरा', monthlyCO2Kg: 10, dailyCO2Kg: 0.33, percentOfTotal: 20 },
+        { category: 'diet', label: 'Diet', labelHindi: 'आहार', monthlyCO2Kg: 10, percentOfTotal: 20 },
+        { category: 'travel', label: 'Travel', labelHindi: 'यात्रा', monthlyCO2Kg: 10, percentOfTotal: 20 },
+        { category: 'energy', label: 'Energy', labelHindi: 'ऊर्जा', monthlyCO2Kg: 10, percentOfTotal: 20 },
+        { category: 'shopping', label: 'Shopping', labelHindi: 'खरीदारी', monthlyCO2Kg: 10, percentOfTotal: 20 },
+        { category: 'waste', label: 'Waste', labelHindi: 'कचरा', monthlyCO2Kg: 10, percentOfTotal: 20 },
       ],
     };
     const result = calcHealthScore(breakdown);

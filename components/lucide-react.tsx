@@ -108,5 +108,13 @@ export const Phone = createGlyphIcon("📞");
 export const CreditCard = createGlyphIcon("💳");
 export const Truck = createGlyphIcon("🚚");
 export const Package = createGlyphIcon("📦");
+export const TrendingUp = createGlyphIcon("📈");
+export const Calendar = createGlyphIcon("📅");
+export const Brain = createGlyphIcon("🧠");
+export const Award = createGlyphIcon("🏅");
+export const Activity = createGlyphIcon("📊");
+export const Shield = createGlyphIcon("🛡");
+export const FileText = createGlyphIcon("📄");
+export const Table2 = createGlyphIcon("▦");
 
 export type LucideIcon = (props: IconProps) => ReactElement;

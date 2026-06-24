@@ -39,26 +39,26 @@ describe("logger", () => {
 
   it("logger.warn calls console.warn in non-test env", () => {
     const origEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = "development";
+    (process.env as Record<string, string>).NODE_ENV = "development";
     logger.warn("Rate limit approaching");
     expect(consoleWarnSpy).toHaveBeenCalled();
-    process.env.NODE_ENV = origEnv;
+    (process.env as Record<string, string>).NODE_ENV = origEnv;
   });
 
   it("logger.info calls console.info in development", () => {
     const origEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = "development";
+    (process.env as Record<string, string>).NODE_ENV = "development";
     logger.info("Entry created", { userId: "usr_123" });
     expect(consoleInfoSpy).toHaveBeenCalled();
-    process.env.NODE_ENV = origEnv;
+    (process.env as Record<string, string>).NODE_ENV = origEnv;
   });
 
   it("logger.debug calls console.debug in development", () => {
     const origEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = "development";
+    (process.env as Record<string, string>).NODE_ENV = "development";
     logger.debug("Trace info");
     expect(consoleDebugSpy).toHaveBeenCalled();
-    process.env.NODE_ENV = origEnv;
+    (process.env as Record<string, string>).NODE_ENV = origEnv;
   });
 
   it("logger does not throw on any log level", () => {
@@ -81,7 +81,7 @@ describe("logger", () => {
 
   it("production mode outputs JSON format", () => {
     const origEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = "production";
+    (process.env as Record<string, string>).NODE_ENV = "production";
     logger.error("prod error", { requestId: "req_prod" });
     const call = consoleErrorSpy.mock.calls[0][0] as string;
     // Production should output valid JSON
@@ -90,23 +90,23 @@ describe("logger", () => {
     expect(parsed.level).toBe("error");
     expect(parsed.message).toBe("prod error");
     expect(parsed.requestId).toBe("req_prod");
-    process.env.NODE_ENV = origEnv;
+    (process.env as Record<string, string>).NODE_ENV = origEnv;
   });
 
   it("production mode includes timestamp", () => {
     const origEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = "production";
+    (process.env as Record<string, string>).NODE_ENV = "production";
     logger.error("ts test");
     const call = consoleErrorSpy.mock.calls[0][0] as string;
     const parsed = JSON.parse(call);
     expect(parsed.timestamp).toBeDefined();
     expect(new Date(parsed.timestamp).getTime()).not.toBeNaN();
-    process.env.NODE_ENV = origEnv;
+    (process.env as Record<string, string>).NODE_ENV = origEnv;
   });
 
   it("production mode formats Error objects without stack", () => {
     const origEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = "production";
+    (process.env as Record<string, string>).NODE_ENV = "production";
     const err = new Error("db timeout");
     logger.error("DB error", { error: err });
     const call = consoleErrorSpy.mock.calls[0][0] as string;
@@ -114,16 +114,16 @@ describe("logger", () => {
     expect(parsed.error.name).toBe("Error");
     expect(parsed.error.message).toBe("db timeout");
     expect(parsed.error.stack).toBeUndefined(); // No stack in production
-    process.env.NODE_ENV = origEnv;
+    (process.env as Record<string, string>).NODE_ENV = origEnv;
   });
 
   it("development mode includes duration in output", () => {
     const origEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = "development";
+    (process.env as Record<string, string>).NODE_ENV = "development";
     logger.info("API call", { durationMs: 42 });
     expect(consoleInfoSpy).toHaveBeenCalledWith(
       expect.stringContaining("42ms")
     );
-    process.env.NODE_ENV = origEnv;
+    (process.env as Record<string, string>).NODE_ENV = origEnv;
   });
 });
