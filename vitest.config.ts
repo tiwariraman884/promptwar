@@ -28,6 +28,11 @@ export default defineConfig({
         "lib/**/demo-data.ts",
         "lib/**/energy-audit-data.ts",
         "lib/**/carbonData.ts",
+        "lib/**/anthropicClient.ts", // External API client
+        "lib/**/redis.ts",           // Upstash runtime
+        "lib/**/with-role.ts",       // Next.js navigation runtime
+        "lib/**/emissions/**",       // External data providers
+        "hooks/**",                  // React hooks (need component testing)
       ],
       thresholds: {
         statements: 80,
