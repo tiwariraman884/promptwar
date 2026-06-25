@@ -17,6 +17,18 @@ export function TwinPageClient(): JSX.Element {
 
   const loadProfile = useCallback(async (): Promise<void> => {
     if (!isSupabaseConfigured()) {
+      const stored = localStorage.getItem("carbon_twin_profile");
+      if (stored) {
+        try {
+          const p = JSON.parse(stored) as TwinProfileType;
+          setProfile(p);
+          setBreakdown(calcFullBreakdown(p));
+          setView("profile");
+          return;
+        } catch (err) {
+          console.error("Error parsing stored profile", err);
+        }
+      }
       setView("setup");
       return;
     }

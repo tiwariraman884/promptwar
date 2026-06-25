@@ -13,6 +13,7 @@ import type { TransportModeV2 } from "@/lib/emission-factors-v2";
 import { calcFullBreakdown } from "@/lib/carbon-engine-v2";
 import { calcHealthScore } from "@/lib/health-score";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 /* ─── Default Profile Values ─── */
 const DEFAULT_DIET: DietProfile = {
@@ -175,6 +176,7 @@ export function CarbonTwinSetup({ existingProfile, userId, onComplete }: CarbonT
   const [energy, setEnergy] = useState<EnergyProfile>(existingProfile?.energy ?? DEFAULT_ENERGY);
   const [shopping, setShopping] = useState<ShoppingProfile>(existingProfile?.shopping ?? DEFAULT_SHOPPING);
   const [waste, setWaste] = useState<WasteProfile>(existingProfile?.waste ?? DEFAULT_WASTE);
+  const router = useRouter();
 
   const handleSubmit = useCallback(async (): Promise<void> => {
     setIsSubmitting(true);
@@ -205,14 +207,24 @@ export function CarbonTwinSetup({ existingProfile, userId, onComplete }: CarbonT
             health_score: healthScore.overallScore,
           }, { onConflict: "user_id,year_month" }),
         ]);
+      } else {
+        localStorage.setItem("carbon_twin_profile", JSON.stringify(profile));
+        localStorage.setItem("user_footprint", JSON.stringify({
+          userId,
+          totalKg: breakdown.totalMonthlyCO2Kg,
+          healthScore: healthScore.overallScore
+        }));
+        // Set eco_user so the auth guard doesn't bounce them
+        localStorage.setItem("eco_user", JSON.stringify({ id: userId, name: "Eco User" }));
       }
       onComplete();
+      router.push("/dashboard");
     } catch (err) {
       console.error("Failed to save Carbon Twin:", err);
     } finally {
       setIsSubmitting(false);
     }
-  }, [userId, diet, travel, energy, shopping, waste, onComplete]);
+  }, [userId, diet, travel, energy, shopping, waste, onComplete, router]);
 
   const canGoNext = step < 4;
   const canGoBack = step > 0;
