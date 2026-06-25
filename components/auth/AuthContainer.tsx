@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import { Skeleton } from "@/components/ui/skeleton";
 
 type Tab = "signin" | "signup";
 

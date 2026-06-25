@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 import dynamic from "next/dynamic";
-import { GREEN_MAP_LOCATIONS, CITY_COORDS } from "@/lib/carbonData";
+import { GREEN_MAP_LOCATIONS } from "@/lib/carbonData";
 import { useGreenMapStore, type EcoLocation } from "@/lib/green-map-store";
 import { MapPin, Plus, RefreshCw, X } from "lucide-react";
 
