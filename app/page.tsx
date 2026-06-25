@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -37,10 +36,8 @@ export default function LandingPage() {
 
         <div className="relative mx-auto flex max-w-3xl flex-col items-center text-center">
           {/* Floating logo */}
-          <motion.div
-            animate={{ y: [0, -10, 0], rotate: [-2, 2, -2] }}
-            className="grid h-28 w-28 place-items-center rounded-full bg-emerald-100 dark:bg-accent/20 backdrop-blur-sm border border-emerald-300 dark:border-accent/30 shadow-lg dark:shadow-glow"
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          <div
+            className="animate-float grid h-28 w-28 place-items-center rounded-full bg-emerald-100 dark:bg-accent/20 backdrop-blur-sm border border-emerald-300 dark:border-accent/30 shadow-lg dark:shadow-glow"
           >
             <Image
               alt="GreenStep India leaf logo"
@@ -50,16 +47,14 @@ export default function LandingPage() {
               height={64}
               priority
             />
-          </motion.div>
+          </div>
 
           {/* Headline */}
-          <motion.h1
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-8 font-heading text-4xl font-extrabold leading-tight text-gray-900 sm:text-6xl dark:text-white"
-            initial={{ opacity: 0, y: 14 }}
+          <h1
+            className="animate-fade-up mt-8 font-heading text-4xl font-extrabold leading-tight text-gray-900 sm:text-6xl dark:text-white"
           >
             <span className="text-emerald-600 dark:text-accent">Green</span>Step India
-          </motion.h1>
+          </h1>
 
           {/* Tagline */}
           <p className="mt-4 text-xl font-bold text-gray-600 dark:text-white/80">

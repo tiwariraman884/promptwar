@@ -81,6 +81,13 @@ export default function RootLayout({
   return (
     <html lang="en-IN" suppressHydrationWarning className={`${dmSans.variable} ${plusJakarta.variable} dark`}>
       <head>
+        {/* ── Preconnect to critical origins (Phase 6) ── */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://maps.googleapis.com" />
+        <link rel="dns-prefetch" href="https://generativelanguage.googleapis.com" />
+        <link rel="dns-prefetch" href="https://app.posthog.com" />
+
         {/* Theme detection: localStorage > system preference > dark default */}
         <script
           dangerouslySetInnerHTML={{

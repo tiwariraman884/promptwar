@@ -488,6 +488,9 @@ export default function GreenMapPage() {
   /* ── Default center ── */
   const defaultCenter = CITY_COORDS[selectedCity] || CITY_COORDS.Delhi;
 
+  /* ── Gate map reveal: defer GoogleMap init until user requests it ── */
+  const [mapActivated, setMapActivated] = useState(false)
+
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-[#F8FAF5] dark:bg-[#0B1815] text-[#1B4332] dark:text-[#F8FAF5] flex flex-col md:flex-row pb-20 md:pb-0">
       {/* Toast */}
@@ -589,9 +592,23 @@ export default function GreenMapPage() {
           onClear={handleClearSearch}
         />
 
-        {/* Interactive Google Map */}
+        {/* Interactive Google Map — deferred until user activates */}
         <div className="w-full h-64 md:h-80 rounded-2xl overflow-hidden border border-[#52B788]/20 shadow-md relative">
-          {isLoaded ? (
+          {!mapActivated ? (
+            /* Placeholder: avoids loading Google Maps JS on page init */
+            <div className="w-full h-full flex flex-col items-center justify-center bg-[#0d1f14] gap-4">
+              <MapPin size={36} className="text-[#52B788]" />
+              <p className="text-sm text-[#52B788]/80 text-center px-4">
+                Interactive map ready — tap to load
+              </p>
+              <button
+                onClick={() => setMapActivated(true)}
+                className="rounded-full bg-[#2D6A4F] px-5 py-2 text-sm font-bold text-white hover:bg-[#1B4332] transition"
+              >
+                🗺️ Load Green Map
+              </button>
+            </div>
+          ) : isLoaded ? (
             <GoogleMap
               mapContainerStyle={MAP_CONTAINER_STYLE}
               center={defaultCenter}
@@ -617,14 +634,16 @@ export default function GreenMapPage() {
           )}
 
           {/* Map overlay — tooltip */}
-          <div className="absolute top-3 left-3 flex gap-2 pointer-events-none">
-            <span className="rounded-full bg-[#0d1f1a]/80 backdrop-blur-sm px-3 py-1.5 text-[11px] font-bold text-white flex items-center gap-1.5">
-              <MapPin size={12} className="text-[#00C896]" />
-              {selectedLocation
-                ? selectedLocation.name.split("—")[0].trim()
-                : tooltipText}
-            </span>
-          </div>
+          {mapActivated && (
+            <div className="absolute top-3 left-3 flex gap-2 pointer-events-none">
+              <span className="rounded-full bg-[#0d1f1a]/80 backdrop-blur-sm px-3 py-1.5 text-[11px] font-bold text-white flex items-center gap-1.5">
+                <MapPin size={12} className="text-[#00C896]" />
+                {selectedLocation
+                  ? selectedLocation.name.split("—")[0].trim()
+                  : tooltipText}
+              </span>
+            </div>
+          )}
 
           {selectedLocation && (
             <button
