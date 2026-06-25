@@ -1,6 +1,7 @@
 "use client";
 
-import { usePathname, useReportWebVitals } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useReportWebVitals } from "next/web-vitals";
 import { useEffect, type ReactNode } from "react";
 import { SettingsProvider } from "@/lib/settings-context";
 import { I18nProvider } from "@/lib/i18n-context";
@@ -12,7 +13,7 @@ export function Providers({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   // Next.js hook to report web vitals (LCP, FID, CLS, FCP, TTFB)
-  useReportWebVitals((metric) => {
+  useReportWebVitals((metric: any) => {
     reportPerformanceMetric(metric);
   });
 
