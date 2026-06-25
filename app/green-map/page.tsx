@@ -298,7 +298,6 @@ export default function GreenMapPage() {
           ) : (
             <GoogleMapWrapper
               selectedCity={selectedCity}
-              selectedType={selectedType}
               searchResult={searchResult}
               filteredLocations={filteredLocations}
               selectedLocation={selectedLocation}
@@ -307,7 +306,6 @@ export default function GreenMapPage() {
               showEV={showEV}
               showRecycle={showRecycle}
               showRoute={showRoute}
-              routeError={routeError}
               setRouteError={setRouteError}
               newSubmittedMarker={newSubmittedMarker}
               setMapLoaded={setMapLoaded}

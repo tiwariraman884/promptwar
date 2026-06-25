@@ -1,6 +1,19 @@
-"use client";
+import dynamic from "next/dynamic";
 
-import { AIRoadmapWidget } from "@/components/roadmap/AIRoadmap";
+// AIRoadmapWidget is a heavy client component — load it dynamically
+const AIRoadmapWidget = dynamic(
+  () => import("@/components/roadmap/AIRoadmap").then((m) => m.AIRoadmapWidget),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="space-y-3">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="animate-pulse h-24 rounded-2xl bg-gray-800/50" />
+        ))}
+      </div>
+    ),
+  }
+);
 
 export default function RoadmapPage(): JSX.Element {
   return (

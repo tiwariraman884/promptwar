@@ -554,7 +554,8 @@ input[type="range"] {
   .auth-form-content-enter,
   .auth-field-entrance,
   .auth-glow-pulse,
-  .card-hover-glow {
+  .card-hover-glow,
+  .page-enter {
     animation: none !important;
     opacity: 1 !important;
   }
@@ -564,6 +565,7 @@ input[type="range"] {
   }
 }
 
+
 /* ─── ExplainSheet slide-up animation ─── */
 @keyframes slide-up {
   from { transform: translateY(100%); opacity: 0; }
@@ -572,3 +574,13 @@ input[type="range"] {
 .animate-slide-up {
   animation: slide-up 0.3s ease-out;
 }
+
+/* ─── Page entrance animation (replaces Framer Motion MotionPage) ─── */
+@keyframes page-fade-slide {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-enter {
+  animation: page-fade-slide 0.15s ease-out both;
+}
+

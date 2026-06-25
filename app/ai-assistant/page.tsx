@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import type { ReactNode } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import dynamic from "next/dynamic";
 import { Send, Zap, Lightbulb, CheckCircle2, Coins, Recycle, TrainFront, Utensils } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useSettings } from "@/lib/settings-context";
@@ -11,7 +11,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { demoDashboard, demoTips } from "@/lib/demo-data";
 import { CATEGORY_LABELS, type EmissionCategory } from "@/lib/emission-factors";
-import { QuickWinsCarousel } from "@/components/quick-wins-carousel";
+
+// Lazy-load QuickWinsCarousel — only needed in Eco Tips tab (26 kB savings on initial load)
+const QuickWinsCarousel = dynamic(
+  () => import("@/components/quick-wins-carousel").then((m) => m.QuickWinsCarousel),
+  { ssr: false, loading: () => <div className="h-32 animate-pulse rounded-2xl bg-gray-100 dark:bg-white/5" /> }
+);
 
 /* ─── Chat Types ─── */
 interface Message {
@@ -161,7 +166,6 @@ export default function AiAssistantPage() {
   const [completed, setCompleted] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState<Record<string, boolean>>({});
   const [tipMessage, setTipMessage] = useState("");
-  const prefersReduced = useReducedMotion();
 
   useEffect(() => {
     const stored = localStorage.getItem("user_footprint");
@@ -431,7 +435,10 @@ export default function AiAssistantPage() {
                       const isCompleted = Boolean(completed[tip.id]);
                       const preferred = tip.category === topCategory;
                       return (
-                        <motion.div key={tip.id} animate={isCompleted && !prefersReduced ? { scale: [1, 1.02, 1] } : { scale: 1 }} transition={{ duration: prefersReduced ? 0 : 0.28 }}>
+                        <div
+                          key={tip.id}
+                          className={`transition-transform duration-300 ${isCompleted ? "scale-[1.01]" : ""}`}
+                        >
                           <Card className={preferred ? "border-emerald-300 bg-emerald-50/60 dark:border-[#52B788]/30 dark:bg-[#52B788]/5" : undefined}>
                             <div className="flex items-start gap-3">
                               <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-[#52B788]/15 dark:text-[#52B788]">
@@ -456,7 +463,7 @@ export default function AiAssistantPage() {
                               </div>
                             </div>
                           </Card>
-                        </motion.div>
+                        </div>
                       );
                     })}
                   </div>

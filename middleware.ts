@@ -2,9 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { getOrCreateRequestId } from "@/lib/request-id";
 
-// Force Node.js runtime — Supabase SSR uses process.version which isn't
-// available in Edge Runtime.
-export const runtime = "nodejs";
+// Supabase SSR might emit process.version warnings, but we must use Edge runtime.
 
 /**
  * AUTH GATE + SECURITY MIDDLEWARE

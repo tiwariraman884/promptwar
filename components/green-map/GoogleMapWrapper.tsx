@@ -75,7 +75,6 @@ function createSearchMarkerIcon(): google.maps.Symbol {
 
 interface GoogleMapWrapperProps {
   selectedCity: string;
-  selectedType: string;
   searchResult: EcoLocation | null;
   filteredLocations: EcoLocation[];
   selectedLocation: EcoLocation | null;
@@ -84,7 +83,6 @@ interface GoogleMapWrapperProps {
   showEV: boolean;
   showRecycle: boolean;
   showRoute: boolean;
-  routeError: string;
   setRouteError: (err: string) => void;
   newSubmittedMarker: { lat: number; lng: number } | null;
   setMapLoaded: (loaded: boolean) => void;
@@ -92,7 +90,6 @@ interface GoogleMapWrapperProps {
 
 export default function GoogleMapWrapper({
   selectedCity,
-  selectedType,
   searchResult,
   filteredLocations,
   selectedLocation,
@@ -101,7 +98,6 @@ export default function GoogleMapWrapper({
   showEV,
   showRecycle,
   showRoute,
-  routeError,
   setRouteError,
   newSubmittedMarker,
   setMapLoaded,
