@@ -81,12 +81,34 @@ export default function RootLayout({
   return (
     <html lang="en-IN" suppressHydrationWarning className={`${dmSans.variable} ${plusJakarta.variable} dark`}>
       <head>
-        {/* ── Preconnect to critical origins (Phase 6) ── */}
+        {/* ── Phase 8A: Preload LCP hero image — browser fetches before HTML parsed ── */}
+        <link
+          rel="preload"
+          as="image"
+          href="/images/eco-hero-bg.webp"
+          type="image/webp"
+        />
+
+        {/* ── Phase 6: Preconnect to critical origins ── */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://maps.googleapis.com" />
         <link rel="dns-prefetch" href="https://generativelanguage.googleapis.com" />
         <link rel="dns-prefetch" href="https://app.posthog.com" />
+
+        {/* ── Phase 4B: Inline critical CSS — styles LCP element without file download ── */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          /* Hero section critical path */
+          .hero-section{position:relative;min-height:100svh;display:grid;place-items:center;padding:2.5rem 1rem;overflow:hidden}
+          .hero-title{font-size:clamp(2rem,6vw,3.75rem);font-weight:800;line-height:1.1;letter-spacing:-0.02em;color:#fff}
+          .hero-subtitle{font-size:1.25rem;font-weight:700;color:rgba(255,255,255,0.8);margin-top:1rem}
+          .hero-desc{font-size:.875rem;line-height:1.625;color:rgba(255,255,255,0.6);max-width:36rem;margin-top:1.25rem}
+          /* Prevent layout shift */
+          *{box-sizing:border-box}
+          body{margin:0;font-family:var(--font-body,system-ui,sans-serif)}
+          /* Background color while image loads — no flash of white */
+          .hero-bg-fallback{background-color:#0a1f14}
+        ` }} />
 
         {/* Theme detection: localStorage > system preference > dark default */}
         <script

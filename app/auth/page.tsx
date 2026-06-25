@@ -1,16 +1,15 @@
-"use client";
-
-import { useState } from "react";
-import AuthHero from "@/components/auth/AuthHero";
-import SignInForm from "@/components/auth/SignInForm";
-import SignUpForm from "@/components/auth/SignUpForm";
+import dynamic from "next/dynamic";
+import AuthContainer from "@/components/auth/AuthContainer";
 import Logo from "@/components/Logo";
 
-type Tab = "signin" | "signup";
+// Load AuthHero dynamically with no SSR. It contains canvas/testimonial slider
+// and is hidden on mobile, so we avoid downloading and running this JS on mobile devices.
+const AuthHero = dynamic(() => import("@/components/auth/AuthHero"), {
+  ssr: false,
+  loading: () => <div className="hidden lg:block animate-pulse bg-gradient-to-br from-[#04100a] to-[#0a2418] h-full" />,
+});
 
 export default function AuthPage() {
-  const [tab, setTab] = useState<Tab>("signin");
-
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-[#04100a]">
       {/* Left — Hero (hidden on mobile) */}
@@ -30,53 +29,8 @@ export default function AuthPage() {
             <Logo size="lg" variant="full" />
           </div>
 
-          {/* Glassmorphism Card */}
-          <div className="auth-form-entrance auth-card-glow rounded-3xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-2xl px-7 py-8 sm:px-9 sm:py-10 shadow-2xl shadow-black/40" style={{ animationDelay: "0.1s" }}>
-            {/* Tab switcher */}
-            <div role="tablist" className="relative flex rounded-xl bg-white/[0.05] p-1 mb-7">
-              {/* Sliding indicator */}
-              <div
-                className="absolute top-1 bottom-1 rounded-lg bg-gradient-to-r from-[#00E676] to-[#00C853] shadow-lg shadow-[#00E676]/20 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
-                style={{
-                  left: tab === "signin" ? "4px" : "calc(50% + 0px)",
-                  width: "calc(50% - 4px)",
-                }}
-              />
-              <button
-                type="button"
-                role="tab"
-                aria-selected={tab === "signin"}
-                tabIndex={tab === "signin" ? 0 : -1}
-                onClick={() => setTab("signin")}
-                className={`relative z-10 flex-1 rounded-lg py-2.5 text-sm font-bold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00E676] ${
-                  tab === "signin"
-                    ? "text-[#06120C]"
-                    : "text-white/60 hover:text-white/80"
-                }`}
-              >
-                Sign In
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={tab === "signup"}
-                tabIndex={tab === "signup" ? 0 : -1}
-                onClick={() => setTab("signup")}
-                className={`relative z-10 flex-1 rounded-lg py-2.5 text-sm font-bold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00E676] ${
-                  tab === "signup"
-                    ? "text-[#06120C]"
-                    : "text-white/60 hover:text-white/80"
-                }`}
-              >
-                Create Account
-              </button>
-            </div>
-
-            {/* Form with crossfade */}
-            <div key={tab} className="auth-form-content-enter">
-              {tab === "signin" ? <SignInForm /> : <SignUpForm />}
-            </div>
-          </div>
+          {/* Interactive forms wrapper */}
+          <AuthContainer />
 
           {/* Bottom text */}
           <p className="auth-form-entrance mt-6 text-center text-xs text-white/40 flex items-center justify-center gap-1.5" style={{ animationDelay: "0.3s" }}>

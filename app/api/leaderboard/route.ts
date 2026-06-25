@@ -1,4 +1,5 @@
-import type { NextRequest } from "next/server";
+﻿import type { NextRequest } from "next/server";
+export const dynamic = "force-dynamic"; // reads request.headers
 import { apiError, apiSuccess } from "@/lib/api";
 import { demoLeaderboard } from "@/lib/demo-data";
 import { INDIA_DAILY_AVERAGE_KG } from "@/lib/emission-factors";

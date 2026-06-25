@@ -132,6 +132,20 @@ const nextConfig = {
         ],
       },
       {
+        // Phase 7C: Homepage — serve cached for 5min, revalidate in background
+        source: '/',
+        headers: [{ key: 'Cache-Control', value: 'public, s-maxage=300, stale-while-revalidate=3600' }],
+      },
+      {
+        // Dashboard is user-specific — never CDN-cached
+        source: '/dashboard/:path*',
+        headers: [{ key: 'Cache-Control', value: 'private, no-cache, no-store' }],
+      },
+      {
+        source: '/images/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+      {
         source: '/_next/static/:path*',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
       },

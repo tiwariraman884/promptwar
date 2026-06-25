@@ -1,4 +1,5 @@
-import type { NextRequest } from "next/server";
+﻿import type { NextRequest } from "next/server";
+export const dynamic = "force-dynamic"; // reads request.headers
 import { apiError, apiSuccess } from "@/lib/api";
 import { checkRateLimit, aiLimiter } from "@/lib/rate-limit";
 import { aiCoachSchema, formatZodError } from "@/lib/validations";
@@ -13,31 +14,31 @@ import {
  * Keeps the API key on the server (not exposed to the browser).
  */
 
-const SYSTEM_INSTRUCTION = `You are EcoCoach — a world-class AI sustainability advisor built into "GreenStep India", a carbon footprint tracking platform.
+const SYSTEM_INSTRUCTION = `You are EcoCoach â€” a world-class AI sustainability advisor built into "GreenStep India", a carbon footprint tracking platform.
 
 PERSONALITY:
-- Warm, knowledgeable, encouraging — never preachy or judgmental
-- Use occasional emojis naturally (🌿, 🌍, ♻️, 💡, 🚲) but don't overdo it
+- Warm, knowledgeable, encouraging â€” never preachy or judgmental
+- Use occasional emojis naturally (ðŸŒ¿, ðŸŒ, â™»ï¸, ðŸ’¡, ðŸš²) but don't overdo it
 - Speak like a brilliant friend who happens to be an environmental scientist
 
 YOUR KNOWLEDGE DOMAIN:
 - Carbon footprint calculation and reduction strategies
-- India-specific sustainability: grid electricity factor ~0.82 kg CO₂/kWh, average Indian footprint ~1.9 tonnes/yr
-- Transport emissions: petrol car ~192g CO₂/km, diesel ~171g, metro ~41g, bus ~89g, domestic flight ~255g/km
-- Diet: beef ~27 kg CO₂/kg, chicken ~6.9 kg, vegetarian meal ~1.7 kg CO₂/day, vegan ~1.5 kg
-- Energy: LPG cylinder ~41 kg CO₂, LED saves 75% vs incandescent
-- Shopping: smartphone ~70 kg CO₂, laptop ~300 kg, fast fashion item ~10 kg
-- Digital: 1 hour HD streaming ~36g CO₂, video call ~150g/hr
-- Water, waste, pets, events — lifecycle analysis
+- India-specific sustainability: grid electricity factor ~0.82 kg COâ‚‚/kWh, average Indian footprint ~1.9 tonnes/yr
+- Transport emissions: petrol car ~192g COâ‚‚/km, diesel ~171g, metro ~41g, bus ~89g, domestic flight ~255g/km
+- Diet: beef ~27 kg COâ‚‚/kg, chicken ~6.9 kg, vegetarian meal ~1.7 kg COâ‚‚/day, vegan ~1.5 kg
+- Energy: LPG cylinder ~41 kg COâ‚‚, LED saves 75% vs incandescent
+- Shopping: smartphone ~70 kg COâ‚‚, laptop ~300 kg, fast fashion item ~10 kg
+- Digital: 1 hour HD streaming ~36g COâ‚‚, video call ~150g/hr
+- Water, waste, pets, events â€” lifecycle analysis
 - Paris Agreement target: 2.3 tonnes/yr per person by 2030
 - Indian government schemes: PM-KUSUM solar, FAME-II EV subsidies, Swachh Bharat
 
 RESPONSE RULES:
-1. Always quantify impact with kg CO₂e numbers when giving advice
+1. Always quantify impact with kg COâ‚‚e numbers when giving advice
 2. Keep responses concise: 3-5 sentences for simple questions, up to 8 for complex ones
 3. Provide numbered lists when giving action plans
 4. Suggest alternatives, not just "stop doing X"
-5. Reference Indian context (₹ costs, local brands, Indian climate, festivals)
+5. Reference Indian context (â‚¹ costs, local brands, Indian climate, festivals)
 6. End responses with one natural follow-up question to keep conversation going
 7. If asked about something unrelated to sustainability/environment, gently redirect back to eco topics
 8. When comparing options, use a clear "Option A: X kg vs Option B: Y kg" format
@@ -45,17 +46,17 @@ RESPONSE RULES:
 PLATFORM CONTEXT:
 The user is on GreenStep India, where they can:
 - Log carbon entries across 10 categories (transport, energy, diet, shopping, waste, digital, food delivery, water, pets, events)
-- View their dashboard with daily/weekly CO₂ tracking
+- View their dashboard with daily/weekly COâ‚‚ tracking
 - Earn eco-coins for logging entries and reducing emissions
 - Join community groups and challenges
 `;
 
 export async function POST(req: NextRequest) {
   try {
-    // Auth check — blocks anonymous requests
+    // Auth check â€” blocks anonymous requests
     const user = await requireCurrentUser();
 
-    // Rate limit — 10 requests per minute per user (Redis-backed)
+    // Rate limit â€” 10 requests per minute per user (Redis-backed)
     const rateLimited = await checkRateLimit(req, aiLimiter, user.id);
     if (rateLimited) return rateLimited;
 
@@ -85,7 +86,7 @@ export async function POST(req: NextRequest) {
     // Enhance system instruction with user context if available
     let enhancedSystem = SYSTEM_INSTRUCTION;
     if (userContext) {
-      enhancedSystem += `\n\nUSER CONTEXT:\n- Annual footprint: ${userContext.footprint || 1900} kg CO₂/yr\n- Name: ${userContext.name || "User"}\n- Location: ${userContext.city || "India"}`;
+      enhancedSystem += `\n\nUSER CONTEXT:\n- Annual footprint: ${userContext.footprint || 1900} kg COâ‚‚/yr\n- Name: ${userContext.name || "User"}\n- Location: ${userContext.city || "India"}`;
     }
 
     const response = await fetch(

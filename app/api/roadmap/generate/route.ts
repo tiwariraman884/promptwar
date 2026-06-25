@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic"; // reads request headers
 import { NextRequest, NextResponse } from "next/server";
 import type { EmissionBreakdown, CarbonTwinProfile, AIRoadmap } from "@/lib/types/carbon-twin-types";
 import { INDIA_MONTHLY_BASELINE } from "@/lib/emission-factors-v2";

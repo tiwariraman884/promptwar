@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic"; // reads request headers
 import { NextResponse, type NextRequest } from "next/server";
 
 /* ═══════════════════════════════════════════════════════════════

@@ -1,4 +1,5 @@
-import type { NextRequest } from "next/server";
+﻿import type { NextRequest } from "next/server";
+export const dynamic = "force-dynamic"; // reads request.headers
 import { apiError, apiSuccess } from "@/lib/api";
 import { checkRateLimit, aiLimiter } from "@/lib/rate-limit";
 import { scannerSchema, formatZodError } from "@/lib/validations";
@@ -84,7 +85,7 @@ const PRODUCT_DB: Record<string, Record<string, unknown>> = {
     packaging: { type: "Cardboard", recyclable: true, biodegradable: true },
     comparison: "Equivalent to 1 hour of AC usage",
     greener_alternative: "Locally grown herbal tea", alternative_footprint_kg: 0.8,
-    tip: "Boil only the water you need — heating excess water wastes energy",
+    tip: "Boil only the water you need â€” heating excess water wastes energy",
     eco_facts: ["Tea has ~50% lower footprint than coffee", "Cardboard packaging is easier to recycle"]
   },
 };
@@ -128,7 +129,7 @@ const PRODUCT_NAME_DB: Record<string, Record<string, unknown>> = {
     packaging: { type: "Plastic", recyclable: false, biodegradable: false },
     comparison: "Equivalent to 34 km of car driving",
     greener_alternative: "Organic cotton or linen T-shirt", alternative_footprint_kg: 3.5,
-    tip: "Wash clothes in cold water — heating accounts for 80% of laundry energy",
+    tip: "Wash clothes in cold water â€” heating accounts for 80% of laundry energy",
     eco_facts: ["Cotton uses 10,000 litres of water per kg", "Fast fashion is responsible for 10% of global carbon emissions"]
   },
   "rice": {
@@ -138,8 +139,8 @@ const PRODUCT_NAME_DB: Record<string, Record<string, unknown>> = {
     packaging: { type: "Plastic", recyclable: false, biodegradable: false },
     comparison: "Equivalent to 1.5 hours of running an AC",
     greener_alternative: "Millets (bajra, jowar, ragi)", alternative_footprint_kg: 0.7,
-    tip: "Switch to millets 2x per week — 80% lower water and carbon footprint",
-    eco_facts: ["Rice paddies produce methane — a GHG 80x more potent than CO₂", "India is the 2nd largest rice producer globally"]
+    tip: "Switch to millets 2x per week â€” 80% lower water and carbon footprint",
+    eco_facts: ["Rice paddies produce methane â€” a GHG 80x more potent than COâ‚‚", "India is the 2nd largest rice producer globally"]
   },
   "oat milk": {
     product: "Oat Milk (1L)", brand: "Generic", category: "Beverages",
@@ -156,10 +157,10 @@ const PRODUCT_NAME_DB: Record<string, Record<string, unknown>> = {
     footprint_kg: 2.5, rating: "A", rating_label: "Low", sustainability_score: 85,
     breakdown: { production: 1.8, transport: 0.2, use_phase: 0.3, disposal: 0.2 },
     packaging: { type: "Cardboard", recyclable: true, biodegradable: true },
-    comparison: "Over its lifetime, an LED saves 200 kg CO₂ vs incandescent",
+    comparison: "Over its lifetime, an LED saves 200 kg COâ‚‚ vs incandescent",
     greener_alternative: "Solar-powered outdoor LED", alternative_footprint_kg: 1.0,
-    tip: "LEDs last 25x longer than incandescent — always worth the switch",
-    eco_facts: ["Switching 1 bulb to LED saves ₹1,000/year in electricity", "India's UJALA scheme distributed 360M+ LED bulbs"]
+    tip: "LEDs last 25x longer than incandescent â€” always worth the switch",
+    eco_facts: ["Switching 1 bulb to LED saves â‚¹1,000/year in electricity", "India's UJALA scheme distributed 360M+ LED bulbs"]
   },
   "beef burger": {
     product: "Beef Burger (200g patty)", brand: "Generic", category: "Food",
@@ -168,7 +169,7 @@ const PRODUCT_NAME_DB: Record<string, Record<string, unknown>> = {
     packaging: { type: "Mixed", recyclable: false, biodegradable: false },
     comparison: "Equivalent to driving 23 km or charging phone 657 times",
     greener_alternative: "Plant-based burger patty", alternative_footprint_kg: 0.9,
-    tip: "Replacing 1 beef meal/week with plant-based saves 200 kg CO₂/year",
+    tip: "Replacing 1 beef meal/week with plant-based saves 200 kg COâ‚‚/year",
     eco_facts: ["Beef uses 20x more land than plant proteins", "Cattle farming is the #1 cause of deforestation"]
   },
 };
@@ -210,7 +211,7 @@ async function analyzeWithGemini(query: string, apiKey: string) {
   const parts = data?.candidates?.[0]?.content?.parts || [];
   let text = "";
   for (const part of parts) {
-    // Skip "thought" parts — they don't contain the answer
+    // Skip "thought" parts â€” they don't contain the answer
     if (part.thought) continue;
     if (part.text) text += part.text;
   }
@@ -252,10 +253,10 @@ async function lookupOpenFoodFacts(barcode: string) {
 
 export async function POST(req: NextRequest) {
   try {
-    // Auth check — blocks anonymous requests
+    // Auth check â€” blocks anonymous requests
     const user = await requireCurrentUser();
 
-    // Rate limit — 10 requests per minute per user (Redis-backed)
+    // Rate limit â€” 10 requests per minute per user (Redis-backed)
     const rateLimited = await checkRateLimit(req, aiLimiter, user.id);
     if (rateLimited) return rateLimited;
 
@@ -305,7 +306,7 @@ export async function POST(req: NextRequest) {
           sustainability_score: 0,
           breakdown: { production: 0, transport: 0, use_phase: 0, disposal: 0 },
           packaging: { type: offData.packaging || "Unknown", recyclable: false, biodegradable: false },
-          comparison: "Carbon data unavailable — add Gemini API key for full analysis",
+          comparison: "Carbon data unavailable â€” add Gemini API key for full analysis",
           greener_alternative: "N/A", alternative_footprint_kg: 0,
           tip: "Add GEMINI_API_KEY to get full carbon analysis",
           eco_facts: ["Product found in OpenFoodFacts database"],

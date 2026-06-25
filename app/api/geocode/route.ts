@@ -7,6 +7,10 @@ import {
   requireCurrentUser,
 } from "@/lib/supabase/server";
 
+// This route reads request.headers (auth + rate-limit) — must be dynamic
+export const dynamic = "force-dynamic";
+
+
 export async function GET(request: NextRequest) {
   try {
     // Auth check — blocks anonymous requests

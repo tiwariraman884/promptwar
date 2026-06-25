@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic"; // reads request headers
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient, createAdminSupabaseClient } from '@/lib/supabase/server';
 

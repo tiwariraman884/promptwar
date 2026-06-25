@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import LazySection from "@/components/LazySection";
 import { useSettings } from "@/lib/settings-context";
 import {
@@ -88,7 +88,7 @@ function forecastNextMonth(dailySeries: DailyPoint[]): number | null {
   return Math.round(total * 10) / 10;
 }
 
-function StatCard({
+const StatCard = memo(function StatCard({
   title,
   value,
   helper,
@@ -127,7 +127,7 @@ function StatCard({
       </div>
     </Card>
   );
-}
+});
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData>(demoDashboard);

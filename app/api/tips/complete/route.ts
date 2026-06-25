@@ -1,4 +1,5 @@
-import type { NextRequest } from "next/server";
+﻿import type { NextRequest } from "next/server";
+export const dynamic = "force-dynamic"; // reads request.headers
 import { apiError, apiSuccess } from "@/lib/api";
 import { ECO_COIN_REWARDS } from "@/lib/gamification";
 import { awardCoins } from "@/lib/gamification-server";

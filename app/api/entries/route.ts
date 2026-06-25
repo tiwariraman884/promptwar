@@ -1,4 +1,5 @@
-import type { NextRequest } from "next/server";
+﻿import type { NextRequest } from "next/server";
+export const dynamic = "force-dynamic"; // reads request.headers
 import { apiError, apiPaginated, apiSuccess } from "@/lib/api";
 import { checkRateLimit, authLimiter } from "@/lib/rate-limit";
 import { entryBodySchema, paginationSchema, formatZodError } from "@/lib/validations";
@@ -76,7 +77,7 @@ export async function POST(request: NextRequest) {
   try {
     const user = await requireCurrentUser();
 
-    // Rate limit — 100 req/min per user (Redis-backed)
+    // Rate limit â€” 100 req/min per user (Redis-backed)
     const rateLimited = await checkRateLimit(request, authLimiter, user.id);
     if (rateLimited) return rateLimited;
 
@@ -181,7 +182,7 @@ export async function GET(request: NextRequest) {
   try {
     const user = await requireCurrentUser();
 
-    // Rate limit — 100 req/min per user (Redis-backed)
+    // Rate limit â€” 100 req/min per user (Redis-backed)
     const rateLimited = await checkRateLimit(request, authLimiter, user.id);
     if (rateLimited) return rateLimited;
 

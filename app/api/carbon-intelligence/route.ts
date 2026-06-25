@@ -1,4 +1,5 @@
-import type { NextRequest } from "next/server";
+﻿import type { NextRequest } from "next/server";
+export const dynamic = "force-dynamic"; // reads request.headers
 import { apiError, apiSuccess } from "@/lib/api";
 import { checkRateLimit, authLimiter } from "@/lib/rate-limit";
 import { carbonIntelligenceSchema, formatZodError } from "@/lib/validations";
@@ -13,19 +14,19 @@ import {
  *
  * Accepts structured lifestyle data across 5 categories and returns
  * a comprehensive carbon footprint analysis:
- *   - Personal Carbon Risk Score (0–100)
+ *   - Personal Carbon Risk Score (0â€“100)
  *   - Monthly Carbon Forecast (next 3 months)
  *   - Reduction Roadmap (5 prioritised India-specific actions)
  *   - Predicted Emissions Timeline (6-month BAU vs optimised)
  *
- * All computation is deterministic (pure TypeScript) — no external AI calls.
+ * All computation is deterministic (pure TypeScript) â€” no external AI calls.
  */
 export async function POST(req: NextRequest) {
   try {
-    // Auth check — blocks anonymous requests
+    // Auth check â€” blocks anonymous requests
     const user = await requireCurrentUser();
 
-    // Rate limit — standard limiter (no external API calls, so no AI tier needed)
+    // Rate limit â€” standard limiter (no external API calls, so no AI tier needed)
     const rateLimited = await checkRateLimit(req, authLimiter, user.id);
     if (rateLimited) return rateLimited;
 
