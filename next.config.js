@@ -1,3 +1,7 @@
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
 let withPWA;
 try {
   withPWA = require("next-pwa")({
@@ -62,62 +66,57 @@ try {
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
-
-  // ── Performance: SWC minification ──
   swcMinify: true,
-
-  // ── Performance: HTTP compression ──
   compress: true,
 
-  // ── Performance: strip console.* in production ──
+  // ── Compiler optimizations ──────────────────────────────
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole: process.env.NODE_ENV === 'production'
+      ? { exclude: ['error', 'warn'] }
+      : false,
   },
 
-  // ── Performance: image optimization for India 3G/4G ──
+  // ── Experimental: faster builds + smaller output ────────
+  experimental: {
+    typedRoutes: true,
+    scrollRestoration: true,
+    optimizePackageImports: [
+      'recharts',
+      'framer-motion',
+      'lucide-react',
+      '@heroicons/react',
+      'date-fns',
+      'lodash',
+    ],
+  },
+
+  // ── Image optimization ──────────────────────────────────
   images: {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [360, 414, 768, 1024, 1280],
     minimumCacheTTL: 31536000, // 1-year cache
+    remotePatterns: [
+      { protocol: 'https', hostname: '*.supabase.co', pathname: '/storage/**' },
+      { protocol: 'https', hostname: '*.googleapis.com' },
+    ],
   },
 
-  // ── ESLint: run via `npm run lint` separately, skip during build ──
   eslint: {
     ignoreDuringBuilds: true,
   },
 
-  experimental: {
-    typedRoutes: true,
-    optimizePackageImports: ["lucide-react", "recharts", "framer-motion"],
-    scrollRestoration: true,
-  },
-
+  // ── Headers: caching + security ─────────────────────────
   async headers() {
     return [
-      // ── Security headers (all routes) ──
       {
         source: "/(.*)",
         headers: [
-          {
-            key: "X-Frame-Options",
-            value: "DENY",
-          },
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          {
-            key: "Referrer-Policy",
-            value: "strict-origin-when-cross-origin",
-          },
-          {
-            key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=(self)",
-          },
-          {
-            key: "Strict-Transport-Security",
-            value: "max-age=31536000; includeSubDomains",
-          },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(self)" },
+          { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
+          { key: 'X-DNS-Prefetch-Control', value: 'on' },
           {
             key: "Content-Security-Policy",
             value: [
@@ -132,10 +131,13 @@ const nextConfig = {
           },
         ],
       },
-      // ── Performance: immutable cache for static assets ──
       {
         source: '/_next/static/:path*',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+      {
+        source: '/workers/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=86400' }],
       },
       {
         source: '/fonts/:path*',
@@ -145,4 +147,4 @@ const nextConfig = {
   },
 };
 
-module.exports = withPWA(nextConfig);
+module.exports = withBundleAnalyzer(withPWA(nextConfig));
