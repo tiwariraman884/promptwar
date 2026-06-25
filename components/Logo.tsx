@@ -20,7 +20,7 @@ export default function Logo({ size = "md", variant = "full", href }: LogoProps)
       <div className="relative shrink-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/logo.png"
+          src="/logo.webp"
           alt="GreenStep India"
           width={s}
           height={s}

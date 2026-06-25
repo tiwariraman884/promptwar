@@ -78,7 +78,7 @@ const nextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [360, 414, 768, 1024, 1280],
-    minimumCacheTTL: 86400, // 24-hour cache
+    minimumCacheTTL: 31536000, // 1-year cache
   },
 
   // ── ESLint: run via `npm run lint` separately, skip during build ──

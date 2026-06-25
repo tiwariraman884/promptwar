@@ -30,7 +30,7 @@ export default function LandingPage() {
         {/* Background image */}
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/images/eco-hero-bg.png')" }}
+          style={{ backgroundImage: "url('/images/eco-hero-bg.webp')" }}
         />
         {/* Cinematic overlay */}
         <div className="absolute inset-0 cinematic-overlay" />

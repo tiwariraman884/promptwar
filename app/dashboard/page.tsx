@@ -203,7 +203,7 @@ export default function DashboardPage() {
           {/* Background image */}
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: "url('/images/dashboard-hero-bg.png')" }}
+            style={{ backgroundImage: "url('/images/dashboard-hero-bg.webp')" }}
           />
           <div className="absolute inset-0 cinematic-overlay" />
 

@@ -7,7 +7,7 @@ const IMAGES = [
     input: 'public/logo.png',
     output: 'public/logo.webp',
     targetSizeKb: 30,
-    options: { quality: 85, lossless: true }
+    options: { quality: 85, lossless: true, resize: { width: 128, height: 128 } }
   },
   {
     input: 'public/images/community-hero-bg.png',
@@ -62,7 +62,12 @@ async function convertImage(img) {
   while (quality >= 20) {
     console.log(`Converting ${img.input} with quality=${quality}, lossless=${isLossless}...`);
     
-    const sharpInstance = sharp(inputPath).webp({
+    let sharpInstance = sharp(inputPath);
+    if (img.options.resize) {
+      sharpInstance = sharpInstance.resize(img.options.resize.width, img.options.resize.height);
+    }
+    
+    sharpInstance = sharpInstance.webp({
       quality,
       lossless: isLossless
     });
@@ -90,7 +95,11 @@ async function convertImage(img) {
   
   // If we couldn't meet target size with quality >= 20, just use the quality 20 one
   console.warn(`Could not reach target size of ${img.targetSizeKb} KB for ${img.input}. Saving with quality 20.`);
-  const finalInstance = sharp(inputPath).webp({
+  let finalInstance = sharp(inputPath);
+  if (img.options.resize) {
+    finalInstance = finalInstance.resize(img.options.resize.width, img.options.resize.height);
+  }
+  finalInstance = finalInstance.webp({
     quality: 20,
     lossless: isLossless
   });

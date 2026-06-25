@@ -14,6 +14,7 @@
 [![Playwright](https://img.shields.io/badge/E2E-Playwright-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev/)
 [![Version](https://img.shields.io/badge/v0.1.0-blue?logo=github)]()
 [![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000?logo=vercel)](https://promptwar-orpin.vercel.app)
+[![Made in India](https://img.shields.io/badge/Made_in-India_%F0%9F%87%AE%F0%9F%87%B3-orange)]()
 [![License](https://img.shields.io/badge/license-Private-red)]()
 
 A full-stack, mobile-first Progressive Web App that helps Indian users track, reduce, and offset their carbon footprint — starting from Haridwar, Uttarakhand and designed to scale nationally.
