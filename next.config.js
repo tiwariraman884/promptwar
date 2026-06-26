@@ -1,3 +1,4 @@
+
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
@@ -62,6 +63,7 @@ try {
   withPWA = (config) => config;
 }
 
+/* eslint-disable @typescript-eslint/no-var-requires */
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,

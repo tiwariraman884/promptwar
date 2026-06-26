@@ -43,11 +43,7 @@ const EV_STATIONS: LayerPin[] = [
   { id: "ev-3", lat: 28.6139, lng: 77.2090, name: "NTPC EV Hub – Connaught Place", detail: "CCS2 50kW", emoji: "⚡" },
 ];
 
-const RECYCLE_CENTERS: LayerPin[] = [
-  { id: "rc-1", lat: 29.9550, lng: 78.1620, name: "Haridwar Municipal Recycling", detail: "Paper, Plastic, Glass", emoji: "♻️" },
-  { id: "rc-2", lat: 29.8600, lng: 77.8950, name: "Kabad‑Se‑Jugaad – Roorkee", detail: "E-waste, Metal", emoji: "♻️" },
-  { id: "rc-3", lat: 28.5355, lng: 77.3910, name: "Noida Dry Waste Center", detail: "Paper, Cardboard, Plastic", emoji: "♻️" },
-];
+
 
 /* ── SVG marker icons ── */
 function createMarkerIcon(color: string, pulsing = false): google.maps.Symbol {
@@ -72,6 +68,8 @@ function createSearchMarkerIcon(): google.maps.Symbol {
     anchor: new google.maps.Point(12, 24),
   };
 }
+
+const LIBRARIES: ("places" | "geometry" | "drawing" | "visualization")[] = ["places"];
 
 interface GoogleMapWrapperProps {
   selectedCity: string;
@@ -112,6 +110,7 @@ export default function GoogleMapWrapper({
   /* ── Load Google Maps SDK ── */
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+    libraries: LIBRARIES,
   });
 
   useEffect(() => {
@@ -166,41 +165,56 @@ export default function GoogleMapWrapper({
     }
   }, [isLoaded, plotMarkers]);
 
-  /* ── Layer pins plotting ── */
+  /* ── Layer pins plotting (Live Places API) ── */
   useEffect(() => {
     layerMarkersRef.current.forEach((m) => m.setMap(null));
     layerMarkersRef.current = [];
 
     if (!isLoaded || !mapRef.current) return;
+    if (!window.google?.maps?.places) return;
 
-    const plotLayer = (pins: LayerPin[], color: string) => {
-      pins.forEach((pin) => {
-        const marker = new google.maps.Marker({
-          position: { lat: pin.lat, lng: pin.lng },
-          map: mapRef.current!,
-          icon: createMarkerIcon(color),
-          title: `${pin.emoji} ${pin.name}`,
-        });
+    const service = new google.maps.places.PlacesService(mapRef.current);
 
-        marker.addListener("click", () => {
-          if (infoWindowRef.current) infoWindowRef.current.close();
-          const iw = new google.maps.InfoWindow({
-            content: `<div style="color:#1B4332;font-size:13px;padding:4px;max-width:220px">
-              <strong>${pin.emoji} ${pin.name}</strong><br/>
-              <span style="font-size:11px;color:#6B7C6E">${pin.detail}</span><br/>
-              <a href="https://maps.google.com/?q=${pin.lat},${pin.lng}" target="_blank" style="font-size:11px;color:#2D6A4F">Open in Maps →</a>
-            </div>`,
-          });
-          iw.open(mapRef.current!, marker);
-          infoWindowRef.current = iw;
-        });
+    const fetchAndPlot = (keyword: string, color: string, emoji: string) => {
+      service.nearbySearch(
+        {
+          location: mapRef.current!.getCenter()!,
+          radius: 10000,
+          keyword,
+        },
+        (results, status) => {
+          if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+            results.slice(0, 15).forEach((place) => {
+              if (!place.geometry?.location) return;
+              const marker = new google.maps.Marker({
+                position: place.geometry.location,
+                map: mapRef.current!,
+                icon: createMarkerIcon(color),
+                title: `${emoji} ${place.name}`,
+              });
 
-        layerMarkersRef.current.push(marker);
-      });
+              marker.addListener("click", () => {
+                if (infoWindowRef.current) infoWindowRef.current.close();
+                const iw = new google.maps.InfoWindow({
+                  content: `<div style="color:#1B4332;font-size:13px;padding:4px;max-width:220px">
+                    <strong>${emoji} ${place.name}</strong><br/>
+                    <span style="font-size:11px;color:#6B7C6E">${place.vicinity || ""}</span><br/>
+                    <a href="https://maps.google.com/?q=${place.geometry?.location?.lat()},${place.geometry?.location?.lng()}" target="_blank" style="font-size:11px;color:#2D6A4F">Open in Maps →</a>
+                  </div>`,
+                });
+                iw.open(mapRef.current!, marker);
+                infoWindowRef.current = iw;
+              });
+
+              layerMarkersRef.current.push(marker);
+            });
+          }
+        }
+      );
     };
 
-    if (showEV) plotLayer(EV_STATIONS, "#F59E0B");
-    if (showRecycle) plotLayer(RECYCLE_CENTERS, "#22C55E");
+    if (showEV) fetchAndPlot("EV charging station", "#F59E0B", "⚡");
+    if (showRecycle) fetchAndPlot("Recycling center", "#22C55E", "♻️");
   }, [isLoaded, showEV, showRecycle]);
 
   /* ── Directions routing layer ── */
