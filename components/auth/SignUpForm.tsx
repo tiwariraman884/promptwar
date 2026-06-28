@@ -50,7 +50,7 @@ export default function SignUpForm() {
       if (isSupabaseConfigured()) {
         // Real Supabase auth
         const supabase = createClient();
-        const { error: authError } = await supabase.auth.signUp({
+        const { data, error: authError } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -69,7 +69,14 @@ export default function SignUpForm() {
           return;
         }
 
-        // Show confirmation message
+        // Supabase can either create a session immediately OR require email confirmation.
+        if (data?.session) {
+          router.push(nextUrl as Route);
+          router.refresh();
+          return;
+        }
+
+        // Otherwise, user must confirm via email.
         setSuccess("Account created! Check your email for a confirmation link.");
         setLoading(false);
       } else {
