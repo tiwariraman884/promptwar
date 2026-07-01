@@ -71,8 +71,9 @@ export default function SignUpForm() {
 
         // Supabase can either create a session immediately OR require email confirmation.
         if (data?.session) {
-          router.push(nextUrl as Route);
-          router.refresh();
+          window.location.assign(
+            `/auth/callback?next=${encodeURIComponent(nextUrl)}`
+          );
           return;
         }
 

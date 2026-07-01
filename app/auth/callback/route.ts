@@ -1,6 +1,61 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
+async function redirectAuthenticatedUser(
+  requestUrl: URL,
+  supabase: NonNullable<ReturnType<typeof createServerSupabaseClient>>,
+  next: string
+) {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return NextResponse.redirect(new URL("/auth", requestUrl.origin));
+  }
+
+  const displayName =
+    user.user_metadata?.full_name ||
+    user.user_metadata?.name ||
+    user.user_metadata?.display_name ||
+    user.email?.split("@")[0] ||
+    "Eco User";
+
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("id, onboarding_completed")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (profileError) {
+    throw profileError;
+  }
+
+  if (!profile) {
+    const { error: insertError } = await supabase.from("profiles").insert({
+      id: user.id,
+      display_name: displayName,
+      city: "Haridwar",
+      state: "Uttarakhand",
+      diet_type: "vegetarian",
+      onboarding_completed: false,
+    });
+
+    if (insertError) {
+      throw insertError;
+    }
+
+    return NextResponse.redirect(new URL("/onboarding", requestUrl.origin));
+  }
+
+  if (!profile.onboarding_completed) {
+    return NextResponse.redirect(new URL("/onboarding", requestUrl.origin));
+  }
+
+  return NextResponse.redirect(new URL(next, requestUrl.origin));
+}
+
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
@@ -29,52 +84,7 @@ export async function GET(request: NextRequest) {
         throw exchangeError;
       }
 
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser();
-
-      if (userError || !user) {
-        throw userError ?? new Error("Unable to load authenticated user.");
-      }
-
-      const displayName =
-        user.user_metadata?.full_name ||
-        user.user_metadata?.name ||
-        user.user_metadata?.display_name ||
-        user.email?.split("@")[0] ||
-        "Eco User";
-
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("id, onboarding_completed")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (profileError) {
-        throw profileError;
-      }
-
-      if (!profile) {
-        const { error: insertError } = await supabase.from("profiles").insert({
-          id: user.id,
-          display_name: displayName,
-          city: "Haridwar",
-          state: "Uttarakhand",
-          diet_type: "vegetarian",
-          onboarding_completed: false,
-        });
-
-        if (insertError) {
-          throw insertError;
-        }
-
-        return NextResponse.redirect(new URL("/onboarding", requestUrl.origin));
-      }
-
-      if (!profile.onboarding_completed) {
-        return NextResponse.redirect(new URL("/onboarding", requestUrl.origin));
-      }
+      return await redirectAuthenticatedUser(requestUrl, supabase, next);
     } catch (exchangeError) {
       const redirectUrl = new URL("/auth", requestUrl.origin);
       redirectUrl.searchParams.set("error", "oauth_callback_failed");
@@ -86,5 +96,15 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  return NextResponse.redirect(new URL(next, requestUrl.origin));
+  try {
+    const supabase = createServerSupabaseClient();
+
+    if (!supabase) {
+      throw new Error("Supabase is not configured on the server.");
+    }
+
+    return await redirectAuthenticatedUser(requestUrl, supabase, next);
+  } catch {
+    return NextResponse.redirect(new URL(next, requestUrl.origin));
+  }
 }
