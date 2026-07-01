@@ -28,6 +28,53 @@ export async function GET(request: NextRequest) {
       if (exchangeError) {
         throw exchangeError;
       }
+
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError || !user) {
+        throw userError ?? new Error("Unable to load authenticated user.");
+      }
+
+      const displayName =
+        user.user_metadata?.full_name ||
+        user.user_metadata?.name ||
+        user.user_metadata?.display_name ||
+        user.email?.split("@")[0] ||
+        "Eco User";
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("id, onboarding_completed")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (profileError) {
+        throw profileError;
+      }
+
+      if (!profile) {
+        const { error: insertError } = await supabase.from("profiles").insert({
+          id: user.id,
+          display_name: displayName,
+          city: "Haridwar",
+          state: "Uttarakhand",
+          diet_type: "vegetarian",
+          onboarding_completed: false,
+        });
+
+        if (insertError) {
+          throw insertError;
+        }
+
+        return NextResponse.redirect(new URL("/onboarding", requestUrl.origin));
+      }
+
+      if (!profile.onboarding_completed) {
+        return NextResponse.redirect(new URL("/onboarding", requestUrl.origin));
+      }
     } catch (exchangeError) {
       const redirectUrl = new URL("/auth", requestUrl.origin);
       redirectUrl.searchParams.set("error", "oauth_callback_failed");

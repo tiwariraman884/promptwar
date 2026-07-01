@@ -101,6 +101,17 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
   const { data: { user } } = await supabase.auth.getUser();
 
+  let onboardingCompleted = false;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("onboarding_completed")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    onboardingCompleted = Boolean(profile?.onboarding_completed);
+  }
+
   // Inject IP and request ID headers for audit logging and tracing
   response.headers.set("x-client-ip", getClientIP(request));
   response.headers.set("x-request-id", requestId);
@@ -123,7 +134,11 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
   // Redirect logged-in users away from /auth
   if (user && pathname === "/auth") {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL(onboardingCompleted ? "/dashboard" : "/onboarding", request.url));
+  }
+
+  if (user && pathname === "/dashboard" && !onboardingCompleted) {
+    return NextResponse.redirect(new URL("/onboarding", request.url));
   }
 
   return response;

@@ -7,6 +7,7 @@ create table if not exists profiles (
   city        text default 'Haridwar',
   state       text default 'Uttarakhand',
   diet_type   text default 'vegetarian' check (diet_type in ('vegetarian', 'non_veg', 'vegan')),
+  onboarding_completed boolean not null default false,
   created_at  timestamptz default now()
 );
 

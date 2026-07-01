@@ -149,6 +149,9 @@ function write(key: string, value: unknown) {
 }
 
 export const SettingsDB = {
+  async hydrate() {
+    return;
+  },
   getProfile(): UserProfile { return read(KEYS.profile, DEFAULT_PROFILE); },
   updateProfile(updates: Partial<UserProfile>): UserProfile {
     const updated = { ...this.getProfile(), ...updates };

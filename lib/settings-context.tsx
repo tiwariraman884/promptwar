@@ -73,7 +73,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [notificationItems, setNotificationItems] = useState<NotificationItem[]>([]);
   const [loaded, setLoaded] = useState(false);
 
-  // Hydrate from Supabase after mount (client-only)
+  // Hydrate from the settings cache after mount.
   useEffect(() => {
     let active = true;
 
@@ -187,10 +187,9 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       URL.revokeObjectURL(url);
     },
     deleteAccount: () => {
-      void SettingsDB.deleteAccount().then(() => {
-        setProfile(SettingsDB.getProfile());
-        window.location.href = "/";
-      });
+      SettingsDB.deleteAccount();
+      setProfile(SettingsDB.getProfile());
+      window.location.href = "/";
     },
     reload,
   };

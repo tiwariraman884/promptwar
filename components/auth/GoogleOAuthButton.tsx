@@ -41,6 +41,9 @@ export default function GoogleOAuthButton() {
         provider: "google",
         options: {
           redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextUrl)}`,
+          queryParams: {
+            prompt: "select_account",
+          },
         },
       });
 
