@@ -1,22 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSettings } from "@/lib/settings-context";
 
 export function ThemeToggle() {
   const [dark, setDark] = useState(true);
   const [mounted, setMounted] = useState(false);
+  const { appearance, updateAppearance } = useSettings();
 
   useEffect(() => {
-    const isDark = document.documentElement.classList.contains("dark");
+    const isDark = appearance.theme === "dark"
+      ? true
+      : appearance.theme === "light"
+        ? false
+        : document.documentElement.classList.contains("dark");
     setDark(isDark);
     setMounted(true);
-  }, []);
+  }, [appearance.theme]);
 
   const toggle = () => {
     const next = !dark;
     setDark(next);
     document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("greenstep-theme", next ? "dark" : "light");
+    updateAppearance({ theme: next ? "dark" : "light" });
   };
 
   const bgClass = mounted

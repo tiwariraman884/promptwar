@@ -73,33 +73,25 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [notificationItems, setNotificationItems] = useState<NotificationItem[]>([]);
   const [loaded, setLoaded] = useState(false);
 
-  // Hydrate from localStorage after mount (client-only)
+  // Hydrate from Supabase after mount (client-only)
   useEffect(() => {
-    setProfile(SettingsDB.getProfile());
-    setLanguage(SettingsDB.getLanguage());
-    setNotifications(SettingsDB.getNotificationPrefs());
-    setAppearance(SettingsDB.getAppearance());
-    setPrivacy(SettingsDB.getPrivacy());
-    setSessions(SettingsDB.getSessions());
-    setNotificationItems(SettingsDB.getNotifications());
-    setLoaded(true);
-  }, []);
+    let active = true;
 
-  // Cross-tab sync
-  useEffect(() => {
-    function onStorage(e: StorageEvent) {
-      if (e.key?.startsWith("eco_settings_")) {
-        setProfile(SettingsDB.getProfile());
-        setLanguage(SettingsDB.getLanguage());
-        setNotifications(SettingsDB.getNotificationPrefs());
-        setAppearance(SettingsDB.getAppearance());
-        setPrivacy(SettingsDB.getPrivacy());
-        setSessions(SettingsDB.getSessions());
-        setNotificationItems(SettingsDB.getNotifications());
-      }
-    }
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+    void SettingsDB.hydrate().then(() => {
+      if (!active) return;
+      setProfile(SettingsDB.getProfile());
+      setLanguage(SettingsDB.getLanguage());
+      setNotifications(SettingsDB.getNotificationPrefs());
+      setAppearance(SettingsDB.getAppearance());
+      setPrivacy(SettingsDB.getPrivacy());
+      setSessions(SettingsDB.getSessions());
+      setNotificationItems(SettingsDB.getNotifications());
+      setLoaded(true);
+    });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   // Apply theme whenever appearance changes
@@ -109,10 +101,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     if (theme === "system") {
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       document.documentElement.classList.toggle("dark", prefersDark);
-      localStorage.setItem("greenstep-theme", prefersDark ? "dark" : "light");
     } else {
       document.documentElement.classList.toggle("dark", theme === "dark");
-      localStorage.setItem("greenstep-theme", theme);
     }
   }, [appearance, loaded]);
 
@@ -124,13 +114,15 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   }, [language.code, loaded]);
 
   const reload = useCallback(() => {
-    setProfile(SettingsDB.getProfile());
-    setLanguage(SettingsDB.getLanguage());
-    setNotifications(SettingsDB.getNotificationPrefs());
-    setAppearance(SettingsDB.getAppearance());
-    setPrivacy(SettingsDB.getPrivacy());
-    setSessions(SettingsDB.getSessions());
-    setNotificationItems(SettingsDB.getNotifications());
+    void SettingsDB.hydrate().then(() => {
+      setProfile(SettingsDB.getProfile());
+      setLanguage(SettingsDB.getLanguage());
+      setNotifications(SettingsDB.getNotificationPrefs());
+      setAppearance(SettingsDB.getAppearance());
+      setPrivacy(SettingsDB.getPrivacy());
+      setSessions(SettingsDB.getSessions());
+      setNotificationItems(SettingsDB.getNotifications());
+    });
   }, []);
 
   const value: SettingsContextValue = {
@@ -195,9 +187,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       URL.revokeObjectURL(url);
     },
     deleteAccount: () => {
-      SettingsDB.deleteAccount();
-      setProfile(SettingsDB.getProfile());
-      window.location.href = "/";
+      void SettingsDB.deleteAccount().then(() => {
+        setProfile(SettingsDB.getProfile());
+        window.location.href = "/";
+      });
     },
     reload,
   };
