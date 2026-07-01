@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { Route } from "next";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/client";
+import GoogleOAuthButton from "./GoogleOAuthButton";
 
 function GoogleIcon() {
   return (
@@ -29,6 +31,8 @@ interface SocialButtonsProps {
 
 export default function SocialButtons({ mode }: SocialButtonsProps) {
   const router = useRouter();
+  const [activeProvider, setActiveProvider] = useState<"github" | null>(null);
+  const [error, setError] = useState("");
   // AUTH GATE (RULE 2): Read the ?next= param so social sign-in also
   // redirects users to the page they originally tried to visit.
   const searchParams = useSearchParams();
@@ -36,15 +40,34 @@ export default function SocialButtons({ mode }: SocialButtonsProps) {
   const label = mode === "signin" ? "Sign in with" : "Continue with";
 
   async function handleSocialLogin(provider: "google" | "github") {
+    setError("");
+
     if (isSupabaseConfigured()) {
       // Real Supabase OAuth
       const supabase = createClient();
-      await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextUrl)}`,
-        },
-      });
+      setActiveProvider(provider === "github" ? "github" : null);
+
+      try {
+        const { data, error: authError } = await supabase.auth.signInWithOAuth({
+          provider,
+          options: {
+            redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextUrl)}`,
+          },
+        });
+
+        if (authError) {
+          throw authError;
+        }
+
+        if (!data.url) {
+          throw new Error("OAuth provider did not return a redirect URL.");
+        }
+
+        window.location.assign(data.url);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "OAuth sign-in failed.");
+        setActiveProvider(null);
+      }
     } else {
       // Demo mode — localStorage mock
       const name = `${provider.charAt(0).toUpperCase() + provider.slice(1)} User`;
@@ -61,6 +84,14 @@ export default function SocialButtons({ mode }: SocialButtonsProps) {
 
   return (
     <div className="space-y-3">
+      <GoogleOAuthButton />
+
+      {error && (
+        <div role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs text-red-300">
+          {error}
+        </div>
+      )}
+
       {/* Divider */}
       <div className="flex items-center gap-3 my-1">
         <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
@@ -70,15 +101,16 @@ export default function SocialButtons({ mode }: SocialButtonsProps) {
 
       {/* Buttons */}
       <div className="grid grid-cols-2 gap-2">
-        {buttons.map((b) => (
+        {buttons.filter((b) => b.provider !== "google").map((b) => (
           <button
             key={b.name}
             type="button"
             onClick={() => handleSocialLogin(b.provider)}
+            disabled={activeProvider === b.provider}
             className="group flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.02] px-3 py-3 text-[12px] font-medium text-white/60 transition-all duration-300 hover:bg-white/[0.06] hover:border-white/15 hover:text-white/90 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/20 focus:outline-none focus:ring-2 focus:ring-[#00E676]/30 active:translate-y-0"
           >
             <span className="transition-transform duration-200 group-hover:scale-110">{b.icon}</span>
-            {label} {b.name}
+            {activeProvider === b.provider ? "Connecting…" : `${label} ${b.name}`}
           </button>
         ))}
       </div>

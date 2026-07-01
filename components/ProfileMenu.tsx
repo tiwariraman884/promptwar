@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import {
   IconProfile,
   IconEditAccount,
@@ -68,7 +69,16 @@ export default function ProfileMenu() {
   // AUTH GATE (RULE 3): Sign out clears session and redirects to /auth.
   // Uses router.replace to prevent the browser back button from returning
   // to a protected page after sign-out.
-  function handleSignOut() {
+  async function handleSignOut() {
+    if (isSupabaseConfigured()) {
+      try {
+        const supabase = createClient();
+        await supabase.auth.signOut();
+      } catch {
+        // Continue with local cleanup even if network/session revocation fails.
+      }
+    }
+
     localStorage.removeItem("eco_user");
     setUser(null);
     setOpen(false);
