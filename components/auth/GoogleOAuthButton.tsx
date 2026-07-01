@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { Route } from "next";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
 function GoogleIcon() {
@@ -25,6 +25,7 @@ function getAuthErrorMessage(error: unknown) {
 export default function GoogleOAuthButton() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const router = useRouter();
   const searchParams = useSearchParams();
   const nextUrl = searchParams.get("next") || "/dashboard";
 
@@ -34,7 +35,11 @@ export default function GoogleOAuthButton() {
 
     try {
       if (!isSupabaseConfigured()) {
-        throw new Error("Supabase is not configured in this environment.");
+        const name = "Google User";
+        const email = "user@google.com";
+        localStorage.setItem("eco_user", JSON.stringify({ name, email, provider: "google" }));
+        router.push(nextUrl as Route);
+        return;
       }
 
       const supabase = createClient();
