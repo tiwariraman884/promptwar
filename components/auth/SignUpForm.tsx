@@ -77,8 +77,8 @@ export default function SignUpForm() {
         }
 
         // Otherwise, user must confirm via email.
-        setSuccess("Account created! Check your email for a confirmation link.");
-        setLoading(false);
+        router.push(`/auth/verify?email=${encodeURIComponent(email)}&next=${encodeURIComponent(nextUrl)}` as Route);
+        return;
       } else {
         // Demo mode — localStorage mock (no Supabase configured)
         localStorage.setItem("eco_user", JSON.stringify({ name, email, country, role }));
