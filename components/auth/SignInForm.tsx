@@ -48,15 +48,11 @@ export default function SignInForm() {
           return;
         }
 
-        if (remember) localStorage.setItem("eco_remember", "true");
         router.push(nextUrl as Route);
         router.refresh();
       } else {
-        // Demo mode — localStorage mock (no Supabase configured)
-        const name = email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-        localStorage.setItem("eco_user", JSON.stringify({ name, email }));
-        if (remember) localStorage.setItem("eco_remember", "true");
-        router.push(nextUrl as Route);
+        setError("Supabase is not configured. This app now requires Supabase Auth.");
+        setLoading(false);
       }
     } catch {
       setError("An unexpected error occurred. Please try again.");

@@ -273,17 +273,9 @@ function write(key: string, value: unknown) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
-/* ─── Migration: pull from old eco_user into new profile ─── */
+/* ─── Migration ─── */
 function migrateFromLegacy(profile: UserProfile): UserProfile {
   if (typeof window === "undefined") return profile;
-  try {
-    const oldUser = localStorage.getItem("eco_user");
-    if (oldUser) {
-      const parsed = JSON.parse(oldUser);
-      if (parsed.name && !profile.name) profile.name = parsed.name;
-      if (parsed.email && !profile.email) profile.email = parsed.email;
-    }
-  } catch { /* ignore */ }
 
   // Also migrate old notification prefs
   try {
@@ -318,10 +310,6 @@ export const SettingsDB = {
     const current = this.getProfile();
     const updated = { ...current, ...updates };
     write(KEYS.profile, updated);
-    // Also sync back to eco_user for backward compatibility
-    if (typeof window !== "undefined") {
-      localStorage.setItem("eco_user", JSON.stringify({ name: updated.name, email: updated.email }));
-    }
     return updated;
   },
 
@@ -462,9 +450,7 @@ export const SettingsDB = {
     Object.values(KEYS).forEach((key) => {
       if (typeof window !== "undefined") localStorage.removeItem(key);
     });
-    // Also clear legacy keys
     if (typeof window !== "undefined") {
-      localStorage.removeItem("eco_user");
       localStorage.removeItem("eco_language");
       localStorage.removeItem("eco_notifications");
       localStorage.removeItem("greenstep-theme");

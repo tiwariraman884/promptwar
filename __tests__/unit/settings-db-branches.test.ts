@@ -21,33 +21,13 @@ describe('SettingsDB branch coverage', () => {
     Object.keys(store).forEach(k => delete store[k]);
   });
 
-  // ── Migration branches (migrateFromLegacy) ──
+  // ── Migration branches ──
   describe('legacy migration', () => {
-    it('migrates name/email from legacy eco_user key', () => {
-      store['eco_user'] = JSON.stringify({ name: 'Legacy User', email: 'legacy@test.com' });
-      const profile = SettingsDB.getProfile();
-      expect(profile.name).toBe('Legacy User');
-      expect(profile.email).toBe('legacy@test.com');
-    });
-
-    it('does NOT override existing profile name from legacy', () => {
-      store['eco_settings_profile'] = JSON.stringify({ name: 'Existing', email: 'existing@test.com' });
-      store['eco_user'] = JSON.stringify({ name: 'Legacy', email: 'legacy@test.com' });
-      const profile = SettingsDB.getProfile();
-      expect(profile.name).toBe('Existing');
-    });
-
     it('migrates language from legacy eco_language key', () => {
       store['eco_language'] = JSON.stringify({ code: 'hi', unitSystem: 'metric', currency: 'INR', dateFormat: 'DD/MM/YYYY' });
       SettingsDB.getProfile(); // triggers migration
       const lang = SettingsDB.getLanguage();
       expect(lang.code).toBe('hi');
-    });
-
-    it('handles corrupt legacy JSON gracefully', () => {
-      store['eco_user'] = 'not-valid-json{{{';
-      const profile = SettingsDB.getProfile();
-      expect(profile).toBeTruthy(); // should not throw
     });
 
     it('handles corrupt eco_language JSON', () => {

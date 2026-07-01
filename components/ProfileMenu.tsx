@@ -18,6 +18,7 @@ import {
 interface EcoUser {
   name: string;
   email: string;
+  avatar?: string;
 }
 
 function getInitials(name: string) {
@@ -35,16 +36,34 @@ export default function ProfileMenu() {
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  // Load user from localStorage on mount and on open (so it stays fresh)
+  // Load the active Supabase session on mount and on open (so it stays fresh)
   useEffect(() => {
-    const stored = localStorage.getItem("eco_user");
-    if (stored) {
-      try {
-        setUser(JSON.parse(stored));
-      } catch {
+    let active = true;
+
+    async function loadUser() {
+      if (!isSupabaseConfigured()) {
         setUser(null);
+        return;
       }
+
+      const supabase = createClient();
+      const { data: { user: sessionUser } } = await supabase.auth.getUser();
+      if (!active) return;
+
+      if (!sessionUser) {
+        setUser(null);
+        return;
+      }
+
+      setUser({
+        name: sessionUser.user_metadata?.full_name || sessionUser.user_metadata?.display_name || sessionUser.email || "User",
+        email: sessionUser.email || "",
+        avatar: sessionUser.user_metadata?.avatar_url,
+      });
     }
+
+    loadUser();
+    return () => { active = false; };
   }, [open]);
 
   // Close on outside click or Escape
@@ -79,7 +98,6 @@ export default function ProfileMenu() {
       }
     }
 
-    localStorage.removeItem("eco_user");
     setUser(null);
     setOpen(false);
     router.replace("/auth");

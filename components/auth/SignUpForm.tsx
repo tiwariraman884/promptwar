@@ -80,10 +80,8 @@ export default function SignUpForm() {
         router.push(`/auth/verify?email=${encodeURIComponent(email)}&next=${encodeURIComponent(nextUrl)}` as Route);
         return;
       } else {
-        // Demo mode — localStorage mock (no Supabase configured)
-        localStorage.setItem("eco_user", JSON.stringify({ name, email, country, role }));
-        // AUTH GATE (RULE 2): Redirect to the intended destination after successful sign-up
-        router.push(nextUrl as Route);
+        setError("Supabase is not configured. This app now requires Supabase Auth.");
+        setLoading(false);
       }
     } catch {
       setError("An unexpected error occurred. Please try again.");

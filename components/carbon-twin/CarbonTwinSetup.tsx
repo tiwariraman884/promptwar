@@ -208,14 +208,7 @@ export function CarbonTwinSetup({ existingProfile, userId, onComplete }: CarbonT
           }, { onConflict: "user_id,year_month" }),
         ]);
       } else {
-        localStorage.setItem("carbon_twin_profile", JSON.stringify(profile));
-        localStorage.setItem("user_footprint", JSON.stringify({
-          userId,
-          totalKg: breakdown.totalMonthlyCO2Kg,
-          healthScore: healthScore.overallScore
-        }));
-        // Set eco_user so the auth guard doesn't bounce them
-        localStorage.setItem("eco_user", JSON.stringify({ id: userId, name: "Eco User" }));
+        throw new Error("Supabase is not configured. Carbon Twin setup now requires Supabase.");
       }
       onComplete();
       router.push("/dashboard");

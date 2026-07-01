@@ -52,14 +52,6 @@ describe('SettingsDB', () => {
       expect(updated.bio).toBe('Hello');
       expect(mockLocalStorage.setItem).toHaveBeenCalled();
     });
-
-    it('syncs to legacy eco_user key', () => {
-      SettingsDB.updateProfile({ name: 'Legacy', email: 'legacy@test.com' });
-      const legacyCall = mockLocalStorage.setItem.mock.calls.find(
-        (c: string[]) => c[0] === 'eco_user'
-      );
-      expect(legacyCall).toBeTruthy();
-    });
   });
 
   // ── Language ──
@@ -231,7 +223,6 @@ describe('SettingsDB', () => {
     it('clears all storage keys', () => {
       store['eco_settings_profile'] = '{}';
       store['eco_settings_language'] = '{}';
-      store['eco_user'] = '{}';
       SettingsDB.deleteAccount();
       expect(mockLocalStorage.removeItem).toHaveBeenCalled();
     });

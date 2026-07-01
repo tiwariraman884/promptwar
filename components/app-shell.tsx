@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useCallback, useMemo, startTransition } fr
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Logo from "@/components/Logo";
@@ -368,8 +369,31 @@ export function AppShell({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!mounted) return;
     if (isAuth) return;
-    const user = localStorage.getItem("eco_user");
-    if (!user) { router.replace("/auth"); }
+    if (!isSupabaseConfigured()) {
+      router.replace("/auth");
+      return;
+    }
+
+    const supabase = createClient();
+    let active = true;
+
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!active) return;
+      if (!user) {
+        router.replace("/auth");
+      }
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session && !isAuth) {
+        router.replace("/auth");
+      }
+    });
+
+    return () => {
+      active = false;
+      listener.subscription.unsubscribe();
+    };
   }, [mounted, pathname, isAuth, router]);
 
   const safeProfile = mounted ? profile : { name: "", email: "", avatar: "" };
@@ -377,14 +401,13 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   async function handleSignOut() {
     try {
-      const { isSupabaseConfigured, createClient } = await import("@/lib/supabase/client");
       if (isSupabaseConfigured()) {
         const supabase = createClient();
         await supabase.auth.signOut();
       }
-    } catch { /* continue with localStorage clear */ }
-    localStorage.removeItem("eco_user");
-    localStorage.removeItem("eco_settings_profile");
+    } catch {
+      /* continue with redirect */
+    }
     router.replace("/auth");
   }
 

@@ -32,37 +32,35 @@ export default function SocialButtons({ mode }: SocialButtonsProps) {
     setError("");
     setLoading(true);
 
-    if (isSupabaseConfigured()) {
-      // Real Supabase OAuth
-      const supabase = createClient();
+    if (!isSupabaseConfigured()) {
+      setError("Supabase is not configured. This app now requires Supabase Auth.");
+      setLoading(false);
+      return;
+    }
 
-      try {
-        const { data, error: authError } = await supabase.auth.signInWithOAuth({
-          provider: "github",
-          options: {
-            redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextUrl)}`,
-          },
-        });
+    // Real Supabase OAuth
+    const supabase = createClient();
 
-        if (authError) {
-          throw authError;
-        }
+    try {
+      const { data, error: authError } = await supabase.auth.signInWithOAuth({
+        provider: "github",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextUrl)}`,
+        },
+      });
 
-        if (!data.url) {
-          throw new Error("OAuth provider did not return a redirect URL.");
-        }
-
-        window.location.assign(data.url);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "OAuth sign-in failed.");
-        setLoading(false);
+      if (authError) {
+        throw authError;
       }
-    } else {
-      // Demo mode — localStorage mock
-      const name = "GitHub User";
-      const email = "user@github.com";
-      localStorage.setItem("eco_user", JSON.stringify({ name, email, provider: "github" }));
-      router.push(nextUrl as Route);
+
+      if (!data.url) {
+        throw new Error("OAuth provider did not return a redirect URL.");
+      }
+
+      window.location.assign(data.url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "OAuth sign-in failed.");
+      setLoading(false);
     }
   }
 

@@ -34,13 +34,7 @@ export default function GoogleOAuthButton() {
     setLoading(true);
 
     try {
-      if (!isSupabaseConfigured()) {
-        const name = "Google User";
-        const email = "user@google.com";
-        localStorage.setItem("eco_user", JSON.stringify({ name, email, provider: "google" }));
-        router.push(nextUrl as Route);
-        return;
-      }
+      if (!isSupabaseConfigured()) throw new Error("Supabase is not configured. This app now requires Supabase Auth.");
 
       const supabase = createClient();
       const { data, error: authError } = await supabase.auth.signInWithOAuth({
