@@ -20,7 +20,7 @@ interface SocialButtonsProps {
 
 export default function SocialButtons({ mode }: SocialButtonsProps) {
   const router = useRouter();
-  const [activeProvider, setActiveProvider] = useState<"github" | null>(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   // AUTH GATE (RULE 2): Read the ?next= param so social sign-in also
   // redirects users to the page they originally tried to visit.
@@ -28,17 +28,17 @@ export default function SocialButtons({ mode }: SocialButtonsProps) {
   const nextUrl = searchParams.get("next") || "/dashboard";
   const label = mode === "signin" ? "Sign in with" : "Continue with";
 
-  async function handleSocialLogin(provider: "github") {
+  async function handleGitHubLogin() {
     setError("");
+    setLoading(true);
 
     if (isSupabaseConfigured()) {
       // Real Supabase OAuth
       const supabase = createClient();
-      setActiveProvider("github");
 
       try {
         const { data, error: authError } = await supabase.auth.signInWithOAuth({
-          provider,
+          provider: "github",
           options: {
             redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextUrl)}`,
           },
@@ -55,18 +55,16 @@ export default function SocialButtons({ mode }: SocialButtonsProps) {
         window.location.assign(data.url);
       } catch (err) {
         setError(err instanceof Error ? err.message : "OAuth sign-in failed.");
-        setActiveProvider(null);
+        setLoading(false);
       }
     } else {
       // Demo mode — localStorage mock
       const name = "GitHub User";
       const email = "user@github.com";
-      localStorage.setItem("eco_user", JSON.stringify({ name, email, provider }));
+      localStorage.setItem("eco_user", JSON.stringify({ name, email, provider: "github" }));
       router.push(nextUrl as Route);
     }
   }
-
-  const buttons = [{ name: "GitHub", icon: <GithubIcon />, provider: "github" as const }];
 
   return (
     <div className="space-y-3">
@@ -87,18 +85,17 @@ export default function SocialButtons({ mode }: SocialButtonsProps) {
 
       {/* Buttons */}
       <div className="grid grid-cols-1 gap-2">
-        {buttons.map((b) => (
-          <button
-            key={b.name}
-            type="button"
-            onClick={() => handleSocialLogin(b.provider)}
-            disabled={activeProvider === b.provider}
-            className="group flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.02] px-3 py-3 text-[12px] font-medium text-white/60 transition-all duration-300 hover:bg-white/[0.06] hover:border-white/15 hover:text-white/90 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/20 focus:outline-none focus:ring-2 focus:ring-[#00E676]/30 active:translate-y-0"
-          >
-            <span className="transition-transform duration-200 group-hover:scale-110">{b.icon}</span>
-            {activeProvider === b.provider ? "Connecting…" : `${label} ${b.name}`}
-          </button>
-        ))}
+        <button
+          type="button"
+          onClick={handleGitHubLogin}
+          disabled={loading}
+          className="group flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.02] px-3 py-3 text-[12px] font-medium text-white/60 transition-all duration-300 hover:bg-white/[0.06] hover:border-white/15 hover:text-white/90 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/20 focus:outline-none focus:ring-2 focus:ring-[#00E676]/30 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <span className="transition-transform duration-200 group-hover:scale-110">
+            <GithubIcon />
+          </span>
+          {loading ? "Connecting…" : `${label} GitHub`}
+        </button>
       </div>
     </div>
   );
