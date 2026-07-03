@@ -18,6 +18,9 @@ const PUBLIC_PATHS = [
   "/auth",
   "/auth/callback",
   "/auth/forgot",
+  "/logo.webp",
+  "/logo.png",
+  "/offline.html",
 ];
 
 const ADMIN_PATHS = ["/admin"];
@@ -146,6 +149,6 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|manifest.json|icons|data|sw.js|workbox-.*).*)",
+    "/((?!_next/static|_next/image|favicon.ico|manifest.json|icons|images|data|sw.js|workbox-.*|.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico|woff2?|ttf|eot|css|js|map)$).*)",
   ],
 };
