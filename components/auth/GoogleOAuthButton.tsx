@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import type { Route } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
@@ -25,7 +24,6 @@ function getAuthErrorMessage(error: unknown) {
 export default function GoogleOAuthButton() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();
   const searchParams = useSearchParams();
   const nextUrl = searchParams.get("next") || "/dashboard";
 

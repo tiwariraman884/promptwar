@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import type { Route } from "next";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/client";
 import GoogleOAuthButton from "./GoogleOAuthButton";
 
@@ -19,7 +18,6 @@ interface SocialButtonsProps {
 }
 
 export default function SocialButtons({ mode }: SocialButtonsProps) {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   // AUTH GATE (RULE 2): Read the ?next= param so social sign-in also
