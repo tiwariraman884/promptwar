@@ -131,9 +131,9 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     notifications,
     appearance,
     privacy,
-    sessions,
-    notificationItems,
-    unreadCount: notificationItems.filter((n) => !n.read).length,
+    sessions: Array.isArray(sessions) ? sessions : [],
+    notificationItems: Array.isArray(notificationItems) ? notificationItems : [],
+    unreadCount: (Array.isArray(notificationItems) ? notificationItems : []).filter((n) => !n?.read).length,
     loaded,
 
     updateProfile: (updates) => {

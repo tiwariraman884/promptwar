@@ -136,7 +136,12 @@ function read<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
   try {
     const raw = localStorage.getItem(key);
-    return raw ? { ...fallback, ...JSON.parse(raw) } : fallback;
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(fallback)) {
+      return Array.isArray(parsed) ? (parsed as unknown as T) : fallback;
+    }
+    return { ...fallback, ...parsed };
   } catch {
     return fallback;
   }
