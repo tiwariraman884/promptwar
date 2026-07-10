@@ -187,7 +187,10 @@ export const SettingsDB = {
     write(KEYS.privacy, updated);
     return updated;
   },
-  getSessions(): SessionInfo[] { return read(KEYS.sessions, seedSessions()); },
+  getSessions(): SessionInfo[] {
+    const data = read(KEYS.sessions, seedSessions());
+    return Array.isArray(data) ? data : [];
+  },
   removeSession(sessionId: string): SessionInfo[] {
     const updated = this.getSessions().filter((s) => s.id !== sessionId);
     write(KEYS.sessions, updated);
@@ -198,7 +201,10 @@ export const SettingsDB = {
     write(KEYS.sessions, updated);
     return updated;
   },
-  getNotifications(): NotificationItem[] { return read(KEYS.notificationItems, seedNotifications()); },
+  getNotifications(): NotificationItem[] {
+    const data = read(KEYS.notificationItems, seedNotifications());
+    return Array.isArray(data) ? data : [];
+  },
   getUnreadCount(): number { return this.getNotifications().filter((n) => !n.read).length; },
   markRead(notificationId: string): NotificationItem[] {
     const updated = this.getNotifications().map((n) => (n.id === notificationId ? { ...n, read: true } : n));
