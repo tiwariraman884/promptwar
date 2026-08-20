@@ -135,7 +135,19 @@ function seedSessions(): SessionInfo[] {
 function read<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
   try {
-    const raw = localStorage.getItem(key);
+    let raw = localStorage.getItem(key);
+    if (!raw && key === KEYS.language) {
+      const legacy = localStorage.getItem("eco_language");
+      if (legacy) {
+        try {
+          const parsedLegacy = JSON.parse(legacy);
+          write(KEYS.language, parsedLegacy);
+          raw = legacy;
+        } catch {
+          // ignore corrupted legacy key
+        }
+      }
+    }
     if (!raw) return fallback;
     const parsed = JSON.parse(raw);
     if (Array.isArray(fallback)) {

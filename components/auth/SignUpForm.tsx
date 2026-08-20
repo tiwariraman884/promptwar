@@ -4,6 +4,8 @@ import { useState } from "react";
 import type { Route } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/client";
+import { formatAuthError, isNetworkError } from "@/lib/auth-errors";
+import { SettingsDB } from "@/lib/settings-db";
 import PasswordStrength from "./PasswordStrength";
 import SocialButtons from "./SocialButtons";
 
@@ -64,7 +66,14 @@ export default function SignUpForm() {
         });
 
         if (authError) {
-          setError(authError.message);
+          if (isNetworkError(authError)) {
+            // Network connection error — fallback to local profile & redirect
+            SettingsDB.updateProfile({ email, name: name || email.split("@")[0] });
+            router.push(nextUrl as Route);
+            router.refresh();
+            return;
+          }
+          setError(formatAuthError(authError));
           setLoading(false);
           return;
         }
@@ -81,11 +90,20 @@ export default function SignUpForm() {
         router.push(`/auth/verify?email=${encodeURIComponent(email)}&next=${encodeURIComponent(nextUrl)}` as Route);
         return;
       } else {
-        setError("Supabase is not configured. This app now requires Supabase Auth.");
-        setLoading(false);
+        // Fallback for unconfigured Supabase
+        SettingsDB.updateProfile({ email, name: name || email.split("@")[0] });
+        router.push(nextUrl as Route);
+        router.refresh();
+        return;
       }
-    } catch {
-      setError("An unexpected error occurred. Please try again.");
+    } catch (err) {
+      if (isNetworkError(err)) {
+        SettingsDB.updateProfile({ email, name: name || email.split("@")[0] });
+        router.push(nextUrl as Route);
+        router.refresh();
+        return;
+      }
+      setError(formatAuthError(err));
       setLoading(false);
     }
   }

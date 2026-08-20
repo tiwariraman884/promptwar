@@ -1,4 +1,4 @@
-﻿import type { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 export const dynamic = "force-dynamic"; // reads request.headers
 import { apiError, apiSuccess } from "@/lib/api";
 import { demoDashboard } from "@/lib/demo-data";
@@ -56,6 +56,7 @@ export async function GET(_request: NextRequest) {
       ]);
 
     if (entriesResult.error) {
+      console.error("Supabase API error fetching entries:", entriesResult.error);
       return apiError(entriesResult.error.message, 500);
     }
 
@@ -131,6 +132,7 @@ export async function GET(_request: NextRequest) {
     if (error instanceof AuthRequiredError) {
       return apiError("Authentication required", 401);
     }
+    console.error("Dashboard API global error:", error);
     return apiError("Unable to load dashboard", 500);
   }
 }

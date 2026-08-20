@@ -30,6 +30,7 @@
     "@supabase/supabase-js": "^2.46.1",
     "@types/lodash.debounce": "^4.0.9",
     "@upstash/redis": "^1.38.0",
+    "barcode-detector": "^3.2.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^11.18.2",

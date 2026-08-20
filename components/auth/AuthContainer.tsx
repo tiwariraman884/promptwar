@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import { formatAuthError } from "@/lib/auth-errors";
 
 type Tab = "signin" | "signup";
 
@@ -38,7 +39,7 @@ export default function AuthContainer({ initialError = "", initialMessage = "" }
               : "border-[#00E676]/30 bg-[#00E676]/10 text-[#00E676]"
           }`}
         >
-          {initialError || initialMessage}
+          {initialError ? formatAuthError(initialError) : initialMessage}
         </div>
       )}
 

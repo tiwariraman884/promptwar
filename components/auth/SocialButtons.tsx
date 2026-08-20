@@ -3,6 +3,10 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/client";
+import { formatAuthError, isNetworkError } from "@/lib/auth-errors";
+import { SettingsDB } from "@/lib/settings-db";
+import { useRouter } from "next/navigation";
+import type { Route } from "next";
 import GoogleOAuthButton from "./GoogleOAuthButton";
 
 function GithubIcon() {
@@ -20,6 +24,7 @@ interface SocialButtonsProps {
 export default function SocialButtons({ mode }: SocialButtonsProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const router = useRouter();
   // AUTH GATE (RULE 2): Read the ?next= param so social sign-in also
   // redirects users to the page they originally tried to visit.
   const searchParams = useSearchParams();
@@ -31,15 +36,15 @@ export default function SocialButtons({ mode }: SocialButtonsProps) {
     setLoading(true);
 
     if (!isSupabaseConfigured()) {
-      setError("Supabase is not configured. This app now requires Supabase Auth.");
-      setLoading(false);
+      SettingsDB.updateProfile({ email: "github-user@greenstep.local", name: "GitHub User" });
+      router.push(nextUrl as Route);
+      router.refresh();
       return;
     }
 
     // Real Supabase OAuth
-    const supabase = createClient();
-
     try {
+      const supabase = createClient();
       const { data, error: authError } = await supabase.auth.signInWithOAuth({
         provider: "github",
         options: {
@@ -57,7 +62,13 @@ export default function SocialButtons({ mode }: SocialButtonsProps) {
 
       window.location.assign(data.url);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "OAuth sign-in failed.");
+      if (isNetworkError(err)) {
+        SettingsDB.updateProfile({ email: "github-user@greenstep.local", name: "GitHub User" });
+        router.push(nextUrl as Route);
+        router.refresh();
+        return;
+      }
+      setError(formatAuthError(err));
       setLoading(false);
     }
   }

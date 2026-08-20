@@ -138,16 +138,15 @@ export default function GreenMapPage() {
         };
 
         try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${loc.lat}&lon=${loc.lng}&format=json&addressdetails=1`,
-            { headers: { "Accept-Language": "en" } }
-          );
-          const data = await res.json();
-          if (data.display_name) {
-            loc.address = data.display_name;
+          const res = await fetch(`/api/geocode/reverse?lat=${loc.lat}&lng=${loc.lng}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success && data.data?.address) {
+              loc.address = data.data.address;
+            }
           }
         } catch {
-          // ignore geocode error
+          // ignore geocode network errors
         }
 
         setUserLocation(loc);

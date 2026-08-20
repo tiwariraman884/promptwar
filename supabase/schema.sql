@@ -97,54 +97,75 @@ alter table challenges enable row level security;
 alter table user_challenges enable row level security;
 alter table completed_tips enable row level security;
 
+drop policy if exists "profiles_select_own" on profiles;
 create policy "profiles_select_own" on profiles
   for select using (auth.uid() = id);
+drop policy if exists "profiles_insert_own" on profiles;
 create policy "profiles_insert_own" on profiles
   for insert with check (auth.uid() = id);
+drop policy if exists "profiles_update_own" on profiles;
 create policy "profiles_update_own" on profiles
   for update using (auth.uid() = id) with check (auth.uid() = id);
 
+drop policy if exists "user_settings_select_own" on user_settings;
 create policy "user_settings_select_own" on user_settings
   for select using (auth.uid() = user_id);
+drop policy if exists "user_settings_insert_own" on user_settings;
 create policy "user_settings_insert_own" on user_settings
   for insert with check (auth.uid() = user_id);
+drop policy if exists "user_settings_update_own" on user_settings;
 create policy "user_settings_update_own" on user_settings
   for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
+drop policy if exists "entries_select_own" on emission_entries;
 create policy "entries_select_own" on emission_entries
   for select using (auth.uid() = user_id);
+drop policy if exists "entries_insert_own" on emission_entries;
 create policy "entries_insert_own" on emission_entries
   for insert with check (auth.uid() = user_id);
+drop policy if exists "entries_update_own" on emission_entries;
 create policy "entries_update_own" on emission_entries
   for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+drop policy if exists "entries_delete_own" on emission_entries;
 create policy "entries_delete_own" on emission_entries
   for delete using (auth.uid() = user_id);
 
+drop policy if exists "badges_select_own" on user_badges;
 create policy "badges_select_own" on user_badges
   for select using (auth.uid() = user_id);
+drop policy if exists "badges_insert_own" on user_badges;
 create policy "badges_insert_own" on user_badges
   for insert with check (auth.uid() = user_id);
 
+drop policy if exists "streaks_select_own" on user_streaks;
 create policy "streaks_select_own" on user_streaks
   for select using (auth.uid() = user_id);
+drop policy if exists "streaks_upsert_own" on user_streaks;
 create policy "streaks_upsert_own" on user_streaks
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
+drop policy if exists "coins_select_own" on eco_coins;
 create policy "coins_select_own" on eco_coins
   for select using (auth.uid() = user_id);
+drop policy if exists "coins_upsert_own" on eco_coins;
 create policy "coins_upsert_own" on eco_coins
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
+drop policy if exists "challenges_public_read" on challenges;
 create policy "challenges_public_read" on challenges
   for select using (true);
 
+drop policy if exists "user_challenges_select_own" on user_challenges;
 create policy "user_challenges_select_own" on user_challenges
   for select using (auth.uid() = user_id);
+drop policy if exists "user_challenges_upsert_own" on user_challenges;
 create policy "user_challenges_upsert_own" on user_challenges
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
+drop policy if exists "completed_tips_select_own" on completed_tips;
 create policy "completed_tips_select_own" on completed_tips
   for select using (auth.uid() = user_id);
+drop policy if exists "completed_tips_insert_own" on completed_tips;
 create policy "completed_tips_insert_own" on completed_tips
   for insert with check (auth.uid() = user_id);
 

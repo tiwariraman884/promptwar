@@ -17,6 +17,7 @@ import {
   Wifi,
   Zap
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { QuantityStepper } from "@/components/calculator/quantity-stepper";
 import { MotionPage } from "@/components/motion-page";
 import { Badge } from "@/components/ui/badge";
@@ -864,8 +865,16 @@ export default function CalculatorPage() {
         </Card>
 
         {/* ─── Fixed bottom results bar ─── */}
-        <div className="fixed inset-x-0 bottom-20 z-40 mx-auto max-w-2xl px-4 md:bottom-6" aria-live="polite" role="status">
-          <div className="rounded-3xl border-2 border-[#D1FAE5]/60 dark:border-white/10 bg-white/95 dark:bg-[#0B1815]/95 p-5 shadow-2xl backdrop-blur-xl">
+        <div className="fixed inset-0 z-40 pointer-events-none overflow-hidden" aria-live="polite" role="status">
+          <motion.div 
+            drag
+            dragConstraints={{ top: -800, bottom: 0, left: -400, right: 400 }}
+            dragMomentum={false}
+            dragElastic={0.1}
+            style={{ x: 0, y: 0 }}
+            className="absolute bottom-20 left-0 right-0 mx-auto w-full max-w-2xl px-4 md:bottom-6 cursor-grab active:cursor-grabbing pointer-events-auto" 
+          >
+            <div className="rounded-3xl border-2 border-[#D1FAE5]/60 dark:border-white/10 bg-white/95 dark:bg-[#0B1815]/95 p-5 shadow-2xl backdrop-blur-xl">
             {/* Impact level badge */}
             <div className="mb-3 flex items-center justify-between">
               <span className={`inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r ${impactColors[impactLevel]} px-3 py-1 text-xs font-bold text-white shadow-sm`}>
@@ -990,7 +999,8 @@ export default function CalculatorPage() {
                 {savedMessage}
               </p>
             )}
-          </div>
+            </div>
+          </motion.div>
         </div>
       </section>
     </MotionPage>

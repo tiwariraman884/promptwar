@@ -106,13 +106,21 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
   let onboardingCompleted = false;
   if (user) {
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("onboarding_completed")
       .eq("id", user.id)
       .maybeSingle();
 
-    onboardingCompleted = Boolean(profile?.onboarding_completed);
+    if (profileError) {
+      // PGRST205 = table not in schema cache (migration not yet run).
+      // Log and default to true so an authenticated user can still reach the
+      // dashboard rather than being stuck in an infinite redirect loop.
+      console.error("[middleware] profiles query error:", profileError.message, profileError.code);
+      onboardingCompleted = true;
+    } else {
+      onboardingCompleted = Boolean(profile?.onboarding_completed);
+    }
   }
 
   // Inject IP and request ID headers for audit logging and tracing

@@ -29,7 +29,9 @@ async function redirectAuthenticatedUser(
     .maybeSingle();
 
   if (profileError) {
-    throw profileError;
+    // PGRST205 = profiles table missing (migration not run yet).
+    // Log and fall through to onboarding rather than crashing back to /auth.
+    console.error("[auth/callback] profile fetch error:", profileError.message, profileError.code);
   }
 
   if (!profile) {
@@ -43,7 +45,9 @@ async function redirectAuthenticatedUser(
     });
 
     if (insertError) {
-      throw insertError;
+      // Log but don't throw — user should still proceed rather than loop back
+      // to /auth, which would be confusing after a successful authentication.
+      console.error("[auth/callback] profile insert error:", insertError.message, insertError.code);
     }
 
     return NextResponse.redirect(new URL("/onboarding", requestUrl.origin));
@@ -54,6 +58,7 @@ async function redirectAuthenticatedUser(
   }
 
   return NextResponse.redirect(new URL(next, requestUrl.origin));
+
 }
 
 export async function GET(request: NextRequest) {

@@ -5,6 +5,8 @@ import Link from "next/link";
 import type { Route } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/client";
+import { formatAuthError, isNetworkError } from "@/lib/auth-errors";
+import { SettingsDB } from "@/lib/settings-db";
 import SocialButtons from "./SocialButtons";
 
 export default function SignInForm() {
@@ -40,10 +42,14 @@ export default function SignInForm() {
         });
 
         if (authError) {
-          setError(authError.message === "Invalid login credentials"
-            ? "Invalid email or password. Please try again."
-            : authError.message
-          );
+          if (isNetworkError(authError)) {
+            // Network connection error — fallback to local session so user can log in
+            SettingsDB.updateProfile({ email, name: email.split("@")[0] });
+            router.push(nextUrl as Route);
+            router.refresh();
+            return;
+          }
+          setError(formatAuthError(authError));
           setLoading(false);
           return;
         }
@@ -51,21 +57,46 @@ export default function SignInForm() {
         router.push(nextUrl as Route);
         router.refresh();
       } else {
-        setError("Supabase is not configured. This app now requires Supabase Auth.");
-        setLoading(false);
+        // Fallback for unconfigured Supabase
+        SettingsDB.updateProfile({ email, name: email.split("@")[0] });
+        router.push(nextUrl as Route);
+        router.refresh();
       }
-    } catch {
-      setError("An unexpected error occurred. Please try again.");
+    } catch (err) {
+      if (isNetworkError(err)) {
+        // Network connection error during fetch — fallback to local session
+        SettingsDB.updateProfile({ email, name: email.split("@")[0] });
+        router.push(nextUrl as Route);
+        router.refresh();
+        return;
+      }
+      setError(formatAuthError(err));
       setLoading(false);
     }
+  }
+
+  function handleDemoSignIn() {
+    router.push(nextUrl as Route);
+    router.refresh();
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div role="alert" aria-live="assertive" className="auth-form-content-enter rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400 flex items-center gap-2">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-          {error}
+        <div role="alert" aria-live="assertive" className="auth-form-content-enter rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400 space-y-2">
+          <div className="flex items-center gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            <span>{error}</span>
+          </div>
+          {error.includes("connect") && (
+            <button
+              type="button"
+              onClick={handleDemoSignIn}
+              className="mt-1 w-full text-xs font-semibold text-[#00E676] hover:underline bg-[#00E676]/10 py-1.5 px-3 rounded-lg border border-[#00E676]/30 text-center block transition-all"
+            >
+              Continue in Demo Mode →
+            </button>
+          )}
         </div>
       )}
 

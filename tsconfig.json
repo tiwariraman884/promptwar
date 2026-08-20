@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "downlevelIteration": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "es2020",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": false,
     "skipLibCheck": true,
     "strict": true,
+    "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -19,13 +23,25 @@
         "name": "next"
       }
     ],
-    "types": ["vitest/globals"],
-    "baseUrl": ".",
+    "types": [
+      "vitest/globals"
+    ],
     "paths": {
-      "@/*": ["./*"],
-      "lucide-react": ["./components/lucide-react"]
+      "@/*": [
+        "./*"
+      ],
+      "lucide-react": [
+        "./components/lucide-react"
+      ]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
