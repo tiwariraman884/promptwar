@@ -113,7 +113,7 @@ export default function RootLayout({
         {/* Theme detection: localStorage > system preference > dark default */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('greenstep-theme');var d=t==='light'?false:t==='dark'?true:window.matchMedia('(prefers-color-scheme:dark)').matches!==false;document.documentElement.classList.toggle('dark',d);var l=JSON.parse(localStorage.getItem('eco_language')||'{}');if(l.code){document.documentElement.lang=l.code}}catch(e){document.documentElement.classList.add('dark')}})();`,
+            __html: `(function(){try{var d=window.matchMedia('(prefers-color-scheme:dark)').matches!==false;document.documentElement.classList.toggle('dark',d);}catch(e){document.documentElement.classList.add('dark')}})();`,
           }}
         />
       </head>

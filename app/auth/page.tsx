@@ -2,6 +2,13 @@ import dynamic from "next/dynamic";
 import AuthContainer from "@/components/auth/AuthContainer";
 import Logo from "@/components/Logo";
 
+interface AuthPageProps {
+  searchParams?: {
+    error?: string | string[];
+    message?: string | string[];
+  };
+}
+
 // Load AuthHero dynamically with no SSR. It contains canvas/testimonial slider
 // and is hidden on mobile, so we avoid downloading and running this JS on mobile devices.
 const AuthHero = dynamic(() => import("@/components/auth/AuthHero"), {
@@ -9,7 +16,14 @@ const AuthHero = dynamic(() => import("@/components/auth/AuthHero"), {
   loading: () => <div className="hidden lg:block animate-pulse bg-gradient-to-br from-[#04100a] to-[#0a2418] h-full" />,
 });
 
-export default function AuthPage() {
+function toSingleValue(value?: string | string[]) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export default function AuthPage({ searchParams }: AuthPageProps) {
+  const error = toSingleValue(searchParams?.error);
+  const message = toSingleValue(searchParams?.message);
+
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-[#04100a]">
       {/* Left — Hero (hidden on mobile) */}
@@ -30,7 +44,7 @@ export default function AuthPage() {
           </div>
 
           {/* Interactive forms wrapper */}
-          <AuthContainer />
+          <AuthContainer initialError={error} initialMessage={message} />
 
           {/* Bottom text */}
           <p className="auth-form-entrance mt-6 text-center text-xs text-white/40 flex items-center justify-center gap-1.5" style={{ animationDelay: "0.3s" }}>

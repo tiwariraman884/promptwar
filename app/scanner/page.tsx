@@ -149,6 +149,7 @@ export default function ScannerPage() {
   const scanningRef = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const handleScanRef = useRef<(q: string, t: "name" | "barcode" | "qr") => void>();
+  const polyfillDetectorRef = useRef<any>(null);
 
   // Load history
   useEffect(() => {
@@ -219,10 +220,23 @@ export default function ScannerPage() {
 
   /* ─── Camera ─── */
 
-  // Check if BarcodeDetector is supported (Chrome, Edge, Android)
+  // Force load the polyfill for all environments to bypass broken/unsupported native OS implementations (like Chrome on Windows)
   useEffect(() => {
-    if (typeof window !== "undefined" && !("BarcodeDetector" in window)) {
+    if (typeof window !== "undefined") {
       setBarcodeSupported(false);
+      import("barcode-detector")
+        .then(({ BarcodeDetector }) => {
+          polyfillDetectorRef.current = BarcodeDetector;
+          setBarcodeSupported(true);
+        })
+        .catch((err) => {
+          console.error("Failed to load BarcodeDetector polyfill:", err);
+          if ("BarcodeDetector" in window) {
+            setBarcodeSupported(true);
+          } else {
+            setBarcodeSupported(false);
+          }
+        });
     }
   }, []);
 
@@ -231,14 +245,42 @@ export default function ScannerPage() {
   // WHAT WAS BROKEN: The original code opened the camera and displayed the
   // video feed, but NEVER attempted to read/decode any barcodes from it.
   // The camera was purely visual — no decoding logic existed.
-  const startScanningLoop = useCallback(() => {
-    if (!barcodeSupported || !("BarcodeDetector" in window)) return;
+  const stopCamera = useCallback(() => {
+    scanningRef.current = false; // Stop the scanning loop
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+    }
+    setCameraActive(false);
+  }, []);
 
-    const detector = new (window as any).BarcodeDetector({
-      formats: ["ean_13", "ean_8", "upc_a", "upc_e", "qr_code", "code_128", "code_39"],
-    });
+  // Barcode scanning loop managed reactively by useEffect to prevent race conditions
+  useEffect(() => {
+    if (!cameraActive || !barcodeSupported) {
+      scanningRef.current = false;
+      return;
+    }
+
+    const DetectorClass = polyfillDetectorRef.current || (window as any).BarcodeDetector;
+    if (!DetectorClass) {
+      console.warn("BarcodeDetector is not available yet.");
+      return;
+    }
+
+    let detector: any;
+    try {
+      detector = new DetectorClass({
+        formats: ["ean_13", "ean_8", "upc_a", "upc_e", "qr_code", "code_128", "code_39"],
+      });
+    } catch (err: any) {
+      console.error("Failed to initialize BarcodeDetector:", err);
+      setCameraError(`Failed to initialize scanner: ${err.message || err}`);
+      return;
+    }
 
     scanningRef.current = true;
+    let timeoutId: any;
+    let frameId: number;
 
     const scan = async () => {
       if (!scanningRef.current || !videoRef.current || !canvasRef.current) return;
@@ -246,7 +288,6 @@ export default function ScannerPage() {
       const video = videoRef.current;
       const canvas = canvasRef.current;
 
-      // Only scan when video has actual frames
       if (video.readyState >= video.HAVE_ENOUGH_DATA && video.videoWidth > 0) {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
@@ -258,33 +299,42 @@ export default function ScannerPage() {
             if (barcodes.length > 0) {
               const code = barcodes[0].rawValue;
               if (code) {
-                // Stop scanning, show detected code, and trigger lookup
                 scanningRef.current = false;
                 setDetectedCode(code);
                 setBarcodeInput(code);
-                // Auto-trigger the scan after a brief visual flash
-                setTimeout(() => {
+                timeoutId = setTimeout(() => {
                   handleScanRef.current?.(code, "barcode");
                   stopCamera();
                 }, 600);
-                return; // Don't continue the loop
+                return;
               }
             }
-          } catch {
-            // Detection can throw on invalid frames — just continue
+          } catch (err: any) {
+            console.warn("Barcode detection warning/error:", err);
+            if (err && err.message && (err.message.includes("fetch") || err.message.includes("Wasm") || err.message.includes("compile") || err.message.includes("Worker"))) {
+              setCameraError(`Scanning engine error: ${err.message}. Check browser console for details.`);
+              scanningRef.current = false;
+            }
           }
         }
       }
 
-      // Continue loop at ~10fps (every 100ms) to balance performance
       if (scanningRef.current) {
-        requestAnimationFrame(() => setTimeout(scan, 100));
+        frameId = requestAnimationFrame(() => {
+          timeoutId = setTimeout(scan, 100);
+        });
       }
     };
 
     // Start after a short delay to let camera warm up
-    setTimeout(scan, 300);
-  }, [barcodeSupported]);
+    timeoutId = setTimeout(scan, 300);
+
+    return () => {
+      scanningRef.current = false;
+      clearTimeout(timeoutId);
+      cancelAnimationFrame(frameId);
+    };
+  }, [cameraActive, barcodeSupported, stopCamera]);
 
   const startCamera = async () => {
     setCameraError("");
@@ -299,21 +349,10 @@ export default function ScannerPage() {
         await videoRef.current.play();
       }
       setCameraActive(true);
-      // FIX: Start the barcode decoding loop when camera starts
-      startScanningLoop();
     } catch (_err) {
       setCameraError("Camera access denied. Please allow camera permissions in your browser settings.");
       setCameraActive(false);
     }
-  };
-
-  const stopCamera = () => {
-    scanningRef.current = false; // Stop the scanning loop
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((t) => t.stop());
-      streamRef.current = null;
-    }
-    setCameraActive(false);
   };
 
   useEffect(() => {
@@ -480,9 +519,14 @@ export default function ScannerPage() {
         {activeTab === "camera" && (
           <div className="space-y-4">
             <div className="relative overflow-hidden rounded-2xl border-2 border-[#D1FAE5]/80 dark:border-white/10 bg-black aspect-video">
+              <video 
+                ref={videoRef} 
+                className={cn("h-full w-full object-cover", !cameraActive && "hidden")} 
+                playsInline 
+                muted 
+              />
               {cameraActive ? (
                 <>
-                  <video ref={videoRef} className="h-full w-full object-cover" playsInline muted />
                   {/* Scanner overlay */}
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="h-48 w-48 rounded-2xl border-4 border-[#52B788]/60">

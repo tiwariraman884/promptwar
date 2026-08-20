@@ -7,7 +7,21 @@ create table if not exists profiles (
   city        text default 'Haridwar',
   state       text default 'Uttarakhand',
   diet_type   text default 'vegetarian' check (diet_type in ('vegetarian', 'non_veg', 'vegan')),
+  onboarding_completed boolean not null default false,
   created_at  timestamptz default now()
+);
+
+create table if not exists user_settings (
+  user_id            uuid primary key references auth.users on delete cascade,
+  profile            jsonb not null default '{}'::jsonb,
+  language           jsonb not null default '{}'::jsonb,
+  notifications      jsonb not null default '{}'::jsonb,
+  appearance         jsonb not null default '{}'::jsonb,
+  privacy            jsonb not null default '{}'::jsonb,
+  sessions           jsonb not null default '[]'::jsonb,
+  notification_items jsonb not null default '[]'::jsonb,
+  created_at         timestamptz default now(),
+  updated_at         timestamptz default now()
 );
 
 -- Emission Entries
@@ -74,6 +88,7 @@ create table if not exists completed_tips (
 );
 
 alter table profiles enable row level security;
+alter table user_settings enable row level security;
 alter table emission_entries enable row level security;
 alter table user_badges enable row level security;
 alter table user_streaks enable row level security;
@@ -82,47 +97,75 @@ alter table challenges enable row level security;
 alter table user_challenges enable row level security;
 alter table completed_tips enable row level security;
 
+drop policy if exists "profiles_select_own" on profiles;
 create policy "profiles_select_own" on profiles
   for select using (auth.uid() = id);
+drop policy if exists "profiles_insert_own" on profiles;
 create policy "profiles_insert_own" on profiles
   for insert with check (auth.uid() = id);
+drop policy if exists "profiles_update_own" on profiles;
 create policy "profiles_update_own" on profiles
   for update using (auth.uid() = id) with check (auth.uid() = id);
 
+drop policy if exists "user_settings_select_own" on user_settings;
+create policy "user_settings_select_own" on user_settings
+  for select using (auth.uid() = user_id);
+drop policy if exists "user_settings_insert_own" on user_settings;
+create policy "user_settings_insert_own" on user_settings
+  for insert with check (auth.uid() = user_id);
+drop policy if exists "user_settings_update_own" on user_settings;
+create policy "user_settings_update_own" on user_settings
+  for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+drop policy if exists "entries_select_own" on emission_entries;
 create policy "entries_select_own" on emission_entries
   for select using (auth.uid() = user_id);
+drop policy if exists "entries_insert_own" on emission_entries;
 create policy "entries_insert_own" on emission_entries
   for insert with check (auth.uid() = user_id);
+drop policy if exists "entries_update_own" on emission_entries;
 create policy "entries_update_own" on emission_entries
   for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+drop policy if exists "entries_delete_own" on emission_entries;
 create policy "entries_delete_own" on emission_entries
   for delete using (auth.uid() = user_id);
 
+drop policy if exists "badges_select_own" on user_badges;
 create policy "badges_select_own" on user_badges
   for select using (auth.uid() = user_id);
+drop policy if exists "badges_insert_own" on user_badges;
 create policy "badges_insert_own" on user_badges
   for insert with check (auth.uid() = user_id);
 
+drop policy if exists "streaks_select_own" on user_streaks;
 create policy "streaks_select_own" on user_streaks
   for select using (auth.uid() = user_id);
+drop policy if exists "streaks_upsert_own" on user_streaks;
 create policy "streaks_upsert_own" on user_streaks
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
+drop policy if exists "coins_select_own" on eco_coins;
 create policy "coins_select_own" on eco_coins
   for select using (auth.uid() = user_id);
+drop policy if exists "coins_upsert_own" on eco_coins;
 create policy "coins_upsert_own" on eco_coins
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
+drop policy if exists "challenges_public_read" on challenges;
 create policy "challenges_public_read" on challenges
   for select using (true);
 
+drop policy if exists "user_challenges_select_own" on user_challenges;
 create policy "user_challenges_select_own" on user_challenges
   for select using (auth.uid() = user_id);
+drop policy if exists "user_challenges_upsert_own" on user_challenges;
 create policy "user_challenges_upsert_own" on user_challenges
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
+drop policy if exists "completed_tips_select_own" on completed_tips;
 create policy "completed_tips_select_own" on completed_tips
   for select using (auth.uid() = user_id);
+drop policy if exists "completed_tips_insert_own" on completed_tips;
 create policy "completed_tips_insert_own" on completed_tips
   for insert with check (auth.uid() = user_id);
 
@@ -147,6 +190,52 @@ begin
   on conflict (user_id) do nothing;
 
   insert into public.eco_coins (user_id) values (new.id)
+  on conflict (user_id) do nothing;
+
+  insert into public.user_settings (user_id, profile, language, notifications, appearance, privacy, sessions, notification_items)
+  values (
+    new.id,
+    jsonb_build_object(
+      'id', new.id,
+      'name', coalesce(new.raw_user_meta_data->>'display_name', split_part(new.email, '@', 1)),
+      'username', '',
+      'email', coalesce(new.email, ''),
+      'phone', '',
+      'bio', '',
+      'avatar', coalesce(new.raw_user_meta_data->>'avatar_url', ''),
+      'createdAt', now()::text,
+      'lastLogin', now()::text,
+      'passwordHash', ''
+    ),
+    jsonb_build_object('code', 'en', 'unitSystem', 'metric', 'currency', 'INR', 'dateFormat', 'DD/MM/YYYY'),
+    jsonb_build_object(
+      'paused', false,
+      'loginAlerts', true,
+      'securityAlerts', true,
+      'passwordChanges', true,
+      'accountUpdates', true,
+      'dailyCarbonReminders', true,
+      'weeklyReports', true,
+      'streakReminders', true,
+      'challengeUpdates', true,
+      'badgeUnlocks', true,
+      'ecoCoinRewards', true,
+      'productUpdates', true,
+      'newsletter', false,
+      'sustainabilityTips', true,
+      'monthlySummaries', true,
+      'browserNotifications', false,
+      'mobileNotifications', false,
+      'instantAlerts', false,
+      'quietFrom', '22:00',
+      'quietTo', '07:00',
+      'noWeekends', false
+    ),
+    jsonb_build_object('theme', 'system'),
+    jsonb_build_object('profileVisibility', 'public', 'dataSharing', false, 'analyticsOptIn', false),
+    '[]'::jsonb,
+    '[]'::jsonb
+  )
   on conflict (user_id) do nothing;
 
   return new;

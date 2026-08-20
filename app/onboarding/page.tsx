@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Bike, Building2, Check, MapPin, Target, Utensils } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MotionPage } from "@/components/motion-page";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import { SettingsDB } from "@/lib/settings-db";
 
 /* Lazy-load the India map so SSR doesn't break (canvas + requestAnimationFrame) */
 const IndiaMap3D = dynamic(() => import("@/components/IndiaMap3D"), {
@@ -48,23 +50,82 @@ export default function OnboardingPage() {
   const [homeType, setHomeType] = useState("apartment");
   const [vehicle, setVehicle] = useState("two_wheeler_petrol");
   const [goal, setGoal] = useState(20);
+  const [saving, setSaving] = useState(false);
 
   const selectedCity = useMemo(() => manualCity.trim() || city, [city, manualCity]);
 
-  const save = () => {
-    localStorage.setItem(
-      "greenstep-onboarding",
-      JSON.stringify({
-        display_name: userName.trim() || "Eco User",
+  useEffect(() => {
+    if (!isSupabaseConfigured()) return;
+
+    const supabase = createClient();
+
+    void supabase.auth.getUser().then(async ({ data }) => {
+      const user = data.user;
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("display_name, city, state, diet_type, onboarding_completed")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (profile?.display_name) setUserName(profile.display_name);
+      if (profile?.city) setCity(profile.city);
+      if (profile?.diet_type) setDiet(profile.diet_type);
+
+      if (profile?.onboarding_completed) {
+        router.replace("/dashboard");
+      }
+    });
+  }, [router]);
+
+  const save = async () => {
+    if (!isSupabaseConfigured()) {
+      router.push("/dashboard");
+      return;
+    }
+
+    setSaving(true);
+
+    try {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        router.push("/auth");
+        return;
+      }
+
+      const displayName =
+        userName.trim() ||
+        (user.user_metadata?.full_name as string | undefined) ||
+        (user.user_metadata?.name as string | undefined) ||
+        "Eco User";
+
+      const { error } = await supabase.from("profiles").upsert({
+        id: user.id,
+        display_name: displayName,
         city: selectedCity,
         state: selectedCity === "Haridwar" ? "Uttarakhand" : "",
         diet_type: diet,
-        home_type: homeType,
-        vehicle_owned: vehicle,
-        six_month_goal_percent: goal
-      })
-    );
-    router.push("/dashboard");
+        onboarding_completed: true,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      SettingsDB.updateProfile({
+        name: displayName,
+        email: user.email ?? "",
+      });
+
+      router.push("/dashboard");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -278,9 +339,9 @@ export default function OnboardingPage() {
                   Continue
                 </Button>
               ) : (
-                <Button onClick={save} type="button">
+                <Button onClick={save} type="button" disabled={saving}>
                   <Check aria-hidden size={18} />
-                  Start tracking
+                  {saving ? "Saving…" : "Start tracking"}
                 </Button>
               )}
             </div>

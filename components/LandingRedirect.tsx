@@ -12,16 +12,26 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
 
 export default function LandingRedirect() {
   const router = useRouter()
 
   useEffect(() => {
-    const user = window.localStorage.getItem('eco_user')
-    if (!user) {
-      router.replace('/auth')
+    async function checkSession() {
+      if (!isSupabaseConfigured()) {
+        router.replace('/auth')
+        return
+      }
+
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        router.replace('/auth')
+      }
     }
-    // If user exists, stay on landing — no redirect needed
+
+    checkSession()
   }, [router])
 
   return null

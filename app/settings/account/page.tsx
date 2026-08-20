@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { useSettings } from "@/lib/settings-context";
 import { SettingsDB } from "@/lib/settings-db";
 import { SettingsCard } from "@/components/settings/SettingsCard";
@@ -111,29 +112,27 @@ export default function EditAccountPage() {
 
   async function handlePasswordUpdate(e: React.FormEvent) {
     e.preventDefault();
-    if (!currentPw) return showSettingsToast("Enter your current password", "error");
     if (newPw.length < 8) return showSettingsToast("Password must be at least 8 characters", "error");
     if (newPw !== confirmPw) return showSettingsToast("Passwords do not match", "error");
+    if (!isSupabaseConfigured()) return showSettingsToast("Supabase Auth is required to change passwords", "error");
 
     setChangingPw(true);
-    await new Promise((r) => setTimeout(r, 800));
-
-    // Verify current password if one exists
-    if (profile.passwordHash) {
-      const valid = await SettingsDB.verifyPassword(currentPw, profile.passwordHash);
-      if (!valid) {
-        setChangingPw(false);
-        return showSettingsToast("Current password is incorrect", "error");
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.updateUser({ password: newPw });
+      if (error) {
+        showSettingsToast(error.message, "error");
+        return;
       }
-    }
 
-    const hash = await SettingsDB.hashPassword(newPw);
-    updateProfile({ passwordHash: hash });
+      updateProfile({ lastLogin: new Date().toISOString() });
+      showSettingsToast("Password updated successfully");
+    } finally {
+      setChangingPw(false);
+    }
     setCurrentPw("");
     setNewPw("");
     setConfirmPw("");
-    setChangingPw(false);
-    showSettingsToast("Password updated successfully");
   }
 
   function handleAvatarUpload(dataUrl: string) {
@@ -147,7 +146,7 @@ export default function EditAccountPage() {
   }
 
   function handleDeleteAccount() {
-    SettingsDB.deleteAccount();
+    void SettingsDB.deleteAccount();
     setDeleteModal(false);
     showSettingsToast("Account deleted. Redirecting…");
     setTimeout(() => (window.location.href = "/"), 1500);

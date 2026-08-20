@@ -2,8 +2,14 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import { formatAuthError } from "@/lib/auth-errors";
 
 type Tab = "signin" | "signup";
+
+interface AuthContainerProps {
+  initialError?: string;
+  initialMessage?: string;
+}
 
 // Dynamically load sign-in and sign-up forms to split code out of initial bundle
 const SignInForm = dynamic(() => import("@/components/auth/SignInForm"), {
@@ -16,7 +22,7 @@ const SignUpForm = dynamic(() => import("@/components/auth/SignUpForm"), {
   loading: () => <div className="h-[360px] w-full animate-pulse bg-white/5 rounded-2xl" />,
 });
 
-export default function AuthContainer() {
+export default function AuthContainer({ initialError = "", initialMessage = "" }: AuthContainerProps) {
   const [tab, setTab] = useState<Tab>("signin");
 
   return (
@@ -24,6 +30,19 @@ export default function AuthContainer() {
       className="auth-form-entrance auth-card-glow rounded-3xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-2xl px-7 py-8 sm:px-9 sm:py-10 shadow-2xl shadow-black/40"
       style={{ animationDelay: "0.1s" }}
     >
+      {(initialError || initialMessage) && (
+        <div
+          role={initialError ? "alert" : "status"}
+          className={`mb-5 rounded-xl border px-4 py-3 text-sm ${
+            initialError
+              ? "border-red-500/30 bg-red-500/10 text-red-300"
+              : "border-[#00E676]/30 bg-[#00E676]/10 text-[#00E676]"
+          }`}
+        >
+          {initialError ? formatAuthError(initialError) : initialMessage}
+        </div>
+      )}
+
       {/* Tab switcher */}
       <div role="tablist" className="relative flex rounded-xl bg-white/[0.05] p-1 mb-7">
         {/* Sliding indicator */}

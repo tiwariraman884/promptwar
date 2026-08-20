@@ -4,6 +4,8 @@ import { useState } from "react";
 import type { Route } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/client";
+import { formatAuthError, isNetworkError } from "@/lib/auth-errors";
+import { SettingsDB } from "@/lib/settings-db";
 import PasswordStrength from "./PasswordStrength";
 import SocialButtons from "./SocialButtons";
 
@@ -64,29 +66,44 @@ export default function SignUpForm() {
         });
 
         if (authError) {
-          setError(authError.message);
+          if (isNetworkError(authError)) {
+            // Network connection error — fallback to local profile & redirect
+            SettingsDB.updateProfile({ email, name: name || email.split("@")[0] });
+            router.push(nextUrl as Route);
+            router.refresh();
+            return;
+          }
+          setError(formatAuthError(authError));
           setLoading(false);
           return;
         }
 
         // Supabase can either create a session immediately OR require email confirmation.
         if (data?.session) {
-          router.push(nextUrl as Route);
-          router.refresh();
+          window.location.assign(
+            `/auth/callback?next=${encodeURIComponent(nextUrl)}`
+          );
           return;
         }
 
         // Otherwise, user must confirm via email.
-        setSuccess("Account created! Check your email for a confirmation link.");
-        setLoading(false);
+        router.push(`/auth/verify?email=${encodeURIComponent(email)}&next=${encodeURIComponent(nextUrl)}` as Route);
+        return;
       } else {
-        // Demo mode — localStorage mock (no Supabase configured)
-        localStorage.setItem("eco_user", JSON.stringify({ name, email, country, role }));
-        // AUTH GATE (RULE 2): Redirect to the intended destination after successful sign-up
+        // Fallback for unconfigured Supabase
+        SettingsDB.updateProfile({ email, name: name || email.split("@")[0] });
         router.push(nextUrl as Route);
+        router.refresh();
+        return;
       }
-    } catch {
-      setError("An unexpected error occurred. Please try again.");
+    } catch (err) {
+      if (isNetworkError(err)) {
+        SettingsDB.updateProfile({ email, name: name || email.split("@")[0] });
+        router.push(nextUrl as Route);
+        router.refresh();
+        return;
+      }
+      setError(formatAuthError(err));
       setLoading(false);
     }
   }
