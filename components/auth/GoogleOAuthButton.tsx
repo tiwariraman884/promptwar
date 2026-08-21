@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { formatAuthError, isNetworkError } from "@/lib/auth-errors";
 import { SettingsDB } from "@/lib/settings-db";
+import { setAuthCookie } from "@/lib/session-cookie";
 import { useRouter } from "next/navigation";
 import type { Route } from "next";
 
@@ -33,11 +34,13 @@ export default function GoogleOAuthButton() {
     try {
       if (!isSupabaseConfigured()) {
         SettingsDB.updateProfile({ email: "google-user@greenstep.local", name: "Google User" });
+        setAuthCookie();
         router.push(nextUrl as Route);
         router.refresh();
         return;
       }
 
+      setAuthCookie();
       const supabase = createClient();
       const { data, error: authError } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -61,6 +64,7 @@ export default function GoogleOAuthButton() {
     } catch (err) {
       if (isNetworkError(err)) {
         SettingsDB.updateProfile({ email: "google-user@greenstep.local", name: "Google User" });
+        setAuthCookie();
         router.push(nextUrl as Route);
         router.refresh();
         return;

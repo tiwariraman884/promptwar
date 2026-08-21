@@ -34,6 +34,7 @@ async function redirectAuthenticatedUser(
     console.error("[auth/callback] profile fetch error:", profileError.message, profileError.code);
   }
 
+  let redirectRes: NextResponse;
   if (!profile) {
     const { error: insertError } = await supabase.from("profiles").insert({
       id: user.id,
@@ -50,14 +51,15 @@ async function redirectAuthenticatedUser(
       console.error("[auth/callback] profile insert error:", insertError.message, insertError.code);
     }
 
-    return NextResponse.redirect(new URL("/onboarding", requestUrl.origin));
+    redirectRes = NextResponse.redirect(new URL("/onboarding", requestUrl.origin));
+  } else if (!profile.onboarding_completed) {
+    redirectRes = NextResponse.redirect(new URL("/onboarding", requestUrl.origin));
+  } else {
+    redirectRes = NextResponse.redirect(new URL(next, requestUrl.origin));
   }
 
-  if (!profile.onboarding_completed) {
-    return NextResponse.redirect(new URL("/onboarding", requestUrl.origin));
-  }
-
-  return NextResponse.redirect(new URL(next, requestUrl.origin));
+  redirectRes.cookies.set("eco_auth", "true", { path: "/", maxAge: 2592000, sameSite: "lax" });
+  return redirectRes;
 
 }
 

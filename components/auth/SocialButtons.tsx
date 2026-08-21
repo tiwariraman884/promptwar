@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/client";
 import { formatAuthError, isNetworkError } from "@/lib/auth-errors";
 import { SettingsDB } from "@/lib/settings-db";
+import { setAuthCookie } from "@/lib/session-cookie";
 import { useRouter } from "next/navigation";
 import type { Route } from "next";
 import GoogleOAuthButton from "./GoogleOAuthButton";
@@ -37,6 +38,7 @@ export default function SocialButtons({ mode }: SocialButtonsProps) {
 
     if (!isSupabaseConfigured()) {
       SettingsDB.updateProfile({ email: "github-user@greenstep.local", name: "GitHub User" });
+      setAuthCookie();
       router.push(nextUrl as Route);
       router.refresh();
       return;
@@ -44,6 +46,7 @@ export default function SocialButtons({ mode }: SocialButtonsProps) {
 
     // Real Supabase OAuth
     try {
+      setAuthCookie();
       const supabase = createClient();
       const { data, error: authError } = await supabase.auth.signInWithOAuth({
         provider: "github",
@@ -64,6 +67,7 @@ export default function SocialButtons({ mode }: SocialButtonsProps) {
     } catch (err) {
       if (isNetworkError(err)) {
         SettingsDB.updateProfile({ email: "github-user@greenstep.local", name: "GitHub User" });
+        setAuthCookie();
         router.push(nextUrl as Route);
         router.refresh();
         return;

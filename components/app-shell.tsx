@@ -6,6 +6,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import { clearAuthCookie } from "@/lib/session-cookie";
+import { SettingsDB } from "@/lib/settings-db";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Logo from "@/components/Logo";
@@ -368,8 +370,18 @@ export function AppShell({ children }: { children: ReactNode }) {
   // AUTH GATE
   useEffect(() => {
     if (!mounted) return;
-    if (isAuth) return;
+    if (isAuth || isLanding) return;
+
+    const hasCookie = typeof document !== "undefined" && document.cookie.includes("eco_auth=true");
+    const localProfile = SettingsDB.getProfile();
+    const hasLocalSession = hasCookie || Boolean(localProfile?.email);
+
+    if (hasLocalSession) {
+      return;
+    }
+
     if (!isSupabaseConfigured()) {
+      clearAuthCookie();
       router.replace("/auth");
       return;
     }
@@ -379,13 +391,13 @@ export function AppShell({ children }: { children: ReactNode }) {
 
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!active) return;
-      if (!user) {
+      if (!user && !hasLocalSession) {
         router.replace("/auth");
       }
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session && !isAuth) {
+      if (!session && !isAuth && !hasLocalSession) {
         router.replace("/auth");
       }
     });
@@ -394,7 +406,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       active = false;
       listener.subscription.unsubscribe();
     };
-  }, [mounted, pathname, isAuth, router]);
+  }, [mounted, pathname, isAuth, isLanding, router]);
 
   const safeProfile = mounted ? profile : { name: "", email: "", avatar: "" };
   const hasUser = mounted && !!profile.name;

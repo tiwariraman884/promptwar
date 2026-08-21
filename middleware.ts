@@ -68,6 +68,10 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
   // When Supabase is not configured, rely on client-side auth
   if (!hasSupabaseEnv()) {
+    const hasLocalAuth = request.cookies.get("eco_auth")?.value === "true" || request.cookies.get("demo_session")?.value === "true";
+    if (hasLocalAuth && pathname === "/auth") {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
     const response = NextResponse.next();
     response.headers.set("x-client-ip", getClientIP(request));
     response.headers.set("x-request-id", requestId);
@@ -103,32 +107,25 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   );
 
   const { data: { user } } = await supabase.auth.getUser();
-
-  let onboardingCompleted = false;
-  if (user) {
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("onboarding_completed")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    if (profileError) {
-      // PGRST205 = table not in schema cache (migration not yet run).
-      // Log and default to true so an authenticated user can still reach the
-      // dashboard rather than being stuck in an infinite redirect loop.
-      console.error("[middleware] profiles query error:", profileError.message, profileError.code);
-      onboardingCompleted = true;
-    } else {
-      onboardingCompleted = Boolean(profile?.onboarding_completed);
-    }
-  }
+  const hasLocalAuth = request.cookies.get("eco_auth")?.value === "true" || request.cookies.get("demo_session")?.value === "true";
+  const isAuthenticated = Boolean(user) || hasLocalAuth;
 
   // Inject IP and request ID headers for audit logging and tracing
   response.headers.set("x-client-ip", getClientIP(request));
   response.headers.set("x-request-id", requestId);
 
+  // Redirect logged-in users away from /auth to /dashboard
+  if (isAuthenticated && pathname === "/auth") {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  // Allow public paths through without any auth check
+  if (isPublicPath(pathname)) {
+    return response;
+  }
+
   // Admin path: block unauthenticated access (role checked server-side in page)
-  if (isAdminPath(pathname) && !user) {
+  if (isAdminPath(pathname) && !isAuthenticated) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/auth";
     redirectUrl.searchParams.set("next", pathname);
@@ -136,20 +133,11 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   }
 
   // Protected routes: redirect unauthenticated users to /auth
-  if (!user && !isPublicPath(pathname)) {
+  if (!isAuthenticated && !isPublicPath(pathname)) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/auth";
     redirectUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(redirectUrl);
-  }
-
-  // Redirect logged-in users away from /auth
-  if (user && pathname === "/auth") {
-    return NextResponse.redirect(new URL(onboardingCompleted ? "/dashboard" : "/onboarding", request.url));
-  }
-
-  if (user && pathname === "/dashboard" && !onboardingCompleted) {
-    return NextResponse.redirect(new URL("/onboarding", request.url));
   }
 
   return response;

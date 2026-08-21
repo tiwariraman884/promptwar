@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import { clearAuthCookie } from "@/lib/session-cookie";
 import {
   IconProfile,
   IconEditAccount,
@@ -98,6 +99,7 @@ export default function ProfileMenu() {
       }
     }
 
+    clearAuthCookie();
     setUser(null);
     setOpen(false);
     router.replace("/auth");

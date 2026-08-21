@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/client";
 import { formatAuthError, isNetworkError } from "@/lib/auth-errors";
 import { SettingsDB } from "@/lib/settings-db";
+import { setAuthCookie } from "@/lib/session-cookie";
 import PasswordStrength from "./PasswordStrength";
 import SocialButtons from "./SocialButtons";
 
@@ -69,6 +70,7 @@ export default function SignUpForm() {
           if (isNetworkError(authError)) {
             // Network connection error — fallback to local profile & redirect
             SettingsDB.updateProfile({ email, name: name || email.split("@")[0] });
+            setAuthCookie();
             router.push(nextUrl as Route);
             router.refresh();
             return;
@@ -80,18 +82,21 @@ export default function SignUpForm() {
 
         // Supabase can either create a session immediately OR require email confirmation.
         if (data?.session) {
+          setAuthCookie();
           window.location.assign(
             `/auth/callback?next=${encodeURIComponent(nextUrl)}`
           );
           return;
         }
 
+        setAuthCookie();
         // Otherwise, user must confirm via email.
         router.push(`/auth/verify?email=${encodeURIComponent(email)}&next=${encodeURIComponent(nextUrl)}` as Route);
         return;
       } else {
         // Fallback for unconfigured Supabase
         SettingsDB.updateProfile({ email, name: name || email.split("@")[0] });
+        setAuthCookie();
         router.push(nextUrl as Route);
         router.refresh();
         return;
@@ -99,6 +104,7 @@ export default function SignUpForm() {
     } catch (err) {
       if (isNetworkError(err)) {
         SettingsDB.updateProfile({ email, name: name || email.split("@")[0] });
+        setAuthCookie();
         router.push(nextUrl as Route);
         router.refresh();
         return;

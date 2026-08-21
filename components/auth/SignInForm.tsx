@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/client";
 import { formatAuthError, isNetworkError } from "@/lib/auth-errors";
 import { SettingsDB } from "@/lib/settings-db";
+import { setAuthCookie } from "@/lib/session-cookie";
 import SocialButtons from "./SocialButtons";
 
 export default function SignInForm() {
@@ -45,6 +46,7 @@ export default function SignInForm() {
           if (isNetworkError(authError)) {
             // Network connection error — fallback to local session so user can log in
             SettingsDB.updateProfile({ email, name: email.split("@")[0] });
+            setAuthCookie();
             router.push(nextUrl as Route);
             router.refresh();
             return;
@@ -54,11 +56,13 @@ export default function SignInForm() {
           return;
         }
 
+        setAuthCookie();
         router.push(nextUrl as Route);
         router.refresh();
       } else {
         // Fallback for unconfigured Supabase
         SettingsDB.updateProfile({ email, name: email.split("@")[0] });
+        setAuthCookie();
         router.push(nextUrl as Route);
         router.refresh();
       }
@@ -66,6 +70,7 @@ export default function SignInForm() {
       if (isNetworkError(err)) {
         // Network connection error during fetch — fallback to local session
         SettingsDB.updateProfile({ email, name: email.split("@")[0] });
+        setAuthCookie();
         router.push(nextUrl as Route);
         router.refresh();
         return;
@@ -76,6 +81,7 @@ export default function SignInForm() {
   }
 
   function handleDemoSignIn() {
+    setAuthCookie();
     router.push(nextUrl as Route);
     router.refresh();
   }
